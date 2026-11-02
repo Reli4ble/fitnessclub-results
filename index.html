@@ -1,0 +1,113 @@
+<!doctype html>
+<html lang="de">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Ergebnisse und Ranglisten des Fitnessclub-Wettkampfs.">
+  <title>Fitnessclub Wettkampf – Ergebnisse</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <header class="site-header">
+    <div class="header-inner">
+      <a class="brand" href="#" aria-label="Startseite">
+        <span class="brand-mark">FC</span>
+        <span><strong>FITNESSCLUB</strong><small>COMPETITION RESULTS</small></span>
+      </a>
+      <span class="demo-pill" id="status-pill">DEMO-DATEN</span>
+    </div>
+  </header>
+
+  <main class="container">
+    <section class="hero">
+      <div class="hero-copy">
+        <p class="eyebrow">FITNESSCLUB EVENT · RESULTS</p>
+        <h1 id="event-title">Fitnessclub Wettkampf</h1>
+        <p id="event-subtitle" class="hero-subtitle">HYROX-orientierter Club-Wettkampf</p>
+        <div class="event-meta"><span id="event-date">Testdaten</span><span>·</span><span id="event-location">Fitnessclub</span></div>
+      </div>
+      <div class="hero-stamp"><span>8</span><small>STATIONEN</small></div>
+    </section>
+
+    <div class="notice" id="data-notice"></div>
+
+    <section class="stats-grid" aria-label="Wettkampf-Übersicht">
+      <article class="stat-card"><span class="stat-label">TEAMS GESAMT</span><strong id="total-teams">–</strong><span class="stat-foot">im Wettkampf</span></article>
+      <article class="stat-card"><span class="stat-label">DIVISIONEN</span><strong>3</strong><span class="stat-foot">Männer · Frauen · Mixed</span></article>
+      <article class="stat-card"><span class="stat-label">STATIONEN</span><strong id="station-count">8</strong><span class="stat-foot">Einzelwertungen</span></article>
+      <article class="stat-card"><span class="stat-label">WERTUNG</span><strong>Ø Rang</strong><span class="stat-foot">niedriger ist besser</span></article>
+    </section>
+
+    <section class="results-section">
+      <div class="section-heading">
+        <div><p class="eyebrow">LEADERBOARD</p><h2>Gesamtwertung</h2></div>
+        <label class="age-filter">Altersklasse
+          <select id="age-filter"><option value="">Alle Altersklassen</option></select>
+        </label>
+      </div>
+      <div class="view-switch" role="group" aria-label="Wertungsansicht">
+        <button class="view-button active" data-view="overall">Gesamtwertung</button>
+        <button class="view-button" data-view="age">Altersklassenwertung</button>
+      </div>
+      <p id="view-description" class="view-description">Alle Teams einer Division, sortiert nach dem Durchschnitt ihrer acht Stationsränge.</p>
+      <div id="podium" class="podium" aria-label="Top drei Teams"></div>
+      <nav class="division-tabs" aria-label="Division auswählen">
+        <button class="tab" data-division="Overall">Overall <span id="count-overall">0</span></button>
+        <button class="tab active" data-division="Männer">Männer <span id="count-men">0</span></button>
+        <button class="tab" data-division="Frauen">Frauen <span id="count-women">0</span></button>
+        <button class="tab" data-division="Mixed">Mixed <span id="count-mixed">0</span></button>
+      </nav>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th id="rank-heading">RANG</th><th>TEAM</th><th>PARTNER</th><th>Ø-ALTER</th><th>ALTERSKLASSE</th><th>Ø-RANGPUNKTE</th></tr></thead>
+          <tbody id="leaderboard"></tbody>
+        </table>
+      </div>
+      <p class="table-note">Die Rangpunkte sind der Durchschnitt der acht Stationsränge. Gleichstände erhalten denselben Rang (Wettkampf-Rangfolge: 1, 1, 3).</p>
+    </section>
+
+    <section class="stations-section">
+      <div class="section-heading">
+        <div><p class="eyebrow">PERFORMANCE</p><h2>Stationswertungen</h2></div>
+        <label class="age-filter">Team
+          <select id="team-filter"><option value="">Alle Teams</option></select>
+        </label>
+      </div>
+      <div id="station-cards" class="station-grid"></div>
+    </section>
+
+    <dialog id="team-dialog" class="team-dialog">
+      <div class="dialog-head">
+        <div><p class="eyebrow">TEAM PROFILE</p><h2 id="dialog-team-name">Team</h2></div>
+        <button id="dialog-close" class="dialog-close" aria-label="Detailansicht schließen">×</button>
+      </div>
+      <div id="dialog-team-meta" class="dialog-meta"></div>
+      <div id="dialog-team-results" class="detail-results"></div>
+    </dialog>
+
+    <section class="method-section">
+      <div><p class="eyebrow">SCORING</p><h2>So wird gewertet</h2></div>
+      <p>Die Teams werden getrennt nach Männer, Frauen und Mixed verglichen. Pro Station wird innerhalb der jeweiligen Division ein Rang vergeben. Der Mittelwert aus den acht Stationsrängen ergibt die Gesamtwertung. Zusätzlich wird eine Altersklassenwertung innerhalb derselben Division und Altersklasse gebildet.</p>
+    </section>
+
+    <section class="release-section" aria-labelledby="release-title">
+      <details class="release-details">
+        <summary><span><span class="eyebrow">RELEASE NOTES</span><strong id="release-title">Versionshistorie</strong></span><span class="release-current">v1.0.0 · 02.11.2026</span></summary>
+        <div class="release-table-wrap">
+          <table class="release-table">
+            <thead><tr><th>VERSION</th><th>DATUM</th><th>TYP</th><th>ÄNDERUNGEN</th></tr></thead>
+            <tbody>
+              <tr><td><strong>v1.0.0</strong></td><td>02.11.2026</td><td><span class="release-type release-major">MAJOR · INITIAL RELEASE</span></td><td>Erster offizieller semantisch versionierter Release. Enthält Overall-, Männer-, Frauen- und Mixed-Wertungen, Altersklassenansicht, Podien, Stationsübersicht und Team-Detailansichten.</td></tr>
+              <tr><td>v5</td><td>02.11.2026</td><td><span class="release-type">VORVERSION</span></td><td>Letzter Entwicklungsstand vor Einführung von Semantic Versioning: kombinierte Overall-Wertung über alle Divisionen und gruppierte Altersklassenansicht.</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <p class="release-note">Die Website wird unabhängig von der Excel-Auswertung versioniert. MAJOR kennzeichnet inkompatible Änderungen, MINOR neue rückwärtskompatible Funktionen und PATCH Fehlerkorrekturen.</p>
+      </details>
+    </section>
+  </main>
+
+  <footer><span>FITNESSCLUB COMPETITION</span><span>Website v1.0.0 · Release 02.11.2026 · GitHub Pages</span></footer>
+  <script src="app.js"></script>
+</body>
+</html>
