@@ -1,0 +1,421 @@
+{
+  "event": {
+    "id": "halloween-2026",
+    "name": "HYROX Halloween Special 2026",
+    "subtitle": "HYROX-orientierter Club-Wettkampf",
+    "date": "2026-10-31",
+    "location": "AI-Oberhausen",
+    "status": "Ergebnisse veröffentlicht",
+    "ageGroupsAvailable": false,
+    "notice": "Ergebnisse des Fitnessclub-Wettkampfs. Die Ranglisten werden aus den Stationswerten berechnet."
+  },
+  "stations": [
+    {
+      "key": "skiErg",
+      "name": "SkiErg",
+      "unit": "m",
+      "direction": "desc"
+    },
+    {
+      "key": "sledPush",
+      "name": "Sled Push",
+      "unit": "m",
+      "direction": "desc"
+    },
+    {
+      "key": "sledPull",
+      "name": "Sled Pull",
+      "unit": "m",
+      "direction": "desc"
+    },
+    {
+      "key": "burpees",
+      "name": "Burpees",
+      "unit": "m",
+      "direction": "desc"
+    },
+    {
+      "key": "row",
+      "name": "Row",
+      "unit": "m",
+      "direction": "desc"
+    },
+    {
+      "key": "farmersCarry",
+      "name": "Farmers Carry",
+      "unit": "m",
+      "direction": "desc"
+    },
+    {
+      "key": "lunges",
+      "name": "Lunges",
+      "unit": "m",
+      "direction": "desc"
+    },
+    {
+      "key": "wallBalls",
+      "name": "Wall Balls",
+      "unit": "Wdh.",
+      "direction": "desc"
+    }
+  ],
+  "teams": [
+    {
+      "id": "team-1",
+      "name": "Halloween Party",
+      "division": "Männer",
+      "partner1": "Glenn",
+      "partner2": "Henning",
+      "age1": null,
+      "age2": null,
+      "averageAge": null,
+      "ageGroup": null,
+      "results": {
+        "skiErg": 1760.0,
+        "sledPush": 250.0,
+        "sledPull": 145.0,
+        "burpees": 150.0,
+        "row": 1490.0,
+        "farmersCarry": 550.0,
+        "lunges": 195.0,
+        "wallBalls": 166.0
+      }
+    },
+    {
+      "id": "team-2",
+      "name": "Pumpkin Spice",
+      "division": "Mixed",
+      "partner1": "Miguel",
+      "partner2": "Joena",
+      "age1": null,
+      "age2": null,
+      "averageAge": null,
+      "ageGroup": null,
+      "results": {
+        "skiErg": 1510.0,
+        "sledPush": 180.0,
+        "sledPull": 90.0,
+        "burpees": 180.0,
+        "row": 1263.0,
+        "farmersCarry": 595.0,
+        "lunges": 180.0,
+        "wallBalls": 164.0
+      }
+    },
+    {
+      "id": "team-3",
+      "name": "Spooky Squats",
+      "division": "Frauen",
+      "partner1": "Yohanna",
+      "partner2": "Jenny",
+      "age1": null,
+      "age2": null,
+      "averageAge": null,
+      "ageGroup": null,
+      "results": {
+        "skiErg": 1308.0,
+        "sledPush": 240.0,
+        "sledPull": 86.0,
+        "burpees": 150.0,
+        "row": 1160.0,
+        "farmersCarry": 485.0,
+        "lunges": 190.0,
+        "wallBalls": 168.0
+      }
+    },
+    {
+      "id": "team-4",
+      "name": "Devil Cats",
+      "division": "Frauen",
+      "partner1": "Lara",
+      "partner2": "Julia",
+      "age1": null,
+      "age2": null,
+      "averageAge": null,
+      "ageGroup": null,
+      "results": {
+        "skiErg": 1452.0,
+        "sledPush": 289.0,
+        "sledPull": 134.0,
+        "burpees": 155.0,
+        "row": 1226.0,
+        "farmersCarry": 620.0,
+        "lunges": 200.0,
+        "wallBalls": 175.0
+      }
+    },
+    {
+      "id": "team-5",
+      "name": "Heaven & Hell",
+      "division": "Mixed",
+      "partner1": "David",
+      "partner2": "Sarah",
+      "age1": null,
+      "age2": null,
+      "averageAge": null,
+      "ageGroup": null,
+      "results": {
+        "skiErg": 1671.0,
+        "sledPush": 220.0,
+        "sledPull": 120.0,
+        "burpees": 130.0,
+        "row": 1275.0,
+        "farmersCarry": 585.0,
+        "lunges": 160.0,
+        "wallBalls": 181.0
+      }
+    },
+    {
+      "id": "team-6",
+      "name": "Burpee Witches",
+      "division": "Frauen",
+      "partner1": "Dubi",
+      "partner2": "Johanna",
+      "age1": null,
+      "age2": null,
+      "averageAge": null,
+      "ageGroup": null,
+      "results": {
+        "skiErg": 1348.0,
+        "sledPush": 270.0,
+        "sledPull": 170.0,
+        "burpees": 150.0,
+        "row": 1250.0,
+        "farmersCarry": 675.0,
+        "lunges": 180.0,
+        "wallBalls": 179.0
+      }
+    },
+    {
+      "id": "team-7",
+      "name": "Deadly Doc",
+      "division": "Mixed",
+      "partner1": "Jill",
+      "partner2": "Bjarne",
+      "age1": null,
+      "age2": null,
+      "averageAge": null,
+      "ageGroup": null,
+      "results": {
+        "skiErg": 1495.0,
+        "sledPush": 230.0,
+        "sledPull": 140.0,
+        "burpees": 150.0,
+        "row": 1423.0,
+        "farmersCarry": 778.0,
+        "lunges": 160.0,
+        "wallBalls": 155.0
+      }
+    },
+    {
+      "id": "team-8",
+      "name": "Strong Pumpkins",
+      "division": "Frauen",
+      "partner1": "Sarah",
+      "partner2": "Mandy",
+      "age1": null,
+      "age2": null,
+      "averageAge": null,
+      "ageGroup": null,
+      "results": {
+        "skiErg": 1537.0,
+        "sledPush": 250.0,
+        "sledPull": 150.0,
+        "burpees": 165.0,
+        "row": 1603.0,
+        "farmersCarry": 630.0,
+        "lunges": 280.0,
+        "wallBalls": 191.0
+      }
+    },
+    {
+      "id": "team-9",
+      "name": "Fearless Femmes",
+      "division": "Frauen",
+      "partner1": "Julia",
+      "partner2": "Sarah",
+      "age1": null,
+      "age2": null,
+      "averageAge": null,
+      "ageGroup": null,
+      "results": {
+        "skiErg": 1335.0,
+        "sledPush": 230.0,
+        "sledPull": 170.0,
+        "burpees": 99.0,
+        "row": 985.0,
+        "farmersCarry": 473.0,
+        "lunges": 170.0,
+        "wallBalls": 143.0
+      }
+    },
+    {
+      "id": "team-10",
+      "name": "Kürbiskopfbande",
+      "division": "Mixed",
+      "partner1": "Chantal",
+      "partner2": "Alex",
+      "age1": null,
+      "age2": null,
+      "averageAge": null,
+      "ageGroup": null,
+      "results": {
+        "skiErg": 1378.0,
+        "sledPush": 160.0,
+        "sledPull": 80.0,
+        "burpees": 110.0,
+        "row": 1106.0,
+        "farmersCarry": 370.0,
+        "lunges": 105.0,
+        "wallBalls": 113.0
+      }
+    },
+    {
+      "id": "team-11",
+      "name": "Double Trouble from Hell",
+      "division": "Männer",
+      "partner1": "Michael",
+      "partner2": "Markus",
+      "age1": null,
+      "age2": null,
+      "averageAge": null,
+      "ageGroup": null,
+      "results": {
+        "skiErg": 1476.0,
+        "sledPush": 160.0,
+        "sledPull": 120.0,
+        "burpees": 130.0,
+        "row": 1115.0,
+        "farmersCarry": 551.0,
+        "lunges": 120.0,
+        "wallBalls": 113.0
+      }
+    },
+    {
+      "id": "team-12",
+      "name": "Hells Bells",
+      "division": "Frauen",
+      "partner1": "Sarah",
+      "partner2": "Silke",
+      "age1": null,
+      "age2": null,
+      "averageAge": null,
+      "ageGroup": null,
+      "results": {
+        "skiErg": 1240.0,
+        "sledPush": 250.0,
+        "sledPull": 143.0,
+        "burpees": 115.0,
+        "row": 1181.0,
+        "farmersCarry": 603.0,
+        "lunges": 200.0,
+        "wallBalls": 162.0
+      }
+    },
+    {
+      "id": "team-13",
+      "name": "Toxic Twins",
+      "division": "Frauen",
+      "partner1": "Britta",
+      "partner2": "Cathi",
+      "age1": null,
+      "age2": null,
+      "averageAge": null,
+      "ageGroup": null,
+      "results": {
+        "skiErg": 1364.0,
+        "sledPush": 207.0,
+        "sledPull": 112.0,
+        "burpees": 139.0,
+        "row": 1182.0,
+        "farmersCarry": 574.0,
+        "lunges": 180.0,
+        "wallBalls": 167.0
+      }
+    },
+    {
+      "id": "team-14",
+      "name": "Die boxenden Boogymen",
+      "division": "Männer",
+      "partner1": "Halil",
+      "partner2": "Serkan",
+      "age1": null,
+      "age2": null,
+      "averageAge": null,
+      "ageGroup": null,
+      "results": {
+        "skiErg": 1583.0,
+        "sledPush": 210.0,
+        "sledPull": 120.0,
+        "burpees": 112.0,
+        "row": 1254.0,
+        "farmersCarry": 641.0,
+        "lunges": 140.0,
+        "wallBalls": 116.0
+      }
+    },
+    {
+      "id": "team-15",
+      "name": "Hellburnt",
+      "division": "Männer",
+      "partner1": "Denis",
+      "partner2": "Chuck",
+      "age1": null,
+      "age2": null,
+      "averageAge": null,
+      "ageGroup": null,
+      "results": {
+        "skiErg": 1755.0,
+        "sledPush": 236.0,
+        "sledPull": 167.0,
+        "burpees": 150.0,
+        "row": 1407.0,
+        "farmersCarry": 675.0,
+        "lunges": 190.0,
+        "wallBalls": 172.0
+      }
+    },
+    {
+      "id": "team-16",
+      "name": "Last Second",
+      "division": "Mixed",
+      "partner1": "Linda",
+      "partner2": "Jan",
+      "age1": null,
+      "age2": null,
+      "averageAge": null,
+      "ageGroup": null,
+      "results": {
+        "skiErg": 1539.0,
+        "sledPush": 189.0,
+        "sledPull": 120.0,
+        "burpees": 130.0,
+        "row": 1245.0,
+        "farmersCarry": 473.0,
+        "lunges": 120.0,
+        "wallBalls": 138.0
+      }
+    },
+    {
+      "id": "team-17",
+      "name": "Grumpy Skeletons",
+      "division": "Frauen",
+      "partner1": "Claudia",
+      "partner2": "Svenja",
+      "age1": null,
+      "age2": null,
+      "averageAge": null,
+      "ageGroup": null,
+      "results": {
+        "skiErg": 1146.0,
+        "sledPush": 200.0,
+        "sledPull": 155.0,
+        "burpees": 100.0,
+        "row": 1140.0,
+        "farmersCarry": 450.0,
+        "lunges": 140.0,
+        "wallBalls": 118.0
+      }
+    }
+  ]
+}
