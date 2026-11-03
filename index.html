@@ -10,15 +10,38 @@
 <body>
   <header class="site-header">
     <div class="header-inner">
-      <a class="brand" href="#" aria-label="Startseite">
+      <a class="brand" href="#events" id="brand-home" aria-label="Eventübersicht">
         <span class="brand-mark">FC</span>
         <span><strong>FITNESSCLUB</strong><small>COMPETITION RESULTS</small></span>
       </a>
-      <span class="demo-pill" id="status-pill">DEMO-DATEN</span>
+      <nav class="top-nav"><button id="nav-events" class="nav-link">Events</button><button id="nav-results" class="nav-link" hidden>Ergebnisse</button></nav>
+      <span class="demo-pill" id="status-pill">EVENTS</span>
     </div>
   </header>
 
   <main class="container">
+    <section id="events-page" class="events-page">
+      <section class="events-hero">
+        <p class="eyebrow">FITNESSCLUB · COMPETITION SERIES</p>
+        <h1>WETTKÄMPFE</h1>
+        <p class="hero-subtitle">Alle Events. Alle Ergebnisse. Ein Überblick.</p>
+      </section>
+      <section id="featured-event-section" class="event-list-section" hidden>
+        <div class="section-heading"><div><p class="eyebrow">ALS NÄCHSTES</p><h2>Kommendes Event</h2></div></div>
+        <div id="featured-event" class="event-card-grid"></div>
+      </section>
+      <section class="event-list-section">
+        <div class="section-heading"><div><p class="eyebrow">EVENT ARCHIV</p><h2>Vergangene Events</h2></div></div>
+        <div id="past-events" class="event-card-grid"></div>
+      </section>
+      <section id="demo-events-section" class="event-list-section" hidden>
+        <div class="section-heading"><div><p class="eyebrow">VORSCHAU</p><h2>Demo-Daten</h2></div></div>
+        <div id="demo-events" class="event-card-grid"></div>
+      </section>
+      <p id="events-empty" class="empty-events" hidden>Noch keine Events eingetragen.</p>
+    </section>
+    <div id="results-page" hidden>
+
     <section class="hero">
       <div class="hero-copy">
         <p class="eyebrow">FITNESSCLUB EVENT · RESULTS</p>
@@ -92,11 +115,12 @@
 
     <section class="release-section" aria-labelledby="release-title">
       <details class="release-details">
-        <summary><span><span class="eyebrow">RELEASE NOTES</span><strong id="release-title">Versionshistorie</strong></span><span class="release-current">v1.0.0 · 02.11.2026</span></summary>
+        <summary><span><span class="eyebrow">RELEASE NOTES</span><strong id="release-title">Versionshistorie</strong></span><span class="release-current">v1.1.0 · 03.11.2026</span></summary>
         <div class="release-table-wrap">
           <table class="release-table">
             <thead><tr><th>VERSION</th><th>DATUM</th><th>TYP</th><th>ÄNDERUNGEN</th></tr></thead>
             <tbody>
+              <tr><td><strong>v1.1.0</strong></td><td>03.11.2026</td><td><span class="release-type release-major">MINOR · FEATURE</span></td><td>Event-Startseite, Event-Karten für kommende und vergangene Events, Event-Auswahl und getrennte Ergebnisdateien je Event.</td></tr>
               <tr><td><strong>v1.0.0</strong></td><td>02.11.2026</td><td><span class="release-type release-major">MAJOR · INITIAL RELEASE</span></td><td>Erster offizieller semantisch versionierter Release. Enthält Overall-, Männer-, Frauen- und Mixed-Wertungen, Altersklassenansicht, Podien, Stationsübersicht und Team-Detailansichten.</td></tr>
               <tr><td>v5</td><td>02.11.2026</td><td><span class="release-type">VORVERSION</span></td><td>Letzter Entwicklungsstand vor Einführung von Semantic Versioning: kombinierte Overall-Wertung über alle Divisionen und gruppierte Altersklassenansicht.</td></tr>
             </tbody>
@@ -105,9 +129,10 @@
         <p class="release-note">Die Website wird unabhängig von der Excel-Auswertung versioniert. MAJOR kennzeichnet inkompatible Änderungen, MINOR neue rückwärtskompatible Funktionen und PATCH Fehlerkorrekturen.</p>
       </details>
     </section>
+    </div>
   </main>
 
-  <footer><span>FITNESSCLUB COMPETITION</span><span>Website v1.0.0 · Release 02.11.2026 · GitHub Pages</span></footer>
+  <footer><span>WE 💛 FITNESS!</span><span>Website v1.1.0 · Release 03.11.2026 · GitHub Pages</span></footer>
   <script src="app.js"></script>
 </body>
 </html>
