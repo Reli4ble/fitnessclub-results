@@ -90,6 +90,6 @@ Jeder Release aktualisiert diese README, die Versionsangabe im Footer und die Ve
 
 | Version | Datum | Typ | Änderungen |
 |---|---|---|---|
-| v1.2.0 | 03.11.2026 | MINOR | Erstes reales Event veröffentlicht (Halloween 2026); Altersklassen bei fehlenden Altersdaten ausgeblendet; Demo-Daten aus dem öffentlichen Eventkatalog entfernt; Footer-Slogan vergrößert und zentriert. |
+| v1.2.0 | 03.11.2026 | MINOR | Erstes reales Event veröffentlicht (Halloween 2026); Altersklassen bei fehlenden Altersdaten ausgeblendet; Demo-Daten aus dem öffentlichen Eventkatalog entfernt; Footer-Slogan kompakt zentriert: „WE 💛 HYROX!“ |
 | v1.1.0 | 03.11.2026 | MINOR | Event-Startseite, Event-Karten für kommende und vergangene Events, Event-Auswahl und getrennte Ergebnisdateien je Event. |
 | v1.0.0 | 02.11.2026 | MAJOR · Initial Release | Overall-, Männer-, Frauen- und Mixed-Wertungen, Altersklassenansicht, Podien, Stationsübersicht und Team-Detailansichten. |
