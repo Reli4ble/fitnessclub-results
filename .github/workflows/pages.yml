@@ -27,19 +27,19 @@ jobs:
 
     steps:
       - name: Checkout production
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
         with:
           ref: main
           path: site-prod
 
       - name: Checkout development
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
         with:
           ref: develop
           path: site-dev
 
       - name: Configure Pages
-        uses: actions/configure-pages@v5
+        uses: actions/configure-pages@v6
 
       - name: Build combined website
         run: |
