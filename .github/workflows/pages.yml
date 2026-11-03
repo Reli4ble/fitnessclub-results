@@ -46,10 +46,25 @@ jobs:
           mkdir -p _site
           mkdir -p _site/preview
 
+          echo "Copying production website..."
           rsync -av --exclude='.git' site-prod/ _site/
+
+          echo "Copying development website..."
           rsync -av --exclude='.git' site-dev/ _site/preview/
 
           touch _site/.nojekyll
+
+      - name: Verify combined website
+        run: |
+          echo "Generated website files:"
+          find _site -maxdepth 3 -type f | sort
+
+          echo "Checking required files..."
+
+          test -f _site/index.html
+          test -f _site/preview/index.html
+
+          echo "Both production and preview index.html files exist."
 
       - name: Upload Pages artifact
         uses: actions/upload-pages-artifact@v3
