@@ -1,9 +1,16 @@
 # Fitnessclub Competition Results
 
-**Website-Version: v1.2.0**  
+**Website-Version: v1.3.0**  
 **Release-Datum: 03.11.2026**
 
 Statische Ergebnis-Website für GitHub Pages. Keine Datenbank, kein Backend und kein Login. Die Website wird über GitHub Actions aus `main` (Produktion) und `develop` (Preview) gemeinsam veröffentlicht.
+
+## Version 1.3.0
+
+- Erweiterte Team-Detailansichten mit Stations-Radar (innerhalb der Division normalisiert).
+- Kumulierte durchschnittliche Stationsrangpunkte über die acht Stationen.
+- Stationswerte, Einheiten, Stationsplatzierungen sowie Divisions- und Overallrang in der Teamansicht.
+- Mobile Darstellung der Team-Visualisierungen.
 
 ## Inhalt
 
@@ -90,6 +97,7 @@ Jeder Release aktualisiert diese README, die Versionsangabe im Footer und die Ve
 
 | Version | Datum | Typ | Änderungen |
 |---|---|---|---|
+| v1.3.0 | 03.11.2026 | MINOR | Team-Detailansichten erweitert: Stations-Radar, kumulierter Rangverlauf, Stationsleistungen sowie Divisions- und Overallrang. |
 | v1.2.0 | 03.11.2026 | MINOR | Erstes reales Event veröffentlicht (Halloween 2026); Altersklassen bei fehlenden Altersdaten ausgeblendet; Demo-Daten aus dem öffentlichen Eventkatalog entfernt; Footer-Slogan kompakt zentriert: „WE 💛 HYROX!“ |
 | v1.1.0 | 03.11.2026 | MINOR | Event-Startseite, Event-Karten für kommende und vergangene Events, Event-Auswahl und getrennte Ergebnisdateien je Event. |
 | v1.0.0 | 02.11.2026 | MAJOR · Initial Release | Overall-, Männer-, Frauen- und Mixed-Wertungen, Altersklassenansicht, Podien, Stationsübersicht und Team-Detailansichten. |

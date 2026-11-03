@@ -133,29 +133,63 @@ function renderLeaderboard() {
         : "Alle Teams einer Division, sortiert nach dem Durchschnitt ihrer acht Stationsränge.");
   renderPodium();
 }
+function polarPoint(cx,cy,r,angle){return [cx+Math.cos(angle)*r,cy+Math.sin(angle)*r];}
+function renderTeamRadar(team, stations, maxRank){
+  const cx=150,cy=132,r=88;
+  const values=stations.map(s=>Math.max(0,Math.min(100,((maxRank-team.stationRanks[s.key]+1)/maxRank)*100)));
+  const angle=i=>(-Math.PI/2)+(Math.PI*2*i/stations.length);
+  const rings=[25,50,75,100].map(level=>{
+    const pts=stations.map((_,i)=>polarPoint(cx,cy,r*level/100,angle(i)).join(',')).join(' ');
+    return `<polygon points="${pts}" class="radar-grid" />`;
+  }).join('');
+  const axes=stations.map((s,i)=>{const [x,y]=polarPoint(cx,cy,r,angle(i));return `<line x1="${cx}" y1="${cy}" x2="${x}" y2="${y}" class="radar-axis"/>`;}).join('');
+  const points=values.map((v,i)=>polarPoint(cx,cy,r*v/100,angle(i)).join(',')).join(' ');
+  const labels=stations.map((s,i)=>{const [x,y]=polarPoint(cx,cy,r+20,angle(i));const anchor=x<cx-8?'end':x>cx+8?'start':'middle';return `<text x="${x}" y="${y+3}" text-anchor="${anchor}" class="radar-label">${escapeHtml(s.shortName||s.name)}</text>`;}).join('');
+  return `<svg class="team-radar" viewBox="0 0 300 265" role="img" aria-label="Normalisiertes Stationsprofil. Höhere Werte bedeuten bessere Platzierungen.">${rings}${axes}<polygon points="${points}" class="radar-area"/><polyline points="${points}" class="radar-line"/>${values.map((v,i)=>{const [x,y]=polarPoint(cx,cy,r*v/100,angle(i));return `<circle cx="${x}" cy="${y}" r="3.5" class="radar-dot"/>`;}).join('')}${labels}</svg>`;
+}
+function renderCumulativeRank(team, stations){
+  let sum=0;
+  const values=stations.map((s,i)=>{sum+=team.stationRanks[s.key];return sum/(i+1);});
+  const min=1,max=Math.max(2,...values.map(v=>v));
+  const x=i=>28+i*(284/Math.max(1,stations.length-1));
+  const y=v=>18+(v-min)/(max-min||1)*94;
+  const path=values.map((v,i)=>`${i?'L':'M'} ${x(i)} ${y(v)}`).join(' ');
+  return `<svg class="rank-trend" viewBox="0 0 340 145" role="img" aria-label="Kumulierte durchschnittliche Stationsrangpunkte; niedriger ist besser."><line x1="28" y1="18" x2="312" y2="18" class="trend-grid"/><line x1="28" y1="112" x2="312" y2="112" class="trend-grid"/><path d="${path}" class="trend-line"/>${values.map((v,i)=>`<circle cx="${x(i)}" cy="${y(v)}" r="3.5" class="trend-dot"><title>${escapeHtml(stations[i].name)}: ${fmt(v,2)} Ø-Rang</title></circle>`).join('')}<text x="28" y="133" class="trend-label">${escapeHtml(stations[0].shortName||stations[0].name)}</text><text x="312" y="133" text-anchor="end" class="trend-label">${escapeHtml(stations[stations.length-1].shortName||stations[stations.length-1].name)}</text><text x="28" y="11" class="trend-label">Besser ↑</text></svg>`;
+}
 function openTeamDetails(teamId) {
   const raw=sourceData.teams.find(t=>t.id===teamId);
   if(!raw)return;
-  const comparisonPool=activeDivision==="Overall"
-    ? sourceData.teams
-    : sourceData.teams.filter(t=>t.division===raw.division);
-  const team=rankTeams(comparisonPool,sourceData.stations).find(t=>t.id===teamId);
+  // Station ranks and the normalized profile are calculated within the team's own division,
+  // because the divisions use different loads and must not be mixed in this comparison.
+  const divisionPool=sourceData.teams.filter(t=>t.division===raw.division);
+  const rankedDivision=rankTeams(divisionPool,sourceData.stations);
+  const team=rankedDivision.find(t=>t.id===teamId);
+  const overall=rankTeams(sourceData.teams,sourceData.stations).find(t=>t.id===teamId);
+  const maxRank=divisionPool.length;
   const dialog=document.getElementById("team-dialog");
   document.getElementById("dialog-team-name").textContent=team.name;
   document.getElementById("dialog-team-meta").innerHTML=`
     <span>${escapeHtml(team.division)}</span><span>${team.averageAge===null?"Alter nicht erfasst":"Ø Alter "+fmt(team.averageAge,1)}</span>
-    ${team.ageGroup?`<span>${escapeHtml(team.ageGroup)}</span>`:""}<span>${activeDivision==="Overall"?"Overallrang":"Divisionsrang"} ${team.overallRank}</span>`;
-  const stationRows=sourceData.stations.map(s=>`
-    <div class="detail-row">
-      <span class="detail-station">${escapeHtml(s.name)}</span>
-      <span class="detail-rank">${team.stationRanks[s.key]}. Platz</span>
-      <strong>${fmt(team.results[s.key],0)} ${escapeHtml(s.unit)}</strong>
-    </div>`).join("");
+    ${team.ageGroup?`<span>${escapeHtml(team.ageGroup)}</span>`:""}<span>Divisionsrang ${team.overallRank}</span><span>Overallrang ${overall.overallRank}</span>`;
+  const stationRows=sourceData.stations.map(s=>{
+    const rank=team.stationRanks[s.key];
+    const width=Math.max(8,((maxRank-rank+1)/maxRank)*100);
+    return `<div class="performance-row"><div class="performance-top"><span>${escapeHtml(s.name)}</span><strong>${fmt(team.results[s.key],0)} ${escapeHtml(s.unit)}</strong></div><div class="performance-bottom"><div class="performance-track"><span style="width:${width}%"></span></div><small>Platz ${rank} von ${maxRank}</small></div></div>`;
+  }).join("");
   document.getElementById("dialog-team-results").innerHTML=`
-    <div class="detail-summary"><span>${activeDivision==="Overall"?"OVERALL-WERTUNG":"DIVISIONSWERTUNG"}</span><strong>${fmt(team.averageRank,2)}</strong><small>Ø Stationsrangpunkte</small></div>
+    <div class="team-kpi-grid">
+      <div class="team-kpi"><span>DIVISIONSPLATZ</span><strong>${team.overallRank}.</strong></div>
+      <div class="team-kpi"><span>Ø STATIONSRANG</span><strong>${fmt(team.averageRank,2)}</strong></div>
+      <div class="team-kpi"><span>STATIONEN</span><strong>${sourceData.stations.length}/${sourceData.stations.length}</strong></div>
+    </div>
     <div class="detail-partners"><span>TEAM</span><strong>${escapeHtml(team.partner1)} &amp; ${escapeHtml(team.partner2)}</strong></div>
-    <div class="detail-station-list">${stationRows}</div>`;
+    <div class="team-visual-grid">
+      <section class="team-visual-card"><p class="eyebrow">PERFORMANCE RADAR</p><h3>Stationsprofil</h3>${renderTeamRadar(team,sourceData.stations,maxRank)}<p class="chart-note">Innerhalb der Division normalisiert. 100 = beste Platzierung.</p></section>
+      <section class="team-visual-card"><p class="eyebrow">RANK DEVELOPMENT</p><h3>Kumulierte Rangpunkte</h3>${renderCumulativeRank(team,sourceData.stations)}<p class="chart-note">Durchschnitt der bis dahin absolvierten Stationsränge. Niedriger ist besser.</p></section>
+    </div>
+    <section class="team-station-performance"><p class="eyebrow">STATION PERFORMANCE</p><h3>Einzelergebnisse</h3><div class="performance-list">${stationRows}</div></section>`;
   dialog.showModal();
+  history.replaceState(null,"",location.pathname+`#${encodeURIComponent(currentEventId||sourceData.event.id)}/${encodeURIComponent(teamId)}`);
 }
 function renderStations() {
   const teamId=document.getElementById("team-filter").value;
@@ -257,9 +291,9 @@ document.getElementById("nav-events").addEventListener("click",showEvents);
 document.getElementById("brand-home").addEventListener("click",e=>{e.preventDefault();showEvents();});
 document.getElementById("nav-results").addEventListener("click",()=>{document.getElementById("events-page").hidden=true;document.getElementById("results-page").hidden=false;window.scrollTo(0,0);});
 
-document.getElementById("dialog-close").addEventListener("click",()=>document.getElementById("team-dialog").close());
+document.getElementById("dialog-close").addEventListener("click",()=>{document.getElementById("team-dialog").close();history.replaceState(null,"",location.pathname+"#"+encodeURIComponent(currentEventId||sourceData.event.id));});
 document.getElementById("team-dialog").addEventListener("click",e=>{
-  if(e.target===e.currentTarget)e.currentTarget.close();
+  if(e.target===e.currentTarget){e.currentTarget.close();history.replaceState(null,"",location.pathname+"#"+encodeURIComponent(currentEventId||sourceData.event.id));}
 });
 
 document.querySelectorAll(".view-button").forEach(button=>button.addEventListener("click",()=>{
