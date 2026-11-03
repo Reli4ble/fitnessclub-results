@@ -1,7 +1,7 @@
 # Fitnessclub Competition Results
 
-**Website-Version: v1.0.0**  
-**Release-Datum: 02.11.2026**
+**Website-Version: v1.1.0**  
+**Release-Datum: 03.11.2026**
 
 Die Website verwendet ein eigenes Semantic-Versioning-Schema. Die Versionsnummer ist unabhängig von der Excel-Arbeitsmappe. Die Versionshistorie ist im Footer-Bereich der Website aufklappbar.
 
@@ -109,3 +109,10 @@ Jeder Release aktualisiert die Versionsangabe im Footer, die Versionshistorie in
 |---|---|---|---|
 | v1.0.0 | 02.11.2026 | MAJOR · Initial Release | Erster offizieller semantisch versionierter Release mit Overall-, Männer-, Frauen- und Mixed-Wertung, Altersklassenansicht, Podien, Stationsübersicht und Team-Detailansichten. |
 | v5 | 02.11.2026 | Vorversion | Letzter Entwicklungsstand vor Einführung von Semantic Versioning; kombinierte Overall-Wertung und gruppierte Altersklassenansicht. |
+
+
+## Event-Verwaltung (v1.1.0)
+
+Die Startseite liest `data/events.json`. Jedes Event verweist über `dataFile` auf eine eigene JSON-Datei unter `data/events/`. Statuswerte: `planned` (kommend), `completed` (beendet, Ergebnisse noch nicht veröffentlicht), `results` (Ergebnisse verfügbar) und `demo` (Testdaten). Das nächste geplante Event wird hervorgehoben; vergangene Events werden nach Datum sortiert.
+
+Der Excel-Export liest die Event-Stammdaten aus dem Tabellenblatt `Event`, schreibt die Event-Ergebnisse in eine Datei mit der Event-ID und ergänzt bzw. aktualisiert den Eintrag in `data/events.json`. Andere Eventdateien bleiben erhalten.

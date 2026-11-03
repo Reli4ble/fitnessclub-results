@@ -1,5 +1,7 @@
 const DIVISIONS = ["Overall", "Männer", "Frauen", "Mixed"];
 let sourceData;
+let eventIndex=[];
+let currentEventId=null;
 let activeDivision = "Männer";
 let activeView = "overall";
 
@@ -216,9 +218,39 @@ document.getElementById("age-filter").addEventListener("change",()=>{
   renderStations();
 });
 document.getElementById("team-filter").addEventListener("change",renderStations);
-fetch("data/results.json").then(r=>{if(!r.ok)throw new Error("results.json konnte nicht geladen werden");return r.json();}).then(init).catch(err=>{
-  document.getElementById("data-notice").textContent="Daten konnten nicht geladen werden. Bitte die Website über einen lokalen Webserver oder GitHub Pages öffnen. "+err.message;
-});
+function eventDateValue(value){ if(!value)return null; const d=new Date(value+ (value.length===10?"T00:00:00":"")); return Number.isNaN(d.getTime())?null:d; }
+function formatEventDate(value){const d=eventDateValue(value);return d?d.toLocaleDateString("de-DE",{day:"2-digit",month:"long",year:"numeric"}):"Termin folgt";}
+function eventCard(event,featured=false){
+  const status=event.status==="planned"?"GEPLANT":event.status==="completed"?"ABGESCHLOSSEN":event.status==="results"?"ERGEBNISSE VERÖFFENTLICHT":"DEMO";
+  const action=event.status==="results"?"ERGEBNISSE ANSEHEN →":event.status==="planned"?"EVENTDETAILS →":event.status==="completed"?"ERGEBNISSE FOLGEN →":"DEMO ANSEHEN →";
+  return `<button class="event-card ${featured?"featured":""}" data-event-id="${escapeHtml(event.id)}"><span class="event-status">${status}</span><span><span class="event-title">${escapeHtml(event.name)}</span><span class="event-meta">${escapeHtml(formatEventDate(event.date))} · ${escapeHtml(event.location||"Fitnessclub")}</span></span><span class="event-action">${action}</span></button>`;
+}
+function renderEventIndex(){
+  const now=new Date(); now.setHours(0,0,0,0);
+  const planned=eventIndex.filter(e=>e.status==="planned").sort((a,b)=>(eventDateValue(a.date)||new Date(8640000000000000))-(eventDateValue(b.date)||new Date(8640000000000000)));
+  const past=eventIndex.filter(e=>e.status==="results"||e.status==="completed").sort((a,b)=>(eventDateValue(b.date)||new Date(0))-(eventDateValue(a.date)||new Date(0)));
+  const demos=eventIndex.filter(e=>e.status==="demo");
+  const featured=planned[0]||null;
+  document.getElementById("featured-event-section").hidden=!featured;
+  document.getElementById("featured-event").innerHTML=featured?eventCard(featured,true):"";
+  document.getElementById("past-events").innerHTML=past.map(e=>eventCard(e)).join("");
+  document.getElementById("demo-events-section").hidden=!demos.length;
+  document.getElementById("demo-events").innerHTML=demos.map(e=>eventCard(e)).join("");
+  document.getElementById("events-empty").hidden=!!(featured||past.length||demos.length);
+  document.querySelectorAll("[data-event-id]").forEach(b=>b.addEventListener("click",()=>openEvent(b.dataset.eventId)));
+}
+function showEvents(){document.getElementById("events-page").hidden=false;document.getElementById("results-page").hidden=true;document.getElementById("nav-results").hidden=true;document.getElementById("status-pill").textContent="EVENTS";history.replaceState(null,"",location.pathname+"#events");}
+function openEvent(id){
+  const event=eventIndex.find(e=>e.id===id); if(!event)return;
+  if(!event.dataFile){alert("Für dieses Event sind noch keine Ergebnisse hinterlegt.");return;}
+  fetch(event.dataFile).then(r=>{if(!r.ok)throw new Error("Eventdaten konnten nicht geladen werden");return r.json();}).then(data=>{
+    currentEventId=id; init(data); document.getElementById("events-page").hidden=true; document.getElementById("results-page").hidden=false; document.getElementById("nav-results").hidden=false; document.getElementById("status-pill").textContent=event.status==="demo"?"DEMO":event.status==="planned"?"GEPLANT":"ERGEBNISSE"; history.replaceState(null,"",location.pathname+"#"+encodeURIComponent(id)); window.scrollTo(0,0);
+  }).catch(err=>{document.getElementById("events-empty").textContent=err.message;document.getElementById("events-empty").hidden=false;});
+}
+fetch("data/events.json").then(r=>{if(!r.ok)throw new Error("events.json konnte nicht geladen werden");return r.json();}).then(data=>{eventIndex=data.events||[];renderEventIndex();if(location.hash.length>1&&location.hash!=="#events"){const id=decodeURIComponent(location.hash.slice(1));if(eventIndex.some(e=>e.id===id))openEvent(id);}}).catch(err=>{document.getElementById("events-empty").textContent="Eventübersicht konnte nicht geladen werden: "+err.message;document.getElementById("events-empty").hidden=false;});
+document.getElementById("nav-events").addEventListener("click",showEvents);
+document.getElementById("brand-home").addEventListener("click",e=>{e.preventDefault();showEvents();});
+document.getElementById("nav-results").addEventListener("click",()=>{document.getElementById("events-page").hidden=true;document.getElementById("results-page").hidden=false;window.scrollTo(0,0);});
 
 document.getElementById("dialog-close").addEventListener("click",()=>document.getElementById("team-dialog").close());
 document.getElementById("team-dialog").addEventListener("click",e=>{
