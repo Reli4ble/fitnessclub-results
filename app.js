@@ -262,10 +262,26 @@ document.getElementById("age-filter").addEventListener("change",()=>{
 document.getElementById("team-filter").addEventListener("change",renderStations);
 function eventDateValue(value){ if(!value)return null; const d=new Date(value+ (value.length===10?"T00:00:00":"")); return Number.isNaN(d.getTime())?null:d; }
 function formatEventDate(value){const d=eventDateValue(value);return d?d.toLocaleDateString("de-DE",{day:"2-digit",month:"long",year:"numeric"}):"Termin folgt";}
+function eventFlagSvg(countryCode){
+  const flags={
+    DE:'<svg viewBox="0 0 120 80" preserveAspectRatio="xMidYMid slice" aria-hidden="true"><rect width="120" height="26.67" fill="#111"/><rect y="26.67" width="120" height="26.66" fill="#d00"/><rect y="53.33" width="120" height="26.67" fill="#ffce00"/></svg>',
+    NL:'<svg viewBox="0 0 120 80" preserveAspectRatio="xMidYMid slice" aria-hidden="true"><rect width="120" height="26.67" fill="#ae1c28"/><rect y="26.67" width="120" height="26.66" fill="#fff"/><rect y="53.33" width="120" height="26.67" fill="#21468b"/></svg>',
+    AT:'<svg viewBox="0 0 120 80" preserveAspectRatio="xMidYMid slice" aria-hidden="true"><rect width="120" height="80" fill="#ed2939"/><rect y="26.67" width="120" height="26.66" fill="#fff"/></svg>',
+    CH:'<svg viewBox="0 0 120 80" preserveAspectRatio="xMidYMid slice" aria-hidden="true"><rect width="120" height="80" fill="#d52b1e"/><path d="M48 14h24v18h18v16H72v18H48V48H30V32h18z" fill="#fff"/></svg>',
+    FR:'<svg viewBox="0 0 120 80" preserveAspectRatio="xMidYMid slice" aria-hidden="true"><rect width="40" height="80" fill="#002395"/><rect x="40" width="40" height="80" fill="#fff"/><rect x="80" width="40" height="80" fill="#ed2939"/></svg>',
+    IT:'<svg viewBox="0 0 120 80" preserveAspectRatio="xMidYMid slice" aria-hidden="true"><rect width="40" height="80" fill="#009246"/><rect x="40" width="40" height="80" fill="#fff"/><rect x="80" width="40" height="80" fill="#ce2b37"/></svg>',
+    ES:'<svg viewBox="0 0 120 80" preserveAspectRatio="xMidYMid slice" aria-hidden="true"><rect width="120" height="20" fill="#aa151b"/><rect y="20" width="120" height="40" fill="#f1bf00"/><rect y="60" width="120" height="20" fill="#aa151b"/></svg>',
+    BE:'<svg viewBox="0 0 120 80" preserveAspectRatio="xMidYMid slice" aria-hidden="true"><rect width="40" height="80" fill="#111"/><rect x="40" width="40" height="80" fill="#fae042"/><rect x="80" width="40" height="80" fill="#ed2939"/></svg>',
+    US:'<svg viewBox="0 0 120 80" preserveAspectRatio="xMidYMid slice" aria-hidden="true"><rect width="120" height="80" fill="#fff"/><path d="M0 0h120v6H0zm0 12h120v6H0zm0 12h120v6H0zm0 12h120v6H0zm0 12h120v6H0zm0 12h120v6H0zm0 12h120v2H0z" fill="#b22234"/><rect width="52" height="43" fill="#3c3b6e"/><g fill="#fff"><circle cx="9" cy="8" r="2"/><circle cx="22" cy="8" r="2"/><circle cx="35" cy="8" r="2"/><circle cx="9" cy="21" r="2"/><circle cx="22" cy="21" r="2"/><circle cx="35" cy="21" r="2"/><circle cx="9" cy="34" r="2"/><circle cx="22" cy="34" r="2"/><circle cx="35" cy="34" r="2"/></g></svg>'
+  };
+  const code=String(countryCode||"").trim().toUpperCase();
+  return flags[code]||"";
+}
 function eventCard(event,featured=false){
   const status=event.status==="planned"?"GEPLANT":event.status==="completed"?"ABGESCHLOSSEN":"ERGEBNISSE VERÖFFENTLICHT";
   const action=event.status==="results"?"ERGEBNISSE ANSEHEN →":event.status==="planned"?"EVENTDETAILS →":"ERGEBNISSE FOLGEN →";
-  return `<button class="event-card ${featured?"featured":""}" data-event-id="${escapeHtml(event.id)}"><span class="event-status">${status}</span><span><span class="event-title">${escapeHtml(event.name)}</span><span class="event-meta">${escapeHtml(formatEventDate(event.date))} · ${escapeHtml(event.location||"Fitnessclub")}</span></span><span class="event-action">${action}</span></button>`;
+  const flag=eventFlagSvg(event.countryCode);
+  return `<button class="event-card ${featured?"featured":""}" data-event-id="${escapeHtml(event.id)}">${flag?`<span class="event-flag" aria-hidden="true">${flag}</span>`:""}<span class="event-status">${status}</span><span><span class="event-title">${escapeHtml(event.name)}</span><span class="event-meta">${escapeHtml(formatEventDate(event.date))} · ${escapeHtml(event.location||"Fitnessclub")}</span></span><span class="event-action">${action}</span></button>`;
 }
 function renderEventIndex(){
   const now=new Date(); now.setHours(0,0,0,0);
