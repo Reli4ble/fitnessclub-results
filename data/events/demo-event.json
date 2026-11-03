@@ -1,0 +1,419 @@
+{
+  "event": {
+    "name": "Fitnessclub Wettkampf",
+    "subtitle": "HYROX-orientierter Club-Wettkampf",
+    "date": "Testdaten",
+    "location": "Fitnessclub",
+    "status": "DEMO",
+    "notice": "Alle Teams, Namen und Stationswerte auf dieser Website sind frei erfundene Testdaten. Sie dienen ausschließlich zur Vorschau."
+  },
+  "stations": [
+    {
+      "key": "skiErg",
+      "name": "SkiErg",
+      "unit": "m",
+      "direction": "desc"
+    },
+    {
+      "key": "sledPush",
+      "name": "Sled Push",
+      "unit": "m",
+      "direction": "desc"
+    },
+    {
+      "key": "sledPull",
+      "name": "Sled Pull",
+      "unit": "m",
+      "direction": "desc"
+    },
+    {
+      "key": "burpees",
+      "name": "Burpees",
+      "unit": "Wdh.",
+      "direction": "desc"
+    },
+    {
+      "key": "row",
+      "name": "Row",
+      "unit": "m",
+      "direction": "desc"
+    },
+    {
+      "key": "farmersCarry",
+      "name": "Farmers Carry",
+      "unit": "m",
+      "direction": "desc"
+    },
+    {
+      "key": "lunges",
+      "name": "Lunges",
+      "unit": "Wdh.",
+      "direction": "desc"
+    },
+    {
+      "key": "wallBalls",
+      "name": "Wall Balls",
+      "unit": "Wdh.",
+      "direction": "desc"
+    }
+  ],
+  "teams": [
+    {
+      "id": "men-1",
+      "name": "Iron Pair",
+      "division": "Männer",
+      "partner1": "Demo M1A",
+      "partner2": "Demo M1B",
+      "age1": 34,
+      "age2": 36,
+      "averageAge": 35.0,
+      "ageGroup": "35–39",
+      "results": {
+        "skiErg": 1190,
+        "sledPush": 92,
+        "sledPull": 88,
+        "burpees": 74,
+        "row": 1260,
+        "farmersCarry": 118,
+        "lunges": 82,
+        "wallBalls": 91
+      }
+    },
+    {
+      "id": "men-2",
+      "name": "Pace Makers",
+      "division": "Männer",
+      "partner1": "Demo M2A",
+      "partner2": "Demo M2B",
+      "age1": 29,
+      "age2": 31,
+      "averageAge": 30.0,
+      "ageGroup": "30–34",
+      "results": {
+        "skiErg": 1160,
+        "sledPush": 89,
+        "sledPull": 84,
+        "burpees": 78,
+        "row": 1235,
+        "farmersCarry": 121,
+        "lunges": 79,
+        "wallBalls": 94
+      }
+    },
+    {
+      "id": "men-3",
+      "name": "Double Trouble",
+      "division": "Männer",
+      "partner1": "Demo M3A",
+      "partner2": "Demo M3B",
+      "age1": 42,
+      "age2": 44,
+      "averageAge": 43.0,
+      "ageGroup": "40–44",
+      "results": {
+        "skiErg": 1120,
+        "sledPush": 86,
+        "sledPull": 82,
+        "burpees": 71,
+        "row": 1200,
+        "farmersCarry": 114,
+        "lunges": 76,
+        "wallBalls": 88
+      }
+    },
+    {
+      "id": "men-4",
+      "name": "Northbound",
+      "division": "Männer",
+      "partner1": "Demo M4A",
+      "partner2": "Demo M4B",
+      "age1": 25,
+      "age2": 27,
+      "averageAge": 26.0,
+      "ageGroup": "25–29",
+      "results": {
+        "skiErg": 1085,
+        "sledPush": 83,
+        "sledPull": 79,
+        "burpees": 69,
+        "row": 1175,
+        "farmersCarry": 109,
+        "lunges": 73,
+        "wallBalls": 85
+      }
+    },
+    {
+      "id": "men-5",
+      "name": "Old School Power",
+      "division": "Männer",
+      "partner1": "Demo M5A",
+      "partner2": "Demo M5B",
+      "age1": 56,
+      "age2": 60,
+      "averageAge": 58.0,
+      "ageGroup": "55–59",
+      "results": {
+        "skiErg": 1050,
+        "sledPush": 80,
+        "sledPull": 75,
+        "burpees": 66,
+        "row": 1130,
+        "farmersCarry": 104,
+        "lunges": 70,
+        "wallBalls": 82
+      }
+    },
+    {
+      "id": "women-1",
+      "name": "Red Lightning",
+      "division": "Frauen",
+      "partner1": "Demo F1A",
+      "partner2": "Demo F1B",
+      "age1": 31,
+      "age2": 33,
+      "averageAge": 32.0,
+      "ageGroup": "30–34",
+      "results": {
+        "skiErg": 1080,
+        "sledPush": 82,
+        "sledPull": 78,
+        "burpees": 70,
+        "row": 1170,
+        "farmersCarry": 110,
+        "lunges": 78,
+        "wallBalls": 86
+      }
+    },
+    {
+      "id": "women-2",
+      "name": "Wild Hearts",
+      "division": "Frauen",
+      "partner1": "Demo F2A",
+      "partner2": "Demo F2B",
+      "age1": 27,
+      "age2": 29,
+      "averageAge": 28.0,
+      "ageGroup": "25–29",
+      "results": {
+        "skiErg": 1055,
+        "sledPush": 80,
+        "sledPull": 75,
+        "burpees": 73,
+        "row": 1150,
+        "farmersCarry": 108,
+        "lunges": 75,
+        "wallBalls": 89
+      }
+    },
+    {
+      "id": "women-3",
+      "name": "Power Sisters",
+      "division": "Frauen",
+      "partner1": "Demo F3A",
+      "partner2": "Demo F3B",
+      "age1": 38,
+      "age2": 40,
+      "averageAge": 39.0,
+      "ageGroup": "35–39",
+      "results": {
+        "skiErg": 1020,
+        "sledPush": 77,
+        "sledPull": 73,
+        "burpees": 68,
+        "row": 1120,
+        "farmersCarry": 105,
+        "lunges": 72,
+        "wallBalls": 84
+      }
+    },
+    {
+      "id": "women-4",
+      "name": "Fast & Fearless",
+      "division": "Frauen",
+      "partner1": "Demo F4A",
+      "partner2": "Demo F4B",
+      "age1": 45,
+      "age2": 47,
+      "averageAge": 46.0,
+      "ageGroup": "45–49",
+      "results": {
+        "skiErg": 990,
+        "sledPush": 74,
+        "sledPull": 70,
+        "burpees": 66,
+        "row": 1090,
+        "farmersCarry": 101,
+        "lunges": 69,
+        "wallBalls": 81
+      }
+    },
+    {
+      "id": "women-5",
+      "name": "The Survivors",
+      "division": "Frauen",
+      "partner1": "Demo F5A",
+      "partner2": "Demo F5B",
+      "age1": 52,
+      "age2": 54,
+      "averageAge": 53.0,
+      "ageGroup": "50–54",
+      "results": {
+        "skiErg": 960,
+        "sledPush": 71,
+        "sledPull": 68,
+        "burpees": 63,
+        "row": 1060,
+        "farmersCarry": 98,
+        "lunges": 66,
+        "wallBalls": 78
+      }
+    },
+    {
+      "id": "women-6",
+      "name": "Silver Storm",
+      "division": "Frauen",
+      "partner1": "Demo F6A",
+      "partner2": "Demo F6B",
+      "age1": 58,
+      "age2": 60,
+      "averageAge": 59.0,
+      "ageGroup": "55–59",
+      "results": {
+        "skiErg": 930,
+        "sledPush": 68,
+        "sledPull": 64,
+        "burpees": 60,
+        "row": 1030,
+        "farmersCarry": 94,
+        "lunges": 63,
+        "wallBalls": 75
+      }
+    },
+    {
+      "id": "mix-1",
+      "name": "Mixed Signals",
+      "division": "Mixed",
+      "partner1": "Demo M1A",
+      "partner2": "Demo M1B",
+      "age1": 32,
+      "age2": 34,
+      "averageAge": 33.0,
+      "ageGroup": "30–34",
+      "results": {
+        "skiErg": 1170,
+        "sledPush": 90,
+        "sledPull": 85,
+        "burpees": 76,
+        "row": 1240,
+        "farmersCarry": 120,
+        "lunges": 80,
+        "wallBalls": 92
+      }
+    },
+    {
+      "id": "mix-2",
+      "name": "Team Voltage",
+      "division": "Mixed",
+      "partner1": "Demo M2A",
+      "partner2": "Demo M2B",
+      "age1": 26,
+      "age2": 28,
+      "averageAge": 27.0,
+      "ageGroup": "25–29",
+      "results": {
+        "skiErg": 1140,
+        "sledPush": 87,
+        "sledPull": 82,
+        "burpees": 79,
+        "row": 1215,
+        "farmersCarry": 117,
+        "lunges": 83,
+        "wallBalls": 95
+      }
+    },
+    {
+      "id": "mix-3",
+      "name": "Two to Tango",
+      "division": "Mixed",
+      "partner1": "Demo M3A",
+      "partner2": "Demo M3B",
+      "age1": 39,
+      "age2": 41,
+      "averageAge": 40.0,
+      "ageGroup": "40–44",
+      "results": {
+        "skiErg": 1110,
+        "sledPush": 85,
+        "sledPull": 80,
+        "burpees": 72,
+        "row": 1190,
+        "farmersCarry": 112,
+        "lunges": 77,
+        "wallBalls": 87
+      }
+    },
+    {
+      "id": "mix-4",
+      "name": "No Limits",
+      "division": "Mixed",
+      "partner1": "Demo M4A",
+      "partner2": "Demo M4B",
+      "age1": 44,
+      "age2": 46,
+      "averageAge": 45.0,
+      "ageGroup": "45–49",
+      "results": {
+        "skiErg": 1070,
+        "sledPush": 82,
+        "sledPull": 77,
+        "burpees": 70,
+        "row": 1160,
+        "farmersCarry": 108,
+        "lunges": 74,
+        "wallBalls": 84
+      }
+    },
+    {
+      "id": "mix-5",
+      "name": "Crossfire",
+      "division": "Mixed",
+      "partner1": "Demo M5A",
+      "partner2": "Demo M5B",
+      "age1": 51,
+      "age2": 53,
+      "averageAge": 52.0,
+      "ageGroup": "50–54",
+      "results": {
+        "skiErg": 1040,
+        "sledPush": 79,
+        "sledPull": 74,
+        "burpees": 67,
+        "row": 1135,
+        "farmersCarry": 104,
+        "lunges": 71,
+        "wallBalls": 81
+      }
+    },
+    {
+      "id": "mix-6",
+      "name": "Last Rep",
+      "division": "Mixed",
+      "partner1": "Demo M6A",
+      "partner2": "Demo M6B",
+      "age1": 57,
+      "age2": 59,
+      "averageAge": 58.0,
+      "ageGroup": "55–59",
+      "results": {
+        "skiErg": 1000,
+        "sledPush": 76,
+        "sledPull": 71,
+        "burpees": 64,
+        "row": 1100,
+        "farmersCarry": 99,
+        "lunges": 68,
+        "wallBalls": 78
+      }
+    }
+  ]
+}

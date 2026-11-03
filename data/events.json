@@ -1,0 +1,14 @@
+{
+  "events": [
+    {
+      "id": "demo-event",
+      "name": "Fitnessclub Wettkampf – Demo",
+      "date": "",
+      "location": "Fitnessclub",
+      "status": "demo",
+      "subtitle": "HYROX-orientierter Club-Wettkampf",
+      "dataFile": "data/events/demo-event.json",
+      "notice": "Alle Teams, Namen und Stationswerte sind frei erfundene Testdaten und dienen ausschließlich zur Vorschau."
+    }
+  ]
+}
