@@ -6,8 +6,9 @@ let activeDivision = "Männer";
 let activeView = "overall";
 
 function ageGroup(age) {
+  if (age === null || age === undefined || !Number.isFinite(Number(age))) return null;
   const bands = [[24,"16–24"],[29,"25–29"],[34,"30–34"],[39,"35–39"],[44,"40–44"],[49,"45–49"],[54,"50–54"],[59,"55–59"],[64,"60–64"],[69,"65–69"],[74,"70–74"],[79,"75–79"],[84,"80–84"],[89,"85–89"]];
-  return (bands.find(([max]) => age <= max) || bands[bands.length-1])[1];
+  return (bands.find(([max]) => Number(age) <= max) || bands[bands.length-1])[1];
 }
 function rankTeams(teams, stations) {
   const enriched = teams.map(t => ({...t, stationRanks:{}}));
@@ -24,8 +25,9 @@ function rankTeams(teams, stations) {
     });
   }
   enriched.forEach(t => {
-    t.averageAge = (Number(t.age1) + Number(t.age2)) / 2;
-    t.ageGroup = ageGroup(t.averageAge);
+    const hasAges = t.age1 !== null && t.age1 !== undefined && t.age2 !== null && t.age2 !== undefined;
+    t.averageAge = hasAges ? (Number(t.age1) + Number(t.age2)) / 2 : null;
+    t.ageGroup = hasAges ? ageGroup(t.averageAge) : null;
     t.averageRank = stations.reduce((sum,s) => sum + t.stationRanks[s.key],0) / stations.length;
   });
   const sorted = [...enriched].sort((a,b) => a.averageRank - b.averageRank);
@@ -37,6 +39,7 @@ function rankTeams(teams, stations) {
   });
   const ageBuckets = new Map();
   for (const t of enriched) {
+    if (!t.ageGroup) continue;
     const key = t.ageGroup;
     if (!ageBuckets.has(key)) ageBuckets.set(key,[]);
     ageBuckets.get(key).push(t);
@@ -107,8 +110,8 @@ function renderLeaderboard() {
         <td class="rank">${rank}.</td>
         <td class="team-name">${escapeHtml(t.name)}<span class="row-hint">Details ansehen ↗</span></td>
         <td class="partner-names">${escapeHtml(t.partner1)} &amp; ${escapeHtml(t.partner2)}</td>
-        <td>${fmt(t.averageAge,1)}</td>
-        <td>${escapeHtml(t.ageGroup)} <span class="partner-names">· AK ${t.ageRank}.</span></td>
+        <td>${t.averageAge===null?"–":fmt(t.averageAge,1)}</td>
+        <td>${t.ageGroup?`${escapeHtml(t.ageGroup)} <span class="partner-names">· AK ${t.ageRank}.</span>`:"–"}</td>
         <td class="score">${fmt(t.averageRank,2)}</td>
       </tr>`;
   }
@@ -140,8 +143,8 @@ function openTeamDetails(teamId) {
   const dialog=document.getElementById("team-dialog");
   document.getElementById("dialog-team-name").textContent=team.name;
   document.getElementById("dialog-team-meta").innerHTML=`
-    <span>${escapeHtml(team.division)}</span><span>Ø Alter ${fmt(team.averageAge,1)}</span>
-    <span>${escapeHtml(team.ageGroup)}</span><span>${activeDivision==="Overall"?"Overallrang":"Divisionsrang"} ${team.overallRank}</span>`;
+    <span>${escapeHtml(team.division)}</span><span>${team.averageAge===null?"Alter nicht erfasst":"Ø Alter "+fmt(team.averageAge,1)}</span>
+    ${team.ageGroup?`<span>${escapeHtml(team.ageGroup)}</span>`:""}<span>${activeDivision==="Overall"?"Overallrang":"Divisionsrang"} ${team.overallRank}</span>`;
   const stationRows=sourceData.stations.map(s=>`
     <div class="detail-row">
       <span class="detail-station">${escapeHtml(s.name)}</span>
@@ -190,7 +193,12 @@ function init(data) {
     const el=document.getElementById(id);
     if(el) el.textContent=div==="Overall"?data.teams.length:data.teams.filter(t=>t.division===div).length;
   }
-  const ages=[...new Set(data.teams.map(t=>ageGroup((Number(t.age1)+Number(t.age2))/2)))].sort((a,b)=>parseInt(a)-parseInt(b));
+  const ageGroupsAvailable = data.event.ageGroupsAvailable !== false && data.teams.every(t => t.age1 !== null && t.age1 !== undefined && t.age2 !== null && t.age2 !== undefined);
+  document.querySelector(".view-switch").hidden = !ageGroupsAvailable;
+  document.getElementById("age-filter").parentElement.hidden = !ageGroupsAvailable;
+  document.querySelectorAll(".view-button[data-view='age']").forEach(b => b.hidden = !ageGroupsAvailable);
+  if (!ageGroupsAvailable) activeView = "overall";
+  const ages=[...new Set(data.teams.map(t=>t.ageGroup || ageGroup(t.averageAge)).filter(Boolean))].sort((a,b)=>parseInt(a)-parseInt(b));
   document.getElementById("age-filter").innerHTML='<option value="">Alle Altersklassen</option>'+ages.map(a=>`<option>${a}</option>`).join("");
   const initialTeams=activeDivision==="Overall"?data.teams:data.teams.filter(t=>t.division===activeDivision);
   document.getElementById("team-filter").innerHTML='<option value="">Top 3 je Station</option>'+initialTeams.map(t=>`<option value="${escapeHtml(t.id)}">${escapeHtml(t.name)}</option>`).join("");
