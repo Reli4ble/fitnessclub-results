@@ -47,15 +47,23 @@ def main():
         name_cell=ws.cell(row,1).value; division=ws.cell(row,2).value
         if not name_cell or not division: continue
         age1,age2=ws.cell(row,3).value,ws.cell(row,4).value
-        if age1 is None or age2 is None: raise SystemExit(f"Zeile {row}: Für Team {name_cell!r} fehlen Partneralter.")
-        age1,age2=float(age1),float(age2); avg=(age1+age2)/2; results={}
+        if age1 is None or age2 is None:
+            # Altersklassen sind optional. Wenn nicht beide Partneralter vorliegen,
+            # werden beide Alterswerte und die abgeleiteten Felder als null exportiert.
+            age1=age2=avg=age_group_label=None
+        else:
+            age1,age2=float(age1),float(age2)
+            avg=(age1+age2)/2
+            age_group_label=age_group(avg)
+        results={}
         for col,key in enumerate(STATION_KEYS,start=7):
             value=ws.cell(row,col).value
             if value is None: raise SystemExit(f"Zeile {row}: Für Team {name_cell!r} fehlt Stationswert {key}.")
             results[key]=float(value)
-        teams.append({"id":f"team-{len(teams)+1}","name":str(name_cell),"division":str(division),"partner1":str(ws.cell(row,15).value or ""),"partner2":str(ws.cell(row,16).value or ""),"age1":age1,"age2":age2,"averageAge":avg,"ageGroup":age_group(avg),"results":results})
+        teams.append({"id":f"team-{len(teams)+1}","name":str(name_cell),"division":str(division),"partner1":str(ws.cell(row,15).value or ""),"partner2":str(ws.cell(row,16).value or ""),"age1":age1,"age2":age2,"averageAge":avg,"ageGroup":age_group_label,"results":results})
     if not teams: raise SystemExit("Keine Teams zum Export gefunden.")
-    payload={"event":{"id":event_id,"name":name,"subtitle":subtitle,"date":date_str,"location":location,"status":status_label,"notice":"Ergebnisse des Fitnessclub-Wettkampfs. Die Ranglisten werden aus den Stationswerten berechnet."},"stations":stations,"teams":teams}
+    age_groups_available=all(t["averageAge"] is not None for t in teams)
+    payload={"event":{"id":event_id,"name":name,"subtitle":subtitle,"date":date_str,"location":location,"status":status_label,"ageGroupsAvailable":age_groups_available,"notice":"Ergebnisse des Fitnessclub-Wettkampfs. Die Ranglisten werden aus den Stationswerten berechnet."},"stations":stations,"teams":teams}
     root=Path(args.output_dir); event_dir=root/"events"; event_dir.mkdir(parents=True,exist_ok=True)
     event_file=event_dir/f"{event_id}.json"; event_file.write_text(json.dumps(payload,ensure_ascii=False,indent=2),encoding="utf-8")
     index_file=root/"events.json"
