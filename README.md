@@ -1,17 +1,25 @@
 # Fitnessclub Competition Results
 
-**Website-Version: v1.1.0**  
+**Website-Version: v1.2.0**  
 **Release-Datum: 03.11.2026**
 
-Die Website verwendet ein eigenes Semantic-Versioning-Schema. Die Versionsnummer ist unabhängig von der Excel-Arbeitsmappe. Die Versionshistorie ist im Footer-Bereich der Website aufklappbar.
-
-Statische Ergebnis-Website für GitHub Pages. Keine Datenbank, kein Backend und kein Login.
+Statische Ergebnis-Website für GitHub Pages. Keine Datenbank, kein Backend und kein Login. Die Website wird über GitHub Actions aus `main` (Produktion) und `develop` (Preview) gemeinsam veröffentlicht.
 
 ## Inhalt
 
 - `index.html`, `styles.css`, `app.js`: Website
-- `data/results.json`: veröffentlichte Wettkampfdaten (aktuell ausschließlich synthetische DEMO-Daten)
-- `scripts/export_results.py`: liest die Eingabetabelle aus der Excel-Arbeitsmappe und erzeugt `data/results.json`
+- `data/events.json`: öffentlicher Eventkatalog
+- `data/events/<event-id>.json`: Ergebnisdaten je Event
+- `scripts/export_results.py`: Excel-Export für Event-Stammdaten und Ergebnisse
+
+## Deployment und Branch-Modell
+
+- `main`: produktive Website unter `https://reli4ble.github.io/fitnessclub-results/`
+- `develop`: Vorschau unter `https://reli4ble.github.io/fitnessclub-results/preview/`
+- Feature-Branches werden per Pull Request nach `develop` gemergt.
+- Nach erfolgreichem Preview-Test wird `develop` per Pull Request nach `main` übernommen.
+- GitHub Actions erstellt ein gemeinsames Pages-Artefakt. Der Build prüft, dass sowohl `_site/index.html` als auch `_site/preview/index.html` vorhanden sind.
+- Der Workflow verwendet Ubuntu 24.04 sowie Node.js-24-kompatible Actions.
 
 ## Lokal ansehen
 
@@ -23,75 +31,50 @@ python3 -m http.server 8000
 
 Dann `http://localhost:8000` öffnen. `index.html` nicht per Doppelklick (`file://`) öffnen, da der Browser den JSON-Abruf blockieren kann.
 
-## GitHub Pages veröffentlichen
-
-1. Ein neues **öffentliches** GitHub-Repository erstellen, z. B. `fitnessclub-results`.
-2. Alle Dateien dieses Projekts in den Repository-Root hochladen.
-3. GitHub: **Settings → Pages**.
-4. Bei **Build and deployment** `Deploy from a branch` auswählen.
-5. Branch `main`, Ordner `/ (root)` wählen und speichern.
-6. Nach dem Deployment ist die Website über die angezeigte `github.io`-URL erreichbar.
-
-GitHub Pages ist öffentlich. Niemals personenbezogene Daten veröffentlichen, für die keine Freigabe vorliegt.
-
 ## Ergebnisse aus Excel übernehmen
 
 Voraussetzung: Python 3 und `openpyxl`.
 
 ```bash
 python3 -m pip install openpyxl
-python3 scripts/export_results.py "/pfad/zur/HYROX_Fitnessclub_Auswertung_mit_Partnernamen.xlsx"
+python3 scripts/export_results.py "/pfad/zur/Fitnessclub_Auswertung.xlsx"
 ```
 
-Das Skript liest ausschließlich das Blatt `Teams & Ergebnisse` und `Einstellungen`. Es übernimmt Teams, Partnernamen, Alter und die acht Stationswerte. Ranglisten und Altersklassen werden anschließend auf der Website aus den Rohdaten berechnet.
+Das Skript liest die Event-Stammdaten aus dem Tabellenblatt `Event` sowie Teams, Partnernamen, Alter und Stationswerte aus `Teams & Ergebnisse`. Die Event-ID bestimmt den Dateinamen unter `data/events/`. Ein vorhandenes Event wird aktualisiert; andere Eventdateien bleiben erhalten.
 
-Danach `data/results.json` committen und pushen:
+Nach dem Export die Änderungen prüfen und committen:
 
 ```bash
-git add data/results.json
-git commit -m "Update competition results"
+git add data/events.json data/events/
+git commit -m "data: publish event results"
 git push
 ```
 
-GitHub Pages veröffentlicht die aktualisierten Daten automatisch nach dem Deployment.
-
-## Overall-Wertung
-
-Die Overall-Wertung berechnet Stationsränge über alle Divisionen gemeinsam. Sie vergleicht absolute Messwerte ohne Ausgleich unterschiedlicher Lasten oder Bedingungen. Für einen sinnvollen Vergleich müssen Einheit und Messmethode jeder Station über alle Divisionen identisch sein.
+Der Export schreibt Rohdaten. Die Website berechnet Stationsränge, Divisionswertungen und Overall-Wertung aus den Stationswerten.
 
 ## Website-Funktionen
 
-- Division-spezifisches Podium für die drei bestplatzierten Teams.
-- Klick auf ein Team in Podium oder Tabelle öffnet das Teamprofil mit allen acht Stationswerten und Stationsrängen.
-- Vier Ranglisten-Tabs: Overall (alle Divisionen gemeinsam), Männer, Frauen und Mixed.
-- Overall vergleicht absolute Stationsleistungen ohne Ausgleich unterschiedlicher Lasten oder Bedingungen.
-- Umschaltung zwischen Gesamtwertung und Altersklassenwertung.
-- Altersklassenansicht gruppiert die Teams nach Altersklasse und zeigt den Rang innerhalb der Altersklasse.
-- Bei Auswahl einer einzelnen Altersklasse zeigt das Podium deren Top 3.
-- Altersklassenfilter und Stationsübersicht bleiben verfügbar.
+- Eventübersicht mit kommenden und vergangenen Events.
+- Separate Eventdateien; der Eventkatalog verweist über `dataFile` auf die jeweilige JSON-Datei.
+- Division-spezifische Ranglisten: Männer, Frauen und Mixed.
+- Ergänzende Overall-Wertung über alle Divisionen; sie vergleicht absolute Messwerte ohne Ausgleich unterschiedlicher Lasten oder Bedingungen.
+- Podium, Stationsübersicht und Team-Detailansichten.
+- Altersklassenwertung und Altersfilter nur, wenn für alle Teams die erforderlichen Altersangaben vorhanden sind und `ageGroupsAvailable` nicht explizit `false` ist.
+- Fehlen Altersangaben, werden sie als `null` geführt; Altersklassenfunktionen werden für das Event ausgeblendet.
 
-## Datenmodell / Wertung
+## Datenmodell und Wertung
 
-- Divisionen werden separat ausgewertet: Männer, Frauen, Mixed.
-- Stationsrang: gemäß `Rangrichtung` in Excel (`Mehr ist besser` oder `Weniger ist besser`).
+- Divisionen werden getrennt ausgewertet: Männer, Frauen, Mixed.
+- Stationsrang gemäß `direction` je Station (`desc` = höher ist besser, `asc` = niedriger ist besser).
 - Gesamtwertung: arithmetischer Mittelwert der acht Stationsränge; niedriger ist besser.
 - Gleichstände verwenden Competition Ranking (1, 1, 3).
 - Altersklasse basiert auf dem Mittelwert der beiden Partneralter.
 - Altersklassenrang wird innerhalb derselben Division und Altersklasse berechnet.
+- Overall vergleicht absolute Stationsleistungen ohne Ausgleich unterschiedlicher Lasten oder Bedingungen und ist daher nur eine ergänzende Vergleichswertung.
 
-## Wichtige Hinweise
+## Datenschutz
 
-- Die mitgelieferten Teams und Werte sind vollständig erfunden und als DEMO gekennzeichnet.
-- Das Exportskript setzt voraus, dass die Stationswerte in Excel in den Spalten G:N stehen und Partnernamen in O:P. Das entspricht der bereitgestellten Arbeitsmappe.
-- Bei `Weniger ist besser` wird der niedrigste Messwert auf Rang 1 gesetzt.
-- Für die Website werden Partnernamen aus Excel übernommen. Vor Veröffentlichung bitte die Freigabe aller betroffenen Personen sicherstellen.
-
-
-### Version 4
-
-- Die Überschrift wechselt passend zwischen Gesamtwertung und Altersklassenwertung.
-- Bei gewählter Altersklasse werden auch Stationswertungen und Team-Auswahl auf diese Altersklasse begrenzt. Stationsränge werden innerhalb der gefilterten Division und Altersklasse neu berechnet.
-
+GitHub Pages ist öffentlich. Vor Veröffentlichung ist sicherzustellen, dass die betroffenen Personen der Veröffentlichung ihrer Namen und Ergebnisse zugestimmt haben.
 
 ## Versionierung
 
@@ -101,18 +84,12 @@ Die Website wird unabhängig von der Excel-Datei nach Semantic Versioning versio
 - **MINOR**: neue, rückwärtskompatible Funktionen.
 - **PATCH**: rückwärtskompatible Fehlerkorrekturen.
 
-Jeder Release aktualisiert die Versionsangabe im Footer, die Versionshistorie in `index.html` und diese README. Frühere Release-Artefakte werden nicht überschrieben.
+Jeder Release aktualisiert diese README, die Versionsangabe im Footer und die Versionshistorie in `index.html`. Frühere Release-Artefakte werden nicht überschrieben.
 
 ### Versionshistorie
 
 | Version | Datum | Typ | Änderungen |
 |---|---|---|---|
-| v1.0.0 | 02.11.2026 | MAJOR · Initial Release | Erster offizieller semantisch versionierter Release mit Overall-, Männer-, Frauen- und Mixed-Wertung, Altersklassenansicht, Podien, Stationsübersicht und Team-Detailansichten. |
-| v5 | 02.11.2026 | Vorversion | Letzter Entwicklungsstand vor Einführung von Semantic Versioning; kombinierte Overall-Wertung und gruppierte Altersklassenansicht. |
-
-
-## Event-Verwaltung (v1.1.0)
-
-Die Startseite liest `data/events.json`. Jedes Event verweist über `dataFile` auf eine eigene JSON-Datei unter `data/events/`. Statuswerte: `planned` (kommend), `completed` (beendet, Ergebnisse noch nicht veröffentlicht), `results` (Ergebnisse verfügbar) und `demo` (Testdaten). Das nächste geplante Event wird hervorgehoben; vergangene Events werden nach Datum sortiert.
-
-Der Excel-Export liest die Event-Stammdaten aus dem Tabellenblatt `Event`, schreibt die Event-Ergebnisse in eine Datei mit der Event-ID und ergänzt bzw. aktualisiert den Eintrag in `data/events.json`. Andere Eventdateien bleiben erhalten.
+| v1.2.0 | 03.11.2026 | MINOR | Erstes reales Event veröffentlicht (Halloween 2026); Altersklassen bei fehlenden Altersdaten ausgeblendet; Demo-Daten aus dem öffentlichen Eventkatalog entfernt; Footer-Slogan vergrößert und zentriert. |
+| v1.1.0 | 03.11.2026 | MINOR | Event-Startseite, Event-Karten für kommende und vergangene Events, Event-Auswahl und getrennte Ergebnisdateien je Event. |
+| v1.0.0 | 02.11.2026 | MAJOR · Initial Release | Overall-, Männer-, Frauen- und Mixed-Wertungen, Altersklassenansicht, Podien, Stationsübersicht und Team-Detailansichten. |
