@@ -1,6 +1,15 @@
 {
   "events": [
     {
+      "id": "halloween-2026",
+      "name": "HYROX Halloween Special 2026",
+      "date": "2026-10-31",
+      "location": "AI-Oberhausen",
+      "status": "results",
+      "subtitle": "HYROX-orientierter Club-Wettkampf",
+      "dataFile": "data/events/halloween-2026.json"
+    },
+    {
       "id": "demo-event",
       "name": "Fitnessclub Wettkampf – Demo",
       "date": "",
