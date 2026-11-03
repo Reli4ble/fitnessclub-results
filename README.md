@@ -1,9 +1,14 @@
 # Fitnessclub Competition Results
 
-**Website-Version: v1.3.0**  
+**Website-Version: v1.4.0**  
 **Release-Datum: 03.11.2026**
 
 Statische Ergebnis-Website für GitHub Pages. Keine Datenbank, kein Backend und kein Login. Die Website wird über GitHub Actions aus `main` (Produktion) und `develop` (Preview) gemeinsam veröffentlicht.
+
+## Version 1.4.0
+
+- Proprietäre Lizenzbedingungen ergänzt (`LICENSE.md`).
+- Öffentliche Seite „Nutzung & Lizenz“ und Copyright-Hinweise im Footer.
 
 ## Version 1.3.0
 
@@ -93,10 +98,17 @@ Die Website wird unabhängig von der Excel-Datei nach Semantic Versioning versio
 
 Jeder Release aktualisiert diese README, die Versionsangabe im Footer und die Versionshistorie in `index.html`. Frühere Release-Artefakte werden nicht überschrieben.
 
+## Urheberrecht und Lizenz
+
+© 2026 Reli4ble. Alle Rechte vorbehalten. Das Projekt wird unter keiner Open-Source-Lizenz veröffentlicht. Es gelten die Bedingungen in [`LICENSE.md`](LICENSE.md) und auf der Website unter [Nutzung & Lizenz](https://reli4ble.github.io/fitnessclub-results/license.html). Eine Nutzung, Bearbeitung oder kommerzielle Verwertung außerhalb der von GitHub für öffentliche Repositories eingeräumten Plattformrechte bedarf der vorherigen schriftlichen Zustimmung des Rechteinhabers. Lizenzanfragen können über das [GitHub-Profil von Reli4ble](https://github.com/Reli4ble) gestellt werden.
+
+Hinweis: Die Lizenztexte sind ein Formulierungsvorschlag und keine individuelle Rechtsberatung. Vor einer kommerziellen Lizenzierung sollte die Rechteinhaberschaft einschließlich etwaiger Beiträge Dritter und verwendeter Drittanbieter-Komponenten geprüft werden.
+
 ### Versionshistorie
 
 | Version | Datum | Typ | Änderungen |
 |---|---|---|---|
+| v1.4.0 | 03.11.2026 | MINOR | Proprietäre Lizenzbedingungen, Lizenzseite und Copyright-Hinweise ergänzt. |
 | v1.3.0 | 03.11.2026 | MINOR | Team-Detailansichten erweitert: Stations-Radar, kumulierter Rangverlauf, Stationsleistungen sowie Divisions- und Overallrang. |
 | v1.2.0 | 03.11.2026 | MINOR | Erstes reales Event veröffentlicht (Halloween 2026); Altersklassen bei fehlenden Altersdaten ausgeblendet; Demo-Daten aus dem öffentlichen Eventkatalog entfernt; Footer-Slogan kompakt zentriert: „WE 💛 HYROX!“ |
 | v1.1.0 | 03.11.2026 | MINOR | Event-Startseite, Event-Karten für kommende und vergangene Events, Event-Auswahl und getrennte Ergebnisdateien je Event. |
