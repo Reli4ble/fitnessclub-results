@@ -94,3 +94,37 @@ footer>span:last-child{font-size:9px;color:var(--muted)}
 .empty-events{border:1px dashed var(--line);padding:28px;color:var(--muted);text-align:center}
 .results-back{margin:24px 0 0}
 @media(max-width:700px){.event-card-grid{grid-template-columns:1fr}.events-hero{padding:36px 0 28px}.top-nav{margin-right:10px}.nav-link{padding:8px}}
+
+/* v1.3.0: expanded team performance profile */
+.team-dialog{width:min(900px,calc(100vw - 28px));}
+.team-kpi-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin:6px 0 12px}
+.team-kpi{background:linear-gradient(145deg,#202918,var(--panel) 72%);border:1px solid var(--line);padding:14px 16px}
+.team-kpi span{display:block;color:var(--muted);font-size:9px;font-weight:800;letter-spacing:.12em}
+.team-kpi strong{display:block;color:var(--accent);font:800 34px 'Barlow Condensed';margin-top:3px}
+.team-visual-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:18px 0}
+.team-visual-card,.team-station-performance{background:var(--panel);border:1px solid var(--line);padding:16px;min-width:0}
+.team-visual-card h3,.team-station-performance h3{font:700 22px 'Barlow Condensed';text-transform:uppercase;margin:-5px 0 4px}
+.team-radar{display:block;width:100%;max-height:270px;overflow:visible}
+.radar-grid{fill:none;stroke:#343d47;stroke-width:1}
+.radar-axis{stroke:#303944;stroke-width:1}
+.radar-area{fill:rgba(199,255,61,.18);stroke:none}
+.radar-line{fill:none;stroke:var(--accent);stroke-width:2.5;stroke-linejoin:round}
+.radar-dot{fill:var(--accent);stroke:#101419;stroke-width:1.5}
+.radar-label{fill:#b8c1ca;font:9px Inter,Arial,sans-serif}
+.rank-trend{display:block;width:100%;margin:16px 0 0}
+.trend-grid{stroke:#343d47;stroke-width:1;stroke-dasharray:3 4}
+.trend-line{fill:none;stroke:var(--accent);stroke-width:2.5;stroke-linecap:round;stroke-linejoin:round}
+.trend-dot{fill:var(--accent);stroke:#101419;stroke-width:1.5}
+.trend-label{fill:#9ba5b1;font:9px Inter,Arial,sans-serif}
+.chart-note{font-size:9px;color:var(--muted);line-height:1.5;margin:0}
+.team-station-performance{margin-top:12px}
+.performance-list{display:grid;grid-template-columns:1fr 1fr;gap:0 22px;margin-top:8px}
+.performance-row{padding:11px 0;border-top:1px solid var(--line)}
+.performance-top,.performance-bottom{display:flex;align-items:center;justify-content:space-between;gap:10px}
+.performance-top{font-size:11px;font-weight:700}
+.performance-top strong{color:var(--accent);white-space:nowrap;font-size:11px}
+.performance-bottom{margin-top:7px}
+.performance-bottom small{font-size:9px;color:var(--muted);white-space:nowrap}
+.performance-track{height:6px;background:#303842;flex:1;border-radius:10px;overflow:hidden}
+.performance-track span{display:block;height:100%;background:var(--accent);border-radius:10px}
+@media(max-width:650px){.team-visual-grid,.performance-list{grid-template-columns:1fr}.team-kpi-grid{gap:6px}.team-kpi{padding:11px}.team-kpi strong{font-size:28px}.team-visual-card{padding:12px}}
