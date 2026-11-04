@@ -322,11 +322,10 @@ function renderEventStatistics() {
   const divisions=["Männer","Frauen","Mixed"];
   const selectedAge=document.getElementById("age-filter").value;
   const divisionTeams=Object.fromEntries(divisions.map(d=>[d,teams.filter(t=>t.division===d && (!selectedAge || t.ageGroup===selectedAge))]));
-  const participantCount=teams.length*2;
   const activeTeams=activeDivision==="Overall"
     ? teams.filter(t=>!selectedAge || t.ageGroup===selectedAge)
     : divisionTeams[activeDivision]||[];
-  const divisionCount=divisions.filter(d=>divisionTeams[d].length>0).length;
+  const divisionCount=activeDivision==="Overall" ? divisions.filter(d=>divisionTeams[d].length>0).length : (activeTeams.length?1:0);
   document.getElementById("event-stat-kpis").innerHTML=[
     ["TEAMS",activeTeams.length,activeDivision==="Overall"?"im Event":"in "+activeDivision],
     ["ATHLETEN",activeTeams.length*2,"2 Personen je Team"],
