@@ -1,9 +1,13 @@
 # Fitnessclub Competition Results
 
-**Website-Version: v1.5.0**  
-**Release-Datum: 03.11.2026**
+**Website-Version: v1.5.1**  
+**Release-Datum: 04.11.2026**
 
 Statische Ergebnis-Website für GitHub Pages. Keine Datenbank, kein Backend und kein Login. Die Website wird über GitHub Actions aus `main` (Produktion) und `develop` (Preview) gemeinsam veröffentlicht.
+
+## Version 1.5.1
+
+- Doppelte Statusanzeige im Header entfernt; aktiver Navigationszustand wird direkt am jeweiligen Button dargestellt.
 
 ## Version 1.5.0
 
@@ -112,6 +116,7 @@ Hinweis: Die Lizenztexte sind ein Formulierungsvorschlag und keine individuelle 
 
 | Version | Datum | Typ | Änderungen |
 |---|---|---|---|
+| v1.5.1 | 04.11.2026 | PATCH | Doppelte Statusanzeige im Header entfernt; aktive Navigation direkt am Navigationsbutton markiert. |
 | v1.5.0 | 03.11.2026 | MINOR | Optionale Länderflaggen als dezentes Hintergrundmotiv in Event-Karten; Event-Land über `countryCode` konfigurierbar. |
 | v1.4.0 | 03.11.2026 | MINOR | Proprietäre Lizenzbedingungen, Lizenzseite und Copyright-Hinweise ergänzt. |
 | v1.3.0 | 03.11.2026 | MINOR | Team-Detailansichten erweitert: Stations-Radar, kumulierter Rangverlauf, Stationsleistungen sowie Divisions- und Overallrang. |
