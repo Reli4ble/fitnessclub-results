@@ -151,3 +151,6 @@ footer>span:last-child{font-size:9px;color:var(--muted)}
 .event-card .event-title{max-width:78%;text-shadow:0 2px 10px rgba(0,0,0,.45)}
 .event-card .event-meta{max-width:80%;text-shadow:0 1px 6px rgba(0,0,0,.8)}
 @media(max-width:700px){.event-flag{width:54%;opacity:.28}}
+
+/* v1.5.1: active state on the single header navigation controls */
+.nav-link.active{border-color:var(--accent);color:var(--accent)}
