@@ -156,7 +156,39 @@ function renderCumulativeRank(team, stations){
   const path=values.map((v,i)=>`${i?'L':'M'} ${x(i)} ${y(v)}`).join(' ');
   return `<svg class="rank-trend" viewBox="0 0 340 145" role="img" aria-label="Kumulierte durchschnittliche Stationsrangpunkte; niedriger ist besser."><line x1="28" y1="18" x2="312" y2="18" class="trend-grid"/><line x1="28" y1="112" x2="312" y2="112" class="trend-grid"/><path d="${path}" class="trend-line"/>${values.map((v,i)=>`<circle cx="${x(i)}" cy="${y(v)}" r="3.5" class="trend-dot"><title>${escapeHtml(stations[i].name)}: ${fmt(v,2)} Ø-Rang</title></circle>`).join('')}<text x="28" y="133" class="trend-label">${escapeHtml(stations[0].shortName||stations[0].name)}</text><text x="312" y="133" text-anchor="end" class="trend-label">${escapeHtml(stations[stations.length-1].shortName||stations[stations.length-1].name)}</text><text x="28" y="11" class="trend-label">Besser ↑</text></svg>`;
 }
-function openTeamDetails(teamId) {
+function teamProfileUrl(teamId) {
+  const eventId=currentEventId||sourceData.event.id;
+  return `${location.origin}${location.pathname}#${encodeURIComponent(eventId)}/${encodeURIComponent(teamId)}`;
+}
+async function shareTeamProfile(teamId) {
+  const url=teamProfileUrl(teamId);
+  const raw=sourceData.teams.find(t=>t.id===teamId);
+  const title=raw?`${raw.name} – ${sourceData.event.name}`:"Teamprofil";
+  const status=document.getElementById("dialog-share-status");
+  const button=document.getElementById("dialog-share");
+  try {
+    if(navigator.share) {
+      await navigator.share({title,text:`Teamprofil: ${title}`,url});
+      status.textContent="Teilen-Menü geöffnet.";
+    } else if(navigator.clipboard && window.isSecureContext) {
+      await navigator.clipboard.writeText(url);
+      status.textContent="Team-Link wurde kopiert.";
+      button.textContent="LINK KOPIERT ✓";
+    } else {
+      const field=document.createElement("textarea");
+      field.value=url;field.setAttribute("readonly","");field.style.position="fixed";field.style.opacity="0";
+      document.body.appendChild(field);field.select();
+      const copied=document.execCommand("copy");field.remove();
+      if(!copied) throw new Error("Clipboard nicht verfügbar");
+      status.textContent="Team-Link wurde kopiert.";
+      button.textContent="LINK KOPIERT ✓";
+    }
+  } catch(error) {
+    if(error && error.name==="AbortError") return;
+    status.textContent="Link konnte nicht automatisch geteilt werden. Du kannst die URL aus der Adresszeile kopieren.";
+  }
+}
+function openTeamDetails(teamId, options={}) {
   const raw=sourceData.teams.find(t=>t.id===teamId);
   if(!raw)return;
   // Station ranks and the normalized profile are calculated within the team's own division,
@@ -189,7 +221,11 @@ function openTeamDetails(teamId) {
     </div>
     <section class="team-station-performance"><p class="eyebrow">STATION PERFORMANCE</p><h3>Einzelergebnisse</h3><div class="performance-list">${stationRows}</div></section>`;
   dialog.showModal();
-  history.replaceState(null,"",location.pathname+`#${encodeURIComponent(currentEventId||sourceData.event.id)}/${encodeURIComponent(teamId)}`);
+  if(options.updateUrl!==false) history.pushState({eventId:currentEventId,teamId},"",teamProfileUrl(teamId));
+  const shareButton=document.getElementById("dialog-share");
+  shareButton.textContent="LINK TEILEN ↗";
+  document.getElementById("dialog-share-status").textContent="Dieses Profil kann direkt über seine URL aufgerufen werden.";
+  shareButton.onclick=()=>shareTeamProfile(teamId);
 }
 function renderStations() {
   const teamId=document.getElementById("team-filter").value;
@@ -294,21 +330,49 @@ function renderEventIndex(){
   document.querySelectorAll("[data-event-id]").forEach(b=>b.addEventListener("click",()=>openEvent(b.dataset.eventId)));
 }
 function showEvents(){document.getElementById("events-page").hidden=false;document.getElementById("results-page").hidden=true;document.getElementById("nav-results").hidden=true;document.getElementById("nav-events").classList.add("active");document.getElementById("nav-results").classList.remove("active");history.replaceState(null,"",location.pathname+"#events");}
-function openEvent(id){
+function openEvent(id,teamId=null,options={}) {
   const event=eventIndex.find(e=>e.id===id); if(!event)return;
   if(!event.dataFile){alert("Für dieses Event sind noch keine Ergebnisse hinterlegt.");return;}
   fetch(event.dataFile).then(r=>{if(!r.ok)throw new Error("Eventdaten konnten nicht geladen werden");return r.json();}).then(data=>{
-    currentEventId=id; init(data); document.getElementById("events-page").hidden=true; document.getElementById("results-page").hidden=false; document.getElementById("nav-results").hidden=false; document.getElementById("nav-events").classList.remove("active"); document.getElementById("nav-results").classList.add("active"); history.replaceState(null,"",location.pathname+"#"+encodeURIComponent(id)); window.scrollTo(0,0);
+    currentEventId=id; init(data); document.getElementById("events-page").hidden=true; document.getElementById("results-page").hidden=false; document.getElementById("nav-results").hidden=false; document.getElementById("nav-events").classList.remove("active"); document.getElementById("nav-results").classList.add("active");
+    if(options.preserveHash!==true) history.replaceState({eventId:id},"",location.pathname+"#"+encodeURIComponent(id));
+    window.scrollTo(0,0);
+    if(teamId) {
+      if(data.teams.some(t=>t.id===teamId)) openTeamDetails(teamId,{updateUrl:false});
+      else history.replaceState({eventId:id},"",location.pathname+"#"+encodeURIComponent(id));
+    }
   }).catch(err=>{document.getElementById("events-empty").textContent=err.message;document.getElementById("events-empty").hidden=false;});
 }
-fetch("data/events.json").then(r=>{if(!r.ok)throw new Error("events.json konnte nicht geladen werden");return r.json();}).then(data=>{eventIndex=data.events||[];renderEventIndex();if(location.hash.length>1&&location.hash!=="#events"){const id=decodeURIComponent(location.hash.slice(1));if(eventIndex.some(e=>e.id===id))openEvent(id);}}).catch(err=>{document.getElementById("events-empty").textContent="Eventübersicht konnte nicht geladen werden: "+err.message;document.getElementById("events-empty").hidden=false;});
+function readHashRoute() {
+  const raw=location.hash.slice(1);
+  if(!raw||raw==="events") return {page:"events"};
+  const parts=raw.split("/");
+  try { return {page:"event",eventId:decodeURIComponent(parts[0]),teamId:parts[1]?decodeURIComponent(parts[1]):null}; }
+  catch { return {page:"events"}; }
+}
+function restoreRoute() {
+  const route=readHashRoute();
+  if(route.page==="events"){showEvents();return;}
+  if(eventIndex.some(e=>e.id===route.eventId)) openEvent(route.eventId,route.teamId,{preserveHash:true});
+  else showEvents();
+}
+fetch("data/events.json").then(r=>{if(!r.ok)throw new Error("events.json konnte nicht geladen werden");return r.json();}).then(data=>{eventIndex=data.events||[];renderEventIndex();restoreRoute();}).catch(err=>{document.getElementById("events-empty").textContent="Eventübersicht konnte nicht geladen werden: "+err.message;document.getElementById("events-empty").hidden=false;});
+window.addEventListener("popstate",restoreRoute);
 document.getElementById("nav-events").addEventListener("click",showEvents);
 document.getElementById("brand-home").addEventListener("click",e=>{e.preventDefault();showEvents();});
 document.getElementById("nav-results").addEventListener("click",()=>{document.getElementById("events-page").hidden=true;document.getElementById("results-page").hidden=false;document.getElementById("nav-events").classList.remove("active");document.getElementById("nav-results").classList.add("active");window.scrollTo(0,0);});
 
-document.getElementById("dialog-close").addEventListener("click",()=>{document.getElementById("team-dialog").close();history.replaceState(null,"",location.pathname+"#"+encodeURIComponent(currentEventId||sourceData.event.id));});
+function closeTeamProfile() {
+  const dialog=document.getElementById("team-dialog");
+  if(dialog.open) dialog.close();
+  history.replaceState({eventId:currentEventId},"",location.pathname+"#"+encodeURIComponent(currentEventId||sourceData.event.id));
+}
+document.getElementById("dialog-close").addEventListener("click",closeTeamProfile);
 document.getElementById("team-dialog").addEventListener("click",e=>{
-  if(e.target===e.currentTarget){e.currentTarget.close();history.replaceState(null,"",location.pathname+"#"+encodeURIComponent(currentEventId||sourceData.event.id));}
+  if(e.target===e.currentTarget) closeTeamProfile();
+});
+document.getElementById("team-dialog").addEventListener("cancel",e=>{
+  e.preventDefault();closeTeamProfile();
 });
 
 document.querySelectorAll(".view-button").forEach(button=>button.addEventListener("click",()=>{

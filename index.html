@@ -98,8 +98,12 @@
     <dialog id="team-dialog" class="team-dialog">
       <div class="dialog-head">
         <div><p class="eyebrow">TEAM PROFILE</p><h2 id="dialog-team-name">Team</h2></div>
-        <button id="dialog-close" class="dialog-close" aria-label="Detailansicht schließen">×</button>
+        <div class="dialog-actions">
+          <button id="dialog-share" class="dialog-share" type="button">LINK TEILEN ↗</button>
+          <button id="dialog-close" class="dialog-close" aria-label="Detailansicht schließen">×</button>
+        </div>
       </div>
+      <p id="dialog-share-status" class="share-status" role="status" aria-live="polite"></p>
       <div id="dialog-team-meta" class="dialog-meta"></div>
       <div id="dialog-team-results" class="detail-results"></div>
     </dialog>
