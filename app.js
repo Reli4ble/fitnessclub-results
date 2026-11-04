@@ -232,7 +232,7 @@ function createTeamCertificate(teamId) {
     escapeHtml(eventDate)+' · '+escapeHtml(event.location||"Fitnessclub")+'<br>Durchschnittlicher Stationsrang: <strong>'+fmt(team.averageRank,2)+'</strong> · Rang '+rank+' von '+divisionPool.length+' Teams</div>',
     '<div class="footer"><div class="signature">Fitnessclub / Veranstalter</div><div class="signature">Eventorganisation</div></div>',
     '<div class="serial">EVENT '+escapeHtml(event.id)+' · TEAM '+escapeHtml(team.id)+'</div></section></main></body></html>'
-  ].join("\\n");
+  ].join("");
   popup.document.open();
   popup.document.write(htmlContent);
   popup.document.close();
