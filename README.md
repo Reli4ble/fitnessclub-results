@@ -93,7 +93,7 @@ Der Export schreibt Rohdaten. Die Website berechnet Stationsränge, Divisionswer
 - Separate Eventdateien; der Eventkatalog verweist über `dataFile` auf die jeweilige JSON-Datei.
 - Division-spezifische Ranglisten: Männer, Frauen und Mixed.
 - Ergänzende Overall-Wertung über alle Divisionen; sie vergleicht absolute Messwerte ohne Ausgleich unterschiedlicher Lasten oder Bedingungen.
-- Podium, Stationsübersicht und Team-Detailansichten.
+- Podium, interaktive Stationsrangliste, Event-Statistiken (Team-/Athletenzahlen, Divisionsverteilung, Stationsbestwerte, Durchschnitte und Spannweiten) und Team-Detailansichten.
 - Altersklassenwertung und Altersfilter nur, wenn für alle Teams die erforderlichen Altersangaben vorhanden sind und `ageGroupsAvailable` nicht explizit `false` ist.
 - Fehlen Altersangaben, werden sie als `null` geführt; Altersklassenfunktionen werden für das Event ausgeblendet.
 
