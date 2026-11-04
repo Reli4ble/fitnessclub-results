@@ -317,6 +317,55 @@ function renderStations() {
     row.addEventListener("keydown",e=>{if(e.key==="Enter"||e.key===" "){e.preventDefault();openTeamDetails(row.dataset.teamId);}});
   });
 }
+function renderEventStatistics() {
+  const teams=sourceData.teams;
+  const divisions=["Männer","Frauen","Mixed"];
+  const selectedAge=document.getElementById("age-filter").value;
+  const divisionTeams=Object.fromEntries(divisions.map(d=>[d,teams.filter(t=>t.division===d && (!selectedAge || t.ageGroup===selectedAge))]));
+  const participantCount=teams.length*2;
+  const activeTeams=activeDivision==="Overall"
+    ? teams.filter(t=>!selectedAge || t.ageGroup===selectedAge)
+    : divisionTeams[activeDivision]||[];
+  const divisionCount=divisions.filter(d=>divisionTeams[d].length>0).length;
+  document.getElementById("event-stat-kpis").innerHTML=[
+    ["TEAMS",activeTeams.length,activeDivision==="Overall"?"im Event":"in "+activeDivision],
+    ["ATHLETEN",activeTeams.length*2,"2 Personen je Team"],
+    ["STATIONEN",sourceData.stations.length,"Einzelwertungen"],
+    ["DIVISIONEN",divisionCount,"mit Teams in der Auswahl"]
+  ].map(([label,value,foot])=>`<article class="event-stat-kpi"><span>${label}</span><strong>${value}</strong><small>${escapeHtml(foot)}</small></article>`).join("");
+
+  const total=divisions.reduce((sum,d)=>sum+divisionTeams[d].length,0);
+  document.getElementById("division-statistics").innerHTML=divisions.map(d=>{
+    const count=divisionTeams[d].length;
+    const percent=total?count/total*100:0;
+    return `<div class="division-stat-row"><div class="division-stat-meta"><strong>${d}</strong><span>${count} Teams · ${fmt(percent,1)}%</span></div><div class="division-stat-track"><span style="width:${percent}%"></span></div></div>`;
+  }).join("");
+
+  const groups=activeDivision==="Overall"?divisions:[activeDivision];
+  const rows=[];
+  for(const division of groups){
+    const pool=divisionTeams[division];
+    for(const station of sourceData.stations){
+      if(!pool.length)continue;
+      const sorted=[...pool].sort((a,b)=>{
+        const delta=Number(a.results[station.key])-Number(b.results[station.key]);
+        return (station.direction==="asc"?delta:-delta)||a.name.localeCompare(b.name,"de");
+      });
+      const values=pool.map(t=>Number(t.results[station.key])).filter(Number.isFinite);
+      if(!values.length)continue;
+      const best=sorted[0];
+      const average=values.reduce((sum,value)=>sum+value,0)/values.length;
+      const low=Math.min(...values),high=Math.max(...values);
+      rows.push(`<tr><td><span class="station-division">${division}</span></td><td class="stat-station-name">${escapeHtml(station.name)}</td><td class="score">${fmt(best.results[station.key],0)} <small>${escapeHtml(station.unit)}</small></td><td>${escapeHtml(best.name)}</td><td>${fmt(average,1)} <small>${escapeHtml(station.unit)}</small></td><td>${fmt(low,0)}–${fmt(high,0)} <small>${escapeHtml(station.unit)}</small></td></tr>`);
+    }
+  }
+  document.getElementById("statistics-description").textContent=activeDivision==="Overall"
+    ?"Bestwert, Durchschnitt und Spannweite werden getrennt für Männer, Frauen und Mixed ausgewiesen."
+    :`Bestwert, Durchschnitt und Spannweite für die Division ${activeDivision}.`;
+  document.getElementById("statistics-table-title").textContent=activeDivision==="Overall"?"Stationswerte nach Division":`Stationswerte · ${activeDivision}`;
+  document.getElementById("event-statistics-table").innerHTML=rows.join("")||'<tr><td colspan="6">Keine Daten für diese Auswahl vorhanden.</td></tr>';
+}
+
 function init(data) {
   sourceData=data;
   document.title=`${data.event.name} – Ergebnisse`;
@@ -340,15 +389,16 @@ function init(data) {
   const ages=[...new Set(data.teams.map(t=>t.ageGroup || ageGroup(t.averageAge)).filter(Boolean))].sort((a,b)=>parseInt(a)-parseInt(b));
   document.getElementById("age-filter").innerHTML='<option value="">Alle Altersklassen</option>'+ages.map(a=>`<option>${a}</option>`).join("");
   document.getElementById("station-filter").innerHTML=data.stations.map(st=>`<option value="${escapeHtml(st.key)}">${escapeHtml(st.name)}</option>`).join("");
-  renderLeaderboard();renderStations();
+  renderLeaderboard();renderStations();renderEventStatistics();
 }
 document.querySelectorAll(".tab").forEach(b=>b.addEventListener("click",()=>{
   activeDivision=b.dataset.division;
-  renderLeaderboard();renderStations();
+  renderLeaderboard();renderStations();renderEventStatistics();
 }));
 document.getElementById("age-filter").addEventListener("change",()=>{
   renderLeaderboard();
   renderStations();
+  renderEventStatistics();
 });
 document.getElementById("station-filter").addEventListener("change",renderStations);
 function eventDateValue(value){ if(!value)return null; const d=new Date(value+ (value.length===10?"T00:00:00":"")); return Number.isNaN(d.getTime())?null:d; }
