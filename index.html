@@ -102,6 +102,34 @@
       <p class="table-note">Gleichstände erhalten denselben Rang (1, 1, 3). Die Wertungsrichtung richtet sich nach der jeweiligen Station.</p>
     </section>
 
+    <section class="event-statistics-section">
+      <div class="section-heading">
+        <div><p class="eyebrow">EVENT INSIGHTS</p><h2>Event-Statistiken</h2></div>
+      </div>
+      <div id="event-stat-kpis" class="event-stat-kpis"></div>
+      <div class="event-stat-grid">
+        <article class="event-stat-panel">
+          <p class="eyebrow">DIVISION SPLIT</p><h3>Teamverteilung</h3>
+          <div id="division-statistics" class="division-statistics"></div>
+        </article>
+        <article class="event-stat-panel event-stat-explainer">
+          <p class="eyebrow">PERFORMANCE DATA</p><h3>Stationsanalyse</h3>
+          <p id="statistics-description">Bestwert und Durchschnitt je Station.</p>
+          <p class="statistics-caveat">Die Stationswerte werden ausschließlich innerhalb derselben Division verglichen. Unterschiedliche Lasten und Bedingungen machen einen divisionsübergreifenden Leistungsvergleich ungeeignet.</p>
+        </article>
+      </div>
+      <div class="event-stat-table-wrap">
+        <div class="section-heading"><div><p class="eyebrow">STATION BREAKDOWN</p><h3 id="statistics-table-title">Stationswerte nach Division</h3></div></div>
+        <div class="table-wrap">
+          <table class="event-stat-table">
+            <thead><tr><th>DIVISION</th><th>STATION</th><th>BESTWERT</th><th>TEAM</th><th>Ø-ERGEBNIS</th><th>SPANNWEITE</th></tr></thead>
+            <tbody id="event-statistics-table"></tbody>
+          </table>
+        </div>
+      </div>
+      <p class="table-note">Der Durchschnitt basiert auf allen Teams der jeweiligen Auswahl. Die Spannweite zeigt den niedrigsten bis höchsten gemessenen Wert, unabhängig von der Wertungsrichtung.</p>
+    </section>
+
     <dialog id="team-dialog" class="team-dialog">
       <div class="dialog-head">
         <div><p class="eyebrow">TEAM PROFILE</p><h2 id="dialog-team-name">Team</h2></div>
