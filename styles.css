@@ -182,3 +182,30 @@ footer>span:last-child{font-size:9px;color:var(--muted)}
 .dialog-certificate:hover{background:#d8ff75;border-color:#d8ff75}
 .dialog-certificate:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
 @media(max-width:520px){.dialog-actions{flex-wrap:wrap;justify-content:flex-end}.dialog-certificate{padding:0 9px;font-size:8px}}
+
+
+/* Feature 4: event statistics */
+.event-statistics-section{margin:0 0 60px;padding-top:28px;border-top:1px solid var(--line)}
+.event-stat-kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin:18px 0}
+.event-stat-kpi{background:var(--panel);border:1px solid var(--line);padding:16px 18px;min-height:102px}
+.event-stat-kpi>span{display:block;font-size:9px;letter-spacing:.16em;color:var(--muted);font-weight:700}
+.event-stat-kpi strong{display:block;font:800 34px 'Barlow Condensed';margin:5px 0 0;color:var(--accent)}
+.event-stat-kpi small{font-size:10px;color:var(--muted)}
+.event-stat-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:12px 0 28px}
+.event-stat-panel{background:var(--panel);border:1px solid var(--line);padding:20px}
+.event-stat-panel h3,.event-stat-table-wrap h3{font:700 24px 'Barlow Condensed';text-transform:uppercase;margin:0 0 18px}
+.division-stat-row{margin:0 0 17px}
+.division-stat-row:last-child{margin-bottom:0}
+.division-stat-meta{display:flex;justify-content:space-between;gap:12px;margin-bottom:7px;font-size:11px}
+.division-stat-meta span{color:var(--muted);font-variant-numeric:tabular-nums}
+.division-stat-track{height:7px;background:#252c34;overflow:hidden}
+.division-stat-track span{display:block;height:100%;background:var(--accent)}
+.event-stat-explainer p:not(.eyebrow){font-size:12px;line-height:1.7;color:#c4cbd2;margin:0 0 12px}
+.event-stat-explainer .statistics-caveat{color:var(--muted);font-size:10px}
+.event-stat-table-wrap{margin-top:24px}
+.event-stat-table{min-width:780px}
+.event-stat-table td{font-variant-numeric:tabular-nums}
+.event-stat-table td small{font-size:9px;color:var(--muted)}
+.event-stat-table .stat-station-name{font-weight:700}
+@media(max-width:760px){.event-stat-kpis{grid-template-columns:repeat(2,1fr)}.event-stat-grid{grid-template-columns:1fr}}
+@media(max-width:440px){.event-stat-panel{padding:15px}.event-stat-kpi{padding:13px}.division-stat-meta{font-size:10px}}
