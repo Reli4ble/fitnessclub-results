@@ -175,3 +175,10 @@ footer>span:last-child{font-size:9px;color:var(--muted)}
 .station-leaderboard .station-result{white-space:nowrap}
 .station-result small{font-size:9px;color:var(--muted);font-weight:600}
 .station-division{display:inline-block;padding:4px 7px;border:1px solid var(--line);color:#b8c1ca;font-size:9px;letter-spacing:.04em;text-transform:uppercase}
+
+
+/* Feature 3: printable team result certificates */
+.dialog-certificate{min-height:36px;padding:0 13px;background:var(--accent);border:1px solid var(--accent);color:#111;font:800 9px Inter,Arial,sans-serif;letter-spacing:.1em;cursor:pointer}
+.dialog-certificate:hover{background:#d8ff75;border-color:#d8ff75}
+.dialog-certificate:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+@media(max-width:520px){.dialog-actions{flex-wrap:wrap;justify-content:flex-end}.dialog-certificate{padding:0 9px;font-size:8px}}
