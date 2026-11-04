@@ -205,61 +205,34 @@ function createTeamCertificate(teamId) {
   const eventDate=formatEventDate(event.date);
   const rank=team.overallRank;
   const certificateTitle=rank===1?"1. Platz":rank===2?"2. Platz":rank===3?"3. Platz":"Platz "+rank;
-  const htmlContent=\`<!doctype html>
-<html lang="de">
-<head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Zertifikat – \${escapeHtml(team.name)}</title>
-<style>
-@page{size:A4 landscape;margin:10mm}
-*{box-sizing:border-box}
-body{margin:0;background:#e8ebee;color:#171b20;font-family:Arial,Helvetica,sans-serif}
-.toolbar{max-width:1120px;margin:18px auto;display:flex;justify-content:flex-end;gap:10px}
-.toolbar button{border:0;background:#171b20;color:#fff;padding:12px 18px;font-weight:700;cursor:pointer}
-.sheet{width:min(1120px,calc(100% - 32px));min-height:690px;margin:0 auto 28px;background:#fff;padding:26px;box-shadow:0 12px 45px rgba(0,0,0,.12)}
-.frame{height:100%;min-height:638px;border:3px solid #171b20;outline:1px solid #c7ff3d;outline-offset:-10px;padding:55px 62px;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;position:relative}
-.kicker{font-size:12px;font-weight:800;letter-spacing:5px;text-transform:uppercase;color:#68727d}
-h1{font-size:54px;letter-spacing:3px;text-transform:uppercase;margin:20px 0 12px}
-.intro{font-size:17px;color:#4c5661;margin:0}
-.team{font-size:42px;font-weight:800;margin:25px 0 8px}
-.partners{font-size:18px;color:#4c5661}
-.award{margin:28px 0 24px;padding:12px 36px;background:#c7ff3d;font-size:27px;font-weight:900;letter-spacing:1px;text-transform:uppercase}
-.detail{font-size:14px;line-height:1.8;color:#424b55}
-.detail strong{color:#171b20}
-.footer{width:100%;display:flex;justify-content:space-between;gap:35px;margin-top:54px;text-align:left}
-.signature{width:42%;border-top:1px solid #8a929b;padding-top:9px;font-size:11px;color:#68727d}
-.signature:last-child{text-align:right}
-.event{position:absolute;top:27px;left:32px;font-size:10px;letter-spacing:2px;font-weight:800;color:#68727d;text-transform:uppercase}
-.serial{position:absolute;bottom:25px;right:32px;font-size:9px;color:#9299a1;letter-spacing:1px}
-@media(max-width:700px){.sheet{width:calc(100% - 16px);padding:12px}.frame{padding:45px 20px;min-height:600px}h1{font-size:34px}.team{font-size:30px}.footer{margin-top:35px}}
-@media print{body{background:#fff}.toolbar{display:none}.sheet{width:100%;min-height:0;height:190mm;margin:0;padding:0;box-shadow:none}.frame{height:100%;min-height:0;padding:42px 55px}.footer{margin-top:40px}}
-</style>
-</head>
-<body>
-<div class="toolbar"><button onclick="window.print()">DRUCKEN / ALS PDF SPEICHERN</button></div>
-<main class="sheet"><section class="frame">
-<div class="event">Fitnessclub · Competition Results</div>
-<div class="kicker">Ergebniszertifikat</div>
-<h1>Certificate of Achievement</h1>
-<p class="intro">Hiermit wird ausgezeichnet:</p>
-<div class="team">\${escapeHtml(team.name)}</div>
-<div class="partners">\${escapeHtml(team.partner1)} &amp; \${escapeHtml(team.partner2)}</div>
-<div class="award">\${escapeHtml(certificateTitle)}</div>
-<div class="detail">
-<strong>\${escapeHtml(team.division)}</strong> · Divisionsergebnis<br>
-Erreicht beim <strong>\${escapeHtml(event.name)}</strong><br>
-\${escapeHtml(eventDate)} · \${escapeHtml(event.location||"Fitnessclub")}<br>
-Durchschnittlicher Stationsrang: <strong>\${fmt(team.averageRank,2)}</strong> · Rang \${rank} von \${divisionPool.length} Teams
-</div>
-<div class="footer">
-<div class="signature">Fitnessclub / Veranstalter</div>
-<div class="signature">Eventorganisation</div>
-</div>
-<div class="serial">EVENT \${escapeHtml(event.id)} · TEAM \${escapeHtml(team.id)}</div>
-</section></main>
-</body>
-</html>\`;
+  const htmlContent=[
+    '<!doctype html>',
+    '<html lang="de"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">',
+    '<title>Zertifikat – '+escapeHtml(team.name)+'</title>',
+    '<style>',
+    '@page{size:A4 landscape;margin:10mm}*{box-sizing:border-box}body{margin:0;background:#e8ebee;color:#171b20;font-family:Arial,Helvetica,sans-serif}',
+    '.toolbar{max-width:1120px;margin:18px auto;display:flex;justify-content:flex-end;gap:10px}.toolbar button{border:0;background:#171b20;color:#fff;padding:12px 18px;font-weight:700;cursor:pointer}',
+    '.sheet{width:min(1120px,calc(100% - 32px));min-height:690px;margin:0 auto 28px;background:#fff;padding:26px;box-shadow:0 12px 45px rgba(0,0,0,.12)}',
+    '.frame{height:100%;min-height:638px;border:3px solid #171b20;outline:1px solid #c7ff3d;outline-offset:-10px;padding:55px 62px;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;position:relative}',
+    '.kicker{font-size:12px;font-weight:800;letter-spacing:5px;text-transform:uppercase;color:#68727d}h1{font-size:54px;letter-spacing:3px;text-transform:uppercase;margin:20px 0 12px}',
+    '.intro{font-size:17px;color:#4c5661;margin:0}.team{font-size:42px;font-weight:800;margin:25px 0 8px}.partners{font-size:18px;color:#4c5661}',
+    '.award{margin:28px 0 24px;padding:12px 36px;background:#c7ff3d;font-size:27px;font-weight:900;letter-spacing:1px;text-transform:uppercase}',
+    '.detail{font-size:14px;line-height:1.8;color:#424b55}.detail strong{color:#171b20}.footer{width:100%;display:flex;justify-content:space-between;gap:35px;margin-top:54px;text-align:left}',
+    '.signature{width:42%;border-top:1px solid #8a929b;padding-top:9px;font-size:11px;color:#68727d}.signature:last-child{text-align:right}',
+    '.event{position:absolute;top:27px;left:32px;font-size:10px;letter-spacing:2px;font-weight:800;color:#68727d;text-transform:uppercase}.serial{position:absolute;bottom:25px;right:32px;font-size:9px;color:#9299a1;letter-spacing:1px}',
+    '@media(max-width:700px){.sheet{width:calc(100% - 16px);padding:12px}.frame{padding:45px 20px;min-height:600px}h1{font-size:34px}.team{font-size:30px}.footer{margin-top:35px}}',
+    '@media print{body{background:#fff}.toolbar{display:none}.sheet{width:100%;min-height:0;height:190mm;margin:0;padding:0;box-shadow:none}.frame{height:100%;min-height:0;padding:42px 55px}.footer{margin-top:40px}}',
+    '</style></head><body>',
+    '<div class="toolbar"><button onclick="window.print()">DRUCKEN / ALS PDF SPEICHERN</button></div>',
+    '<main class="sheet"><section class="frame"><div class="event">Fitnessclub · Competition Results</div>',
+    '<div class="kicker">Ergebniszertifikat</div><h1>Certificate of Achievement</h1><p class="intro">Hiermit wird ausgezeichnet:</p>',
+    '<div class="team">'+escapeHtml(team.name)+'</div><div class="partners">'+escapeHtml(team.partner1)+' &amp; '+escapeHtml(team.partner2)+'</div>',
+    '<div class="award">'+escapeHtml(certificateTitle)+'</div>',
+    '<div class="detail"><strong>'+escapeHtml(team.division)+'</strong> · Divisionsergebnis<br>Erreicht beim <strong>'+escapeHtml(event.name)+'</strong><br>',
+    escapeHtml(eventDate)+' · '+escapeHtml(event.location||"Fitnessclub")+'<br>Durchschnittlicher Stationsrang: <strong>'+fmt(team.averageRank,2)+'</strong> · Rang '+rank+' von '+divisionPool.length+' Teams</div>',
+    '<div class="footer"><div class="signature">Fitnessclub / Veranstalter</div><div class="signature">Eventorganisation</div></div>',
+    '<div class="serial">EVENT '+escapeHtml(event.id)+' · TEAM '+escapeHtml(team.id)+'</div></section></main></body></html>'
+  ].join("\\n");
   popup.document.open();
   popup.document.write(htmlContent);
   popup.document.close();
