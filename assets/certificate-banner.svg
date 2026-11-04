@@ -1,0 +1,28 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1536 196" role="img" aria-label="HYROX Competition Results">
+<defs>
+ <linearGradient id="bg" x2="1" y2="0"><stop stop-color="#050505"/><stop offset=".5" stop-color="#252525"/><stop offset="1" stop-color="#050505"/></linearGradient>
+ <linearGradient id="photo" x2="0" y2="1"><stop stop-color="#777"/><stop offset="1" stop-color="#111"/></linearGradient>
+ <pattern id="grain" width="8" height="8" patternUnits="userSpaceOnUse"><path d="M0 8L8 0" stroke="#fff" stroke-opacity=".07"/></pattern>
+</defs>
+<rect width="1536" height="196" fill="url(#bg)"/>
+<g opacity=".88">
+ <path d="M400 0h330l-110 196H290z" fill="url(#photo)"/>
+ <path d="M730 0h420l-110 196H620z" fill="#161616"/>
+ <path d="M1150 0h386v196h-496z" fill="url(#photo)"/>
+ <g fill="none" stroke="#aaa" stroke-opacity=".45" stroke-width="5">
+  <path d="M430 20l-30 156M465 12l-26 164M505 18l-25 158M790 30h260M790 48h260M790 66h260M790 84h260M790 102h260"/>
+  <path d="M1170 35l95 130M1195 20l110 150M1220 10l115 160"/>
+ </g>
+ <g fill="#090909" stroke="#ddd" stroke-width="3">
+  <circle cx="520" cy="56" r="22"/><path d="M502 80l-44 42 14 15 44-28 38 50 19-9-32-70-20-18z"/>
+  <circle cx="1320" cy="45" r="22"/><path d="M1298 70l-42 38 22 20 40-26 50 72 22-12-40-87-30-20z"/>
+ </g>
+ <path d="M710 0l-108 196M1110 0l-105 196" stroke="#ffe500" stroke-width="9"/>
+</g>
+<rect width="1536" height="196" fill="url(#grain)"/>
+<rect x="8" y="8" width="1520" height="180" fill="none" stroke="#ffe500" stroke-width="7"/>
+<text x="52" y="91" fill="#fff" font-family="Arial,sans-serif" font-size="58" font-weight="900" letter-spacing="16">HYROX</text>
+<path d="M34 113h345l-22 45H12z" fill="#ffe500"/>
+<text x="53" y="145" fill="#050505" font-family="Arial,sans-serif" font-size="22" font-weight="900" letter-spacing="4">COMPETITION RESULTS</text>
+<path d="M1432 65h70M1418 94h84M1405 123h97" stroke="#ffe500" stroke-width="10"/>
+</svg>
