@@ -87,12 +87,19 @@
 
     <section class="stations-section">
       <div class="section-heading">
-        <div><p class="eyebrow">PERFORMANCE</p><h2>Stationswertungen</h2></div>
-        <label class="age-filter">Team
-          <select id="team-filter"><option value="">Alle Teams</option></select>
+        <div><p class="eyebrow">PERFORMANCE</p><h2>Stationsrangliste</h2></div>
+        <label class="age-filter">Station
+          <select id="station-filter" aria-label="Station für Rangliste auswählen"></select>
         </label>
       </div>
-      <div id="station-cards" class="station-grid"></div>
+      <p id="station-description" class="view-description">Alle Teams der ausgewählten Division, sortiert nach Stationsleistung.</p>
+      <div class="table-wrap station-table-wrap">
+        <table class="station-leaderboard">
+          <thead><tr><th>RANG</th><th>TEAM</th><th>PARTNER</th><th>DIVISION</th><th id="station-result-heading">ERGEBNIS</th></tr></thead>
+          <tbody id="station-leaderboard"></tbody>
+        </table>
+      </div>
+      <p class="table-note">Gleichstände erhalten denselben Rang (1, 1, 3). Die Wertungsrichtung richtet sich nach der jeweiligen Station.</p>
     </section>
 
     <dialog id="team-dialog" class="team-dialog">

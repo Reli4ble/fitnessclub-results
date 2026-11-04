@@ -228,24 +228,42 @@ function openTeamDetails(teamId, options={}) {
   shareButton.onclick=()=>shareTeamProfile(teamId);
 }
 function renderStations() {
-  const teamId=document.getElementById("team-filter").value;
+  const stationKey=document.getElementById("station-filter").value || sourceData.stations[0]?.key;
+  const station=sourceData.stations.find(s=>s.key===stationKey) || sourceData.stations[0];
+  if(!station)return;
   const selectedAge=document.getElementById("age-filter").value;
-  // When an age class is selected, station ranks are recalculated only
-  // among teams from this division and age class.
+  // Ranks are calculated within the selected comparison pool. In Overall,
+  // absolute results across divisions are shown and must be interpreted cautiously.
   const comparisonPool=activeDivision==="Overall"
     ? sourceData.teams
     : sourceData.teams.filter(t=>t.division===activeDivision);
-  const ranked=rankTeams(comparisonPool,sourceData.stations);
-  const teams=ranked.filter(t=>!selectedAge || t.ageGroup===selectedAge);
-  const cards=sourceData.stations.map(s=>{
-    const sorted=[...teams].sort((a,b)=>s.direction==="asc"?a.results[s.key]-b.results[s.key]:b.results[s.key]-a.results[s.key]);
-    const visible=teamId?sorted.filter(t=>t.id===teamId):sorted.slice(0,3);
-    return `<article class="station-card"><h3>${escapeHtml(s.name)}</h3>${visible.map(t=>`
-      <div class="station-leader"><span>${t.stationRanks[s.key]}. ${escapeHtml(t.name)}</span><span>${fmt(t.results[s.key],0)} ${escapeHtml(s.unit)}</span></div>`).join("")}</article>`;
+  const eligible=comparisonPool.filter(t=>!selectedAge || t.ageGroup===selectedAge);
+  const sorted=[...eligible].sort((a,b)=>{
+    const delta=Number(a.results[station.key])-Number(b.results[station.key]);
+    return (station.direction==="asc"?delta:-delta) || a.name.localeCompare(b.name,"de");
+  });
+  let previous=null,rank=0;
+  const rows=sorted.map((team,index)=>{
+    const value=Number(team.results[station.key]);
+    if(previous===null || value!==previous) rank=index+1;
+    previous=value;
+    return `<tr class="station-team-row" data-team-id="${escapeHtml(team.id)}" tabindex="0" role="button" aria-label="Teamprofil ${escapeHtml(team.name)} öffnen">
+      <td class="rank">${rank}.</td>
+      <td class="team-name">${escapeHtml(team.name)}<span class="row-hint">Details ansehen ↗</span></td>
+      <td class="partner-names">${escapeHtml(team.partner1)} &amp; ${escapeHtml(team.partner2)}</td>
+      <td><span class="station-division">${escapeHtml(team.division)}</span></td>
+      <td class="score station-result">${fmt(value,0)} <small>${escapeHtml(station.unit)}</small></td>
+    </tr>`;
   }).join("");
-  document.getElementById("station-cards").innerHTML=cards;
-  document.querySelector(".stations-section .section-heading h2").textContent =
-    selectedAge ? `Stationswertungen · ${selectedAge}` : "Stationswertungen";
+  document.getElementById("station-leaderboard").innerHTML=rows || '<tr><td colspan="5">Keine Teams für diese Auswahl vorhanden.</td></tr>';
+  document.getElementById("station-result-heading").textContent=`ERGEBNIS · ${station.unit}`;
+  document.querySelector(".stations-section .section-heading h2").textContent=`Stationsrangliste · ${station.name}`;
+  document.getElementById("station-description").textContent=
+    `${activeDivision==="Overall"?"Alle Divisionen gemeinsam – absolute Werte, nur eingeschränkt vergleichbar.":`Division: ${activeDivision}.`} ${station.direction==="asc"?"Niedriger ist besser.":"Höher ist besser."} ${selectedAge?`Altersklasse: ${selectedAge}.`:""} ${sorted.length} Teams in der Wertung.`;
+  document.querySelectorAll("#station-leaderboard [data-team-id]").forEach(row=>{
+    row.addEventListener("click",()=>openTeamDetails(row.dataset.teamId));
+    row.addEventListener("keydown",e=>{if(e.key==="Enter"||e.key===" "){e.preventDefault();openTeamDetails(row.dataset.teamId);}});
+  });
 }
 function init(data) {
   sourceData=data;
@@ -269,32 +287,18 @@ function init(data) {
   if (!ageGroupsAvailable) activeView = "overall";
   const ages=[...new Set(data.teams.map(t=>t.ageGroup || ageGroup(t.averageAge)).filter(Boolean))].sort((a,b)=>parseInt(a)-parseInt(b));
   document.getElementById("age-filter").innerHTML='<option value="">Alle Altersklassen</option>'+ages.map(a=>`<option>${a}</option>`).join("");
-  const initialTeams=activeDivision==="Overall"?data.teams:data.teams.filter(t=>t.division===activeDivision);
-  document.getElementById("team-filter").innerHTML='<option value="">Top 3 je Station</option>'+initialTeams.map(t=>`<option value="${escapeHtml(t.id)}">${escapeHtml(t.name)}</option>`).join("");
+  document.getElementById("station-filter").innerHTML=data.stations.map(st=>`<option value="${escapeHtml(st.key)}">${escapeHtml(st.name)}</option>`).join("");
   renderLeaderboard();renderStations();
 }
 document.querySelectorAll(".tab").forEach(b=>b.addEventListener("click",()=>{
   activeDivision=b.dataset.division;
-  document.getElementById("team-filter").value="";
-  const selectedAge=document.getElementById("age-filter").value;
-  const candidates=(activeDivision==="Overall"?sourceData.teams:sourceData.teams.filter(t=>t.division===activeDivision))
-    .filter(t=>!selectedAge || ageGroup((Number(t.age1)+Number(t.age2))/2)===selectedAge);
-  document.getElementById("team-filter").innerHTML='<option value="">Top 3 je Station</option>'+candidates
-    .map(t=>`<option value="${escapeHtml(t.id)}">${escapeHtml(t.name)}</option>`).join("");
   renderLeaderboard();renderStations();
 }));
 document.getElementById("age-filter").addEventListener("change",()=>{
-  const selectedAge=document.getElementById("age-filter").value;
-  const eligible=(activeDivision==="Overall"?sourceData.teams:sourceData.teams.filter(t=>t.division===activeDivision))
-    .filter(t=>!selectedAge || ageGroup((Number(t.age1)+Number(t.age2))/2)===selectedAge);
-  const current=document.getElementById("team-filter").value;
-  document.getElementById("team-filter").innerHTML='<option value="">Top 3 je Station</option>'+eligible
-    .map(t=>`<option value="${escapeHtml(t.id)}">${escapeHtml(t.name)}</option>`).join("");
-  if(!eligible.some(t=>t.id===current)) document.getElementById("team-filter").value="";
   renderLeaderboard();
   renderStations();
 });
-document.getElementById("team-filter").addEventListener("change",renderStations);
+document.getElementById("station-filter").addEventListener("change",renderStations);
 function eventDateValue(value){ if(!value)return null; const d=new Date(value+ (value.length===10?"T00:00:00":"")); return Number.isNaN(d.getTime())?null:d; }
 function formatEventDate(value){const d=eventDateValue(value);return d?d.toLocaleDateString("de-DE",{day:"2-digit",month:"long",year:"numeric"}):"Termin folgt";}
 function eventFlagSvg(countryCode){
