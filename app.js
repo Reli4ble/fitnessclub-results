@@ -222,7 +222,7 @@ function createTeamCertificate(teamId) {
     '.signature{width:42%;border-top:1px solid #8a929b;padding-top:9px;font-size:11px;color:#68727d}.signature:last-child{text-align:right}',
     '.event{font-size:10px;letter-spacing:3px;font-weight:900;color:#171b20;text-transform:uppercase;align-self:flex-start;margin:0 0 8px}.serial{position:absolute;bottom:12px;right:22px;font-size:9px;color:#777;letter-spacing:2px}',
     '@media(max-width:700px){.sheet{width:calc(100% - 16px);padding:12px}.frame{padding:45px 20px;min-height:600px}h1{font-size:34px}.team{font-size:30px}.footer{margin-top:35px}}',
-    '@media print{body{background:#fff}.toolbar{display:none}.sheet{width:100%;min-height:0;height:190mm;margin:0;padding:0;box-shadow:none}.frame{height:100%;min-height:0;padding:42px 55px}.footer{margin-top:40px}}',
+    '@media print{body{background:#fff}.toolbar{display:none}.sheet{width:100%;min-height:0;height:190mm;margin:0;padding:0;box-shadow:none}.banner{height:35mm;object-position:center top}.frame{height:145mm;min-height:0;padding:24px 55px}.footer{margin-top:40px}}',
     '</style></head><body>',
     '<div class="toolbar"><button onclick="window.print()">DRUCKEN / ALS PDF SPEICHERN</button></div>',
     '<main class="sheet"><img class="banner" src="https://d2ol7oe51mr4n9.cloudfront.net/user_3Jj45CDxJpjHd1r9lse0Wb2SJCY/2cadac9c-333e-4ced-a42c-35b540fe9061.png" alt="HYROX-Athleten und Wettkampfszene im Schwarz-Weiß-Banner"><section class="frame"><div class="event">Fitnessclub · Competition Results</div>',
