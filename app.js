@@ -218,7 +218,6 @@ function init(data) {
   document.getElementById("event-subtitle").textContent=data.event.subtitle||"";
   document.getElementById("event-date").textContent=data.event.date||"";
   document.getElementById("event-location").textContent=data.event.location||"";
-  document.getElementById("status-pill").textContent=data.event.status||"ERGEBNISSE";
   document.getElementById("data-notice").textContent=data.event.notice||"";
   document.getElementById("total-teams").textContent=data.teams.length;
   document.getElementById("station-count").textContent=data.stations.length;
@@ -294,18 +293,18 @@ function renderEventIndex(){
   document.getElementById("events-empty").hidden=!!(featured||past.length);
   document.querySelectorAll("[data-event-id]").forEach(b=>b.addEventListener("click",()=>openEvent(b.dataset.eventId)));
 }
-function showEvents(){document.getElementById("events-page").hidden=false;document.getElementById("results-page").hidden=true;document.getElementById("nav-results").hidden=true;document.getElementById("status-pill").textContent="EVENTS";history.replaceState(null,"",location.pathname+"#events");}
+function showEvents(){document.getElementById("events-page").hidden=false;document.getElementById("results-page").hidden=true;document.getElementById("nav-results").hidden=true;document.getElementById("nav-events").classList.add("active");document.getElementById("nav-results").classList.remove("active");history.replaceState(null,"",location.pathname+"#events");}
 function openEvent(id){
   const event=eventIndex.find(e=>e.id===id); if(!event)return;
   if(!event.dataFile){alert("Für dieses Event sind noch keine Ergebnisse hinterlegt.");return;}
   fetch(event.dataFile).then(r=>{if(!r.ok)throw new Error("Eventdaten konnten nicht geladen werden");return r.json();}).then(data=>{
-    currentEventId=id; init(data); document.getElementById("events-page").hidden=true; document.getElementById("results-page").hidden=false; document.getElementById("nav-results").hidden=false; document.getElementById("status-pill").textContent=event.status==="planned"?"GEPLANT":"ERGEBNISSE"; history.replaceState(null,"",location.pathname+"#"+encodeURIComponent(id)); window.scrollTo(0,0);
+    currentEventId=id; init(data); document.getElementById("events-page").hidden=true; document.getElementById("results-page").hidden=false; document.getElementById("nav-results").hidden=false; document.getElementById("nav-events").classList.remove("active"); document.getElementById("nav-results").classList.add("active"); history.replaceState(null,"",location.pathname+"#"+encodeURIComponent(id)); window.scrollTo(0,0);
   }).catch(err=>{document.getElementById("events-empty").textContent=err.message;document.getElementById("events-empty").hidden=false;});
 }
 fetch("data/events.json").then(r=>{if(!r.ok)throw new Error("events.json konnte nicht geladen werden");return r.json();}).then(data=>{eventIndex=data.events||[];renderEventIndex();if(location.hash.length>1&&location.hash!=="#events"){const id=decodeURIComponent(location.hash.slice(1));if(eventIndex.some(e=>e.id===id))openEvent(id);}}).catch(err=>{document.getElementById("events-empty").textContent="Eventübersicht konnte nicht geladen werden: "+err.message;document.getElementById("events-empty").hidden=false;});
 document.getElementById("nav-events").addEventListener("click",showEvents);
 document.getElementById("brand-home").addEventListener("click",e=>{e.preventDefault();showEvents();});
-document.getElementById("nav-results").addEventListener("click",()=>{document.getElementById("events-page").hidden=true;document.getElementById("results-page").hidden=false;window.scrollTo(0,0);});
+document.getElementById("nav-results").addEventListener("click",()=>{document.getElementById("events-page").hidden=true;document.getElementById("results-page").hidden=false;document.getElementById("nav-events").classList.remove("active");document.getElementById("nav-results").classList.add("active");window.scrollTo(0,0);});
 
 document.getElementById("dialog-close").addEventListener("click",()=>{document.getElementById("team-dialog").close();history.replaceState(null,"",location.pathname+"#"+encodeURIComponent(currentEventId||sourceData.event.id));});
 document.getElementById("team-dialog").addEventListener("click",e=>{
