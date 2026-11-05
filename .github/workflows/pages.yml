@@ -45,9 +45,9 @@ jobs:
 
       - name: Validate production event data
         run: |
-          npx --yes ajv-cli@5 validate --spec=draft2020 -s site-prod/schemas/events-catalogue.schema.json -d site-prod/data/events.json --all-errors
-          npx --yes ajv-cli@5 validate --spec=draft2020 -s site-prod/schemas/event.schema.json -d 'site-prod/data/events/*.json' --all-errors
-          node site-prod/scripts/validate-events.mjs site-prod
+          npx --yes ajv-cli@5 validate --spec=draft2020 -s site-dev/schemas/events-catalogue.schema.json -d site-prod/data/events.json --all-errors
+          npx --yes ajv-cli@5 validate --spec=draft2020 -s site-dev/schemas/event.schema.json -d 'site-prod/data/events/*.json' --all-errors
+          node site-dev/scripts/validate-events.mjs site-prod
 
       - name: Validate development event data
         run: |
@@ -57,7 +57,7 @@ jobs:
 
       - name: Generate team share preview pages
         run: |
-          node site-prod/scripts/generate-team-share-pages.mjs _site
+          node site-dev/scripts/generate-team-share-pages.mjs _site
           node site-dev/scripts/generate-team-share-pages.mjs _site/preview https://reli4ble.github.io/fitnessclub-results/preview/
 
       - name: Configure Pages
