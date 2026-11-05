@@ -58,7 +58,7 @@ jobs:
       - name: Generate team share preview pages
         run: |
           node site-prod/scripts/generate-team-share-pages.mjs _site
-          node site-dev/scripts/generate-team-share-pages.mjs _site/preview
+          node site-dev/scripts/generate-team-share-pages.mjs _site/preview https://reli4ble.github.io/fitnessclub-results/preview/
 
       - name: Configure Pages
         uses: actions/configure-pages@v6
