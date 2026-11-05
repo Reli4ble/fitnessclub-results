@@ -418,7 +418,7 @@ function showResultsPage(pageId) {
   if(!target || !target.matches("[data-results-view]")) return;
   activeResultsPage=pageId;
   const divisionBar=document.querySelector(".division-filter-bar");
-  divisionBar.hidden=["overview-page","scoring-page"].includes(pageId);
+  divisionBar.hidden=["overview-page","scoring-page","release-page"].includes(pageId);
   document.querySelectorAll("[data-results-view]").forEach(page=>page.classList.toggle("active",page===target));
   document.querySelectorAll(".results-nav-link").forEach(link=>{
     const active=link.dataset.pageTarget===pageId;
@@ -551,6 +551,6 @@ document.querySelectorAll(".view-button").forEach(button=>button.addEventListene
 }));
 
 
-// Separate result pages; the division selector remains visible on every page.
+// Separate result pages; hide the division selector on pages where it does not apply.
 document.querySelectorAll(".results-nav-link").forEach(button=>button.addEventListener("click",()=>showResultsPage(button.dataset.pageTarget)));
 document.querySelectorAll(".overview-method-link").forEach(button=>button.addEventListener("click",()=>showResultsPage(button.dataset.pageTarget)));
