@@ -3,7 +3,7 @@ import path from "node:path";
 const root=path.resolve(process.argv[2]||".");
 const catalogue=JSON.parse(fs.readFileSync(path.join(root,"data/events.json"),"utf8"));
 const esc=v=>String(v??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
-const base="https://reli4ble.github.io/fitnessclub-results/";
+const base=new URL(process.argv[3]||"https://reli4ble.github.io/fitnessclub-results/");
 let count=0;
 for(const event of catalogue.events||[]){
  if(!event.dataFile)continue;
