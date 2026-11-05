@@ -156,12 +156,11 @@ function renderCumulativeRank(team, stations){
   const path=values.map((v,i)=>`${i?'L':'M'} ${x(i)} ${y(v)}`).join(' ');
   return `<svg class="rank-trend" viewBox="0 0 340 145" role="img" aria-label="Kumulierte durchschnittliche Stationsrangpunkte; niedriger ist besser."><line x1="28" y1="18" x2="312" y2="18" class="trend-grid"/><line x1="28" y1="112" x2="312" y2="112" class="trend-grid"/><path d="${path}" class="trend-line"/>${values.map((v,i)=>`<circle cx="${x(i)}" cy="${y(v)}" r="3.5" class="trend-dot"><title>${escapeHtml(stations[i].name)}: ${fmt(v,2)} Ø-Rang</title></circle>`).join('')}<text x="28" y="133" class="trend-label">${escapeHtml(stations[0].shortName||stations[0].name)}</text><text x="312" y="133" text-anchor="end" class="trend-label">${escapeHtml(stations[stations.length-1].shortName||stations[stations.length-1].name)}</text><text x="28" y="11" class="trend-label">Besser ↑</text></svg>`;
 }
+// Capture the deployment base while app.js is executing. Resolving the relative
+// script src later is unsafe because pushState() can change the document URL.
+const APP_BASE_URL = new URL(".", document.currentScript.src);
 function appBaseUrl() {
-  // Resolve from the loaded app.js URL. This is stable for production and /preview/,
-  // even when the entry URL has no trailing slash or OG metadata points to production.
-  const scriptUrl=document.currentScript?.src || document.querySelector('script[src*="app.js"]')?.src;
-  if(scriptUrl) return new URL(".",scriptUrl);
-  throw new Error("App-Basis-URL konnte nicht ermittelt werden.");
+  return new URL(APP_BASE_URL.href);
 }
 function appRouteUrl(hash="events") {
   const url=appBaseUrl(); url.hash=hash; return url.href;
