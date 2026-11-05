@@ -537,3 +537,18 @@ document.querySelectorAll(".view-button").forEach(button=>button.addEventListene
   activeView=button.dataset.view;
   renderLeaderboard();
 }));
+
+
+// v1.7.1: in-page navigation without changing the event/team deep-link hash.
+document.querySelectorAll(".results-nav-link").forEach(button=>{
+  button.addEventListener("click",()=>{
+    const target=document.getElementById(button.dataset.scrollTarget);
+    if(!target)return;
+    document.querySelectorAll(".results-nav-link").forEach(link=>{
+      link.classList.toggle("active",link===button);
+      if(link===button)link.setAttribute("aria-current","location");
+      else link.removeAttribute("aria-current");
+    });
+    target.scrollIntoView({behavior:"smooth",block:"start"});
+  });
+});
