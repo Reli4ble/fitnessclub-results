@@ -255,3 +255,18 @@ footer>span:last-child{font-size:9px;color:var(--muted)}
 .results-nav-link.active{color:var(--accent);border-color:#536b20;background:#202918}
 #results-overview,#overall-results,#digital-awards,#head-to-head,#station-results,#event-statistics,#scoring-method{scroll-margin-top:72px}
 @media(max-width:700px){.results-section-nav{margin:0 -24px 18px;padding:9px 16px;gap:3px}.results-nav-label{display:none}.results-nav-link{padding:9px 10px;font-size:9px}}
+
+/* v1.8.0: separate result pages with a persistent division selector. */
+.results-view{display:none;min-height:45vh}
+.results-view.active{display:block}
+.division-filter-bar{position:sticky;top:52px;z-index:19;display:flex;align-items:center;gap:14px;margin:0 -24px 24px;padding:11px 24px;background:rgba(14,17,21,.97);border-bottom:1px solid var(--line);backdrop-filter:blur(12px)}
+.division-filter-label{flex:0 0 auto;color:var(--muted);font-size:9px;font-weight:800;letter-spacing:.14em}
+.division-tabs-global{display:flex;gap:6px;min-width:0;overflow-x:auto}
+.division-tabs-global .tab{flex:0 0 auto}
+.results-section-nav{top:0}
+@media(max-width:700px){
+ .division-filter-bar{top:45px;margin:0 -16px 18px;padding:9px 16px;gap:8px}
+ .division-filter-label{font-size:8px}
+ .division-tabs-global{gap:4px}
+ .division-tabs-global .tab{padding:8px 10px;font-size:9px}
+}
