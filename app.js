@@ -395,11 +395,11 @@ function renderDigitalAwards() {
  const host=document.getElementById("digital-awards"),divisions=["Männer","Frauen","Mixed"],cards=[];
  for(const division of divisions){
   const pool=sourceData.teams.filter(t=>t.division===division);if(!pool.length)continue;
-  const ranked=rankTeams(pool,sourceData.stations),champion=ranked.find(t=>t.overallRank===1);
-  if(champion)cards.push({team:champion,title:"Division Champion",detail:division+" · Gesamtsieg",icon:"🏆"});
+  const ranked=rankTeams(pool,sourceData.stations),champions=ranked.filter(t=>t.overallRank===1);
+  for(const champion of champions)cards.push({team:champion,title:"Division Champion",detail:division+" · Gesamtsieg",icon:"🏆"});
   for(const station of sourceData.stations){
-   const best=pool.reduce((current,t)=>!current|| (station.direction==="asc"?t.results[station.key]<current.results[station.key]:t.results[station.key]>current.results[station.key])?t:current,null);
-   if(best)cards.push({team:best,title:"Station Champion",detail:division+" · "+station.name,icon:"⚡"});
+   const values=pool.map(t=>Number(t.results[station.key])),bestValue=station.direction==="asc"?Math.min(...values):Math.max(...values);
+   for(const best of pool.filter(t=>Number(t.results[station.key])===bestValue))cards.push({team:best,title:"Station Champion",detail:division+" · "+station.name,icon:"⚡"});
   }
  }
  host.innerHTML=cards.map(a=>`<button class="digital-award-card" data-team-id="${escapeHtml(a.team.id)}"><span class="award-icon">${a.icon}</span><span class="award-type">${escapeHtml(a.title)}</span><strong>${escapeHtml(a.team.name)}</strong><small>${escapeHtml(a.detail)}</small></button>`).join("")||'<p class="comparison-empty">Noch keine Auszeichnungen verfügbar.</p>';
