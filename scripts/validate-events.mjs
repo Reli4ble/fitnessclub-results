@@ -9,6 +9,7 @@ if(catalogue){
  const ids=new Set();
  for(const entry of catalogue.events||[]){
   if(ids.has(entry.id))errors.push(`Duplicate event id: ${entry.id}`);ids.add(entry.id);
+  if(!entry.dataFile){if(entry.status==='results')errors.push(`Published event ${entry.id} has no dataFile`);continue;}
   if(typeof entry.dataFile!=='string'||!entry.dataFile.startsWith('data/events/')||entry.dataFile.includes('..')){errors.push(`Invalid dataFile for ${entry.id}`);continue;}
   const file=path.join(root,entry.dataFile);if(!fs.existsSync(file)){errors.push(`Missing event file: ${entry.dataFile}`);continue;}
   const data=read(file);if(!data)continue;
