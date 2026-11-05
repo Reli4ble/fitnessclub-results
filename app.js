@@ -398,28 +398,14 @@ function renderDigitalAwards() {
  host.querySelectorAll("[data-team-id]").forEach(b=>b.addEventListener("click",()=>openTeamDetails(b.dataset.teamId)));
 }
 
-function renderHeadToHead() {
-  const selectA=document.getElementById("compare-team-a"),selectB=document.getElementById("compare-team-b"),output=document.getElementById("head-to-head-results");
-  const division=activeDivision==="Overall"?"Männer":activeDivision,teams=sourceData.teams.filter(t=>t.division===division).sort((a,b)=>a.name.localeCompare(b.name,"de"));
-  const oldA=selectA.value,oldB=selectB.value,options=teams.map(t=>`<option value="${escapeHtml(t.id)}">${escapeHtml(t.name)}</option>`).join("");
-  selectA.innerHTML=options;selectB.innerHTML=options;
-  if(teams.some(t=>t.id===oldA))selectA.value=oldA;if(teams.some(t=>t.id===oldB))selectB.value=oldB;
-  if(!selectA.value&&teams[0])selectA.value=teams[0].id;if(!selectB.value&&teams[1])selectB.value=teams[1].id;
-  document.getElementById("comparison-context").textContent=`Division: ${division} · ${teams.length} Teams`;
-  if(teams.length<2){output.innerHTML='<p class="comparison-empty">Für einen direkten Vergleich werden mindestens zwei Teams in derselben Division benötigt.</p>';return;}
-  const a=teams.find(t=>t.id===selectA.value),b=teams.find(t=>t.id===selectB.value);
-  if(!a||!b)return;if(a.id===b.id){output.innerHTML='<p class="comparison-empty">Bitte zwei unterschiedliche Teams auswählen.</p>';return;}
-  const ranked=rankTeams(teams,sourceData.stations),ra=ranked.find(t=>t.id===a.id),rb=ranked.find(t=>t.id===b.id);let winsA=0,winsB=0,ties=0;
-  const rows=sourceData.stations.map(s=>{const av=Number(a.results[s.key]),bv=Number(b.results[s.key]),delta=av-bv,w=delta===0?"tie":((s.direction==="asc"?delta<0:delta>0)?"a":"b");if(w==="a")winsA++;else if(w==="b")winsB++;else ties++;const label=w==="tie"?"Gleichstand":w==="a"?a.name:b.name;return `<tr><td>${escapeHtml(s.name)}</td><td>${fmt(av,0)} <small>${escapeHtml(s.unit)} · Rang ${ra.stationRanks[s.key]}</small></td><td>${fmt(bv,0)} <small>${escapeHtml(s.unit)} · Rang ${rb.stationRanks[s.key]}</small></td><td><strong>${escapeHtml(label)}</strong><small>${delta>0?"+":""}${fmt(delta,0)} ${escapeHtml(s.unit)} (A − B)</small></td></tr>`;}).join("");
-  const winner=Math.abs(ra.averageRank-rb.averageRank)<1e-9?"Unentschieden":ra.averageRank<rb.averageRank?a.name:b.name;
-  output.innerHTML=`<div class="comparison-scoreboard"><article><span>TEAM A</span><h3>${escapeHtml(a.name)}</h3><strong>${fmt(ra.averageRank,2)}</strong><small>Ø Stationsrang · Platz ${ra.overallRank}</small></article><div class="comparison-vs">VS</div><article><span>TEAM B</span><h3>${escapeHtml(b.name)}</h3><strong>${fmt(rb.averageRank,2)}</strong><small>Ø Stationsrang · Platz ${rb.overallRank}</small></article></div><div class="comparison-summary"><strong>${escapeHtml(winner)}</strong><span>Stationsduelle: A ${winsA} · Gleichstand ${ties} · B ${winsB}</span></div><div class="table-wrap"><table class="comparison-table"><thead><tr><th>STATION</th><th>${escapeHtml(a.name)}</th><th>${escapeHtml(b.name)}</th><th>VORTEIL</th></tr></thead><tbody>${rows}</tbody></table></div>`;
-}
 
 let activeResultsPage="overview-page";
 function showResultsPage(pageId) {
   const target=document.getElementById(pageId);
   if(!target || !target.matches("[data-results-view]")) return;
   activeResultsPage=pageId;
+  const divisionBar=document.querySelector(".division-filter-bar");
+  divisionBar.hidden=["overview-page","awards-page"].includes(pageId);
   document.querySelectorAll("[data-results-view]").forEach(page=>page.classList.toggle("active",page===target));
   document.querySelectorAll(".results-nav-link").forEach(link=>{
     const active=link.dataset.pageTarget===pageId;
@@ -452,12 +438,12 @@ function init(data) {
   const ages=[...new Set(data.teams.map(t=>t.ageGroup || ageGroup(t.averageAge)).filter(Boolean))].sort((a,b)=>parseInt(a)-parseInt(b));
   document.getElementById("age-filter").innerHTML='<option value="">Alle Altersklassen</option>'+ages.map(a=>`<option>${a}</option>`).join("");
   document.getElementById("station-filter").innerHTML=data.stations.map(st=>`<option value="${escapeHtml(st.key)}">${escapeHtml(st.name)}</option>`).join("");
-  renderLeaderboard();renderStations();renderEventStatistics();renderHeadToHead();renderDigitalAwards();
+  renderLeaderboard();renderStations();renderEventStatistics();renderDigitalAwards();
 }
 document.querySelectorAll(".tab").forEach(b=>b.addEventListener("click",()=>{
   activeDivision=b.dataset.division;
   document.querySelectorAll(".tab").forEach(tab=>tab.classList.toggle("active",tab.dataset.division===activeDivision));
-  renderLeaderboard();renderStations();renderEventStatistics();renderHeadToHead();
+  renderLeaderboard();renderStations();renderEventStatistics();
 }));
 document.getElementById("age-filter").addEventListener("change",()=>{
   renderLeaderboard();
@@ -466,8 +452,6 @@ document.getElementById("age-filter").addEventListener("change",()=>{
   renderHeadToHead();
 });
 document.getElementById("station-filter").addEventListener("change",renderStations);
-document.getElementById("compare-team-a").addEventListener("change",renderHeadToHead);
-document.getElementById("compare-team-b").addEventListener("change",renderHeadToHead);
 function eventDateValue(value){ if(!value)return null; const d=new Date(value+ (value.length===10?"T00:00:00":"")); return Number.isNaN(d.getTime())?null:d; }
 function formatEventDate(value){const d=eventDateValue(value);return d?d.toLocaleDateString("de-DE",{day:"2-digit",month:"long",year:"numeric"}):"Termin folgt";}
 function eventFlagSvg(countryCode){
