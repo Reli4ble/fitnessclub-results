@@ -202,6 +202,8 @@ function createTeamCertificate(teamId) {
     return;
   }
   const event=sourceData.event;
+  // Resolve the banner from the opener page, not the about:blank certificate popup.
+  const bannerUrl=new URL("assets/certificate-banner.png",window.location.href).href;
   const eventDate=formatEventDate(event.date);
   const rank=team.overallRank;
   const certificateTitle=rank===1?"1. Platz":rank===2?"2. Platz":rank===3?"3. Platz":"Platz "+rank;
@@ -213,7 +215,7 @@ function createTeamCertificate(teamId) {
     '@page{size:A4 landscape;margin:10mm}*{box-sizing:border-box}body{margin:0;background:#e8ebee;color:#171b20;font-family:Arial,Helvetica,sans-serif}',
     '.toolbar{max-width:1120px;margin:18px auto;display:flex;justify-content:flex-end;gap:10px}.toolbar button{border:0;background:#171b20;color:#fff;padding:12px 18px;font-weight:700;cursor:pointer}',
     '.sheet{width:min(1120px,calc(100% - 32px));min-height:690px;margin:0 auto 28px;background:#fff;padding:12px;box-shadow:0 12px 45px rgba(0,0,0,.12);border:3px solid #111}',
-    '.certificate-banner{height:140px;width:100%;padding:0;background:linear-gradient(115deg,#111820 0%,#28313b 48%,#111820 100%);border-bottom:4px solid #ffe500;position:relative;overflow:hidden;display:flex;align-items:center;justify-content:center}.certificate-banner:before,.certificate-banner:after{content:"";position:absolute;top:-70%;height:240%;width:110px;background:rgba(255,255,255,.055);transform:rotate(28deg)}.certificate-banner:before{left:12%}.certificate-banner:after{right:13%}.certificate-banner-brand{position:relative;z-index:1;display:flex;flex-direction:column;align-items:center;gap:8px;color:#fff;text-align:center}.certificate-banner-brand span{font:900 11px Arial,Helvetica,sans-serif;letter-spacing:.42em;color:#ffe500}.certificate-banner-brand strong{font:900 clamp(20px,4vw,34px) Arial,Helvetica,sans-serif;letter-spacing:.12em}.certificate-banner-brand i{font:700 8px Arial,Helvetica,sans-serif;letter-spacing:.35em;color:#c5cbd2}',
+    '.certificate-banner{height:140px;width:100%;padding:0;background:#111;border-bottom:0;position:relative;overflow:hidden}.certificate-banner-image{display:block;width:100%;height:100%;object-fit:cover;object-position:center 44%}',
     '.frame{height:100%;min-height:510px;border:0;outline:1px solid #ffe500;outline-offset:-8px;padding:34px 62px 45px;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;position:relative;background:linear-gradient(120deg,transparent 0 6%,rgba(0,0,0,.035) 6% 8%,transparent 8% 11%,rgba(0,0,0,.035) 11% 13%,transparent 13% 87%,rgba(0,0,0,.035) 87% 89%,transparent 89% 92%,rgba(0,0,0,.035) 92% 94%,transparent 94%)}',
     '.kicker{font-size:12px;font-weight:900;letter-spacing:6px;text-transform:uppercase;color:#171b20;margin-top:10px}h1{font-size:48px;line-height:1.05;font-style:italic;font-weight:900;letter-spacing:1px;text-transform:uppercase;margin:16px 0 10px;white-space:normal;max-width:100%;overflow-wrap:anywhere}',
     '.intro{font-size:17px;color:#4c5661;margin:0}.team{font-size:42px;font-weight:800;margin:25px 0 8px}.partners{font-size:18px;color:#4c5661}',
@@ -225,7 +227,7 @@ function createTeamCertificate(teamId) {
     '@media print{body{background:#fff}.toolbar{display:none}.sheet{width:100%;min-height:0;height:190mm;margin:0;padding:0;box-shadow:none}.certificate-banner{height:35mm}.frame{height:145mm;min-height:0;padding:24px 55px}.award{background:#ffe500!important;-webkit-print-color-adjust:exact;print-color-adjust:exact}.footer{margin-top:40px}}',
     '</style></head><body>',
     '<div class="toolbar"><button onclick="window.print()">DRUCKEN / ALS PDF SPEICHERN</button></div>',
-    '<main class="sheet"><header class="certificate-banner"><div class="certificate-banner-brand"><span>FITNESSCLUB</span><strong>COMPETITION RESULTS</strong><i>TRAIN · PERFORM · ACHIEVE</i></div></header><section class="frame"><div class="event">Fitnessclub · Competition Results</div>',
+    '<main class="sheet"><header class="certificate-banner"><img class="certificate-banner-image" src="'+escapeHtml(bannerUrl)+'" alt="HYROX Competition Results" onerror="this.remove();this.parentElement.classList.add(&quot;banner-fallback&quot;)"></header><section class="frame"><div class="event">Fitnessclub · Competition Results</div>',
     '<div class="kicker">Ergebniszertifikat</div><h1>Certificate of Achievement</h1><p class="intro">Hiermit wird ausgezeichnet:</p>',
     '<div class="team">'+escapeHtml(team.name)+'</div><div class="partners">'+escapeHtml(team.partner1)+' &amp; '+escapeHtml(team.partner2)+'</div>',
     '<div class="award">'+escapeHtml(certificateTitle)+'</div>',
