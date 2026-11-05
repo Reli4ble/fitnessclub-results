@@ -298,3 +298,12 @@ footer>span:last-child{font-size:9px;color:var(--muted)}
 .certificate-banner{background:linear-gradient(115deg,#111 0%,#242a31 55%,#111 100%)}
 .certificate-banner.banner-fallback{display:grid;place-items:center}
 .certificate-banner.banner-fallback::after{content:'FITNESSCLUB · COMPETITION RESULTS';color:#ffe500;font:800 12px Arial,Helvetica,sans-serif;letter-spacing:.28em;text-align:center}
+
+/* Certificate banner is rendered locally; no external image path or broken asset state. */
+.certificate-banner{background:linear-gradient(115deg,#111820 0%,#28313b 48%,#111820 100%);border-bottom:4px solid #ffe500;position:relative;overflow:hidden;display:flex;align-items:center;justify-content:center}
+.certificate-banner:before,.certificate-banner:after{content:"";position:absolute;top:-70%;height:240%;width:110px;background:rgba(255,255,255,.055);transform:rotate(28deg)}
+.certificate-banner:before{left:12%}.certificate-banner:after{right:13%}
+.certificate-banner-brand{position:relative;z-index:1;display:flex;flex-direction:column;align-items:center;gap:8px;color:#fff;text-align:center}
+.certificate-banner-brand span{font:900 11px Arial,Helvetica,sans-serif;letter-spacing:.42em;color:#ffe500}
+.certificate-banner-brand strong{font:900 clamp(20px,4vw,34px) Arial,Helvetica,sans-serif;letter-spacing:.12em}
+.certificate-banner-brand i{font:700 8px Arial,Helvetica,sans-serif;letter-spacing:.35em;color:#c5cbd2}
