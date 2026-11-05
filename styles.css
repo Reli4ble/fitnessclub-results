@@ -267,3 +267,34 @@ footer>span:last-child{font-size:9px;color:var(--muted)}
  .division-tabs-global{gap:4px}
  .division-tabs-global .tab{padding:8px 10px;font-size:9px}
 }
+
+/* Overview dashboard: division champions, station bests and scoring summary. */
+.overview-dashboard-section{margin:0 0 42px;padding-top:24px;border-top:1px solid var(--line)}
+.overview-section-note{color:var(--muted);font-size:9px;letter-spacing:.08em;text-transform:uppercase}
+.overview-champions{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}
+.overview-champion{display:flex;flex-direction:column;align-items:flex-start;gap:7px;min-width:0;min-height:132px;padding:17px 18px;background:var(--panel);border:1px solid var(--line);color:var(--text);text-align:left;cursor:pointer;transition:border-color .15s,background .15s}
+.overview-champion:hover{border-color:var(--accent);background:var(--panel2)}
+.overview-champion-label{color:var(--accent);font-size:8px;font-weight:800;letter-spacing:.14em}
+.overview-champion strong{font:800 23px 'Barlow Condensed';text-transform:uppercase;overflow-wrap:anywhere}
+.overview-champion>span:not(.overview-champion-label){font-size:10px;color:#c4cbd2}
+.overview-champion small{margin-top:auto;color:var(--muted);font-size:9px}
+.overview-champion.is-empty{cursor:default;opacity:.6}
+.overview-highlights-table{width:100%;min-width:650px}
+.overview-highlights-table th,.overview-highlights-table td{padding:11px 13px;vertical-align:top}
+.overview-highlights-table tbody th{font-size:11px;text-align:left;color:var(--text)}
+.overview-highlights-table td{width:25%}
+.overview-best-value{display:block;font-size:13px;font-weight:800;font-variant-numeric:tabular-nums;color:var(--accent)}
+.overview-best-team{display:block;margin-top:4px;padding:0;border:0;background:none;color:var(--text);font:700 10px Inter,Arial,sans-serif;text-align:left;cursor:pointer}
+.overview-best-team:hover{color:var(--accent);text-decoration:underline}
+.overview-tie{display:block;margin-top:3px;color:var(--muted);font-size:8px;text-transform:uppercase;letter-spacing:.06em}
+.overview-no-result{color:var(--muted)}
+.overview-method-note{display:grid;grid-template-columns:minmax(180px,.7fr) 2fr auto;align-items:center;gap:22px;margin:0 0 48px;padding:20px;background:var(--panel);border:1px solid var(--line)}
+.overview-method-note h2{margin:0;font:700 23px 'Barlow Condensed';text-transform:uppercase}
+.overview-method-note p{margin:0;color:#c4cbd2;font-size:11px;line-height:1.7}
+.overview-method-link{border:1px solid var(--line);background:transparent;color:var(--accent);padding:10px 12px;font:800 9px Inter,Arial,sans-serif;letter-spacing:.08em;white-space:nowrap;cursor:pointer}
+.overview-method-link:hover{border-color:var(--accent);background:var(--panel2)}
+@media(max-width:760px){.overview-champions{grid-template-columns:1fr}.overview-champion{min-height:0}.overview-method-note{grid-template-columns:1fr;gap:10px}.overview-method-link{justify-self:start}}
+/* Certificate banner fallback: never show a broken image icon or empty black strip. */
+.certificate-banner{background:linear-gradient(115deg,#111 0%,#242a31 55%,#111 100%)}
+.certificate-banner.banner-fallback{display:grid;place-items:center}
+.certificate-banner.banner-fallback::after{content:'FITNESSCLUB · COMPETITION RESULTS';color:#ffe500;font:800 12px Arial,Helvetica,sans-serif;letter-spacing:.28em;text-align:center}
