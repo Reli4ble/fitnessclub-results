@@ -40,3 +40,9 @@ jobs:
 
       - name: Validate event references and results
         run: node scripts/validate-events.mjs .
+
+      - name: Test team share page generation
+        run: |
+          node scripts/generate-team-share-pages.mjs .
+          test -n "$(find share -name index.html -print -quit)"
+          grep -R -q 'property="og:title"' share
