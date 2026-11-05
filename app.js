@@ -156,7 +156,90 @@ function renderCumulativeRank(team, stations){
   const path=values.map((v,i)=>`${i?'L':'M'} ${x(i)} ${y(v)}`).join(' ');
   return `<svg class="rank-trend" viewBox="0 0 340 145" role="img" aria-label="Kumulierte durchschnittliche Stationsrangpunkte; niedriger ist besser."><line x1="28" y1="18" x2="312" y2="18" class="trend-grid"/><line x1="28" y1="112" x2="312" y2="112" class="trend-grid"/><path d="${path}" class="trend-line"/>${values.map((v,i)=>`<circle cx="${x(i)}" cy="${y(v)}" r="3.5" class="trend-dot"><title>${escapeHtml(stations[i].name)}: ${fmt(v,2)} Ø-Rang</title></circle>`).join('')}<text x="28" y="133" class="trend-label">${escapeHtml(stations[0].shortName||stations[0].name)}</text><text x="312" y="133" text-anchor="end" class="trend-label">${escapeHtml(stations[stations.length-1].shortName||stations[stations.length-1].name)}</text><text x="28" y="11" class="trend-label">Besser ↑</text></svg>`;
 }
-function openTeamDetails(teamId) {
+function teamProfileUrl(teamId) {
+  const eventId=currentEventId||sourceData.event.id;
+  return `${location.origin}${location.pathname}#${encodeURIComponent(eventId)}/${encodeURIComponent(teamId)}`;
+}
+async function shareTeamProfile(teamId) {
+  const url=teamProfileUrl(teamId);
+  const raw=sourceData.teams.find(t=>t.id===teamId);
+  const title=raw?`${raw.name} – ${sourceData.event.name}`:"Teamprofil";
+  const status=document.getElementById("dialog-share-status");
+  const button=document.getElementById("dialog-share");
+  try {
+    if(navigator.share) {
+      await navigator.share({title,text:`Teamprofil: ${title}`,url});
+      status.textContent="Teilen-Menü geöffnet.";
+    } else if(navigator.clipboard && window.isSecureContext) {
+      await navigator.clipboard.writeText(url);
+      status.textContent="Team-Link wurde kopiert.";
+      button.textContent="LINK KOPIERT ✓";
+    } else {
+      const field=document.createElement("textarea");
+      field.value=url;field.setAttribute("readonly","");field.style.position="fixed";field.style.opacity="0";
+      document.body.appendChild(field);field.select();
+      const copied=document.execCommand("copy");field.remove();
+      if(!copied) throw new Error("Clipboard nicht verfügbar");
+      status.textContent="Team-Link wurde kopiert.";
+      button.textContent="LINK KOPIERT ✓";
+    }
+  } catch(error) {
+    if(error && error.name==="AbortError") return;
+    status.textContent="Link konnte nicht automatisch geteilt werden. Du kannst die URL aus der Adresszeile kopieren.";
+  }
+}
+function createTeamCertificate(teamId) {
+  const raw=sourceData.teams.find(t=>t.id===teamId);
+  if(!raw)return;
+  const divisionPool=sourceData.teams.filter(t=>t.division===raw.division);
+  const ranked=rankTeams(divisionPool,sourceData.stations);
+  const team=ranked.find(t=>t.id===teamId);
+  if(!team)return;
+  const popup=window.open("","_blank");
+  const status=document.getElementById("dialog-share-status");
+  if(!popup) {
+    status.textContent="Der Zertifikat-Tab wurde vom Browser blockiert. Bitte Pop-ups für diese Seite erlauben.";
+    return;
+  }
+  const event=sourceData.event;
+  const eventDate=formatEventDate(event.date);
+  const rank=team.overallRank;
+  const certificateTitle=rank===1?"1. Platz":rank===2?"2. Platz":rank===3?"3. Platz":"Platz "+rank;
+  const htmlContent=[
+    '<!doctype html>',
+    '<html lang="de"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">',
+    '<title>Zertifikat – '+escapeHtml(team.name)+'</title>',
+    '<style>',
+    '@page{size:A4 landscape;margin:10mm}*{box-sizing:border-box}body{margin:0;background:#e8ebee;color:#171b20;font-family:Arial,Helvetica,sans-serif}',
+    '.toolbar{max-width:1120px;margin:18px auto;display:flex;justify-content:flex-end;gap:10px}.toolbar button{border:0;background:#171b20;color:#fff;padding:12px 18px;font-weight:700;cursor:pointer}',
+    '.sheet{width:min(1120px,calc(100% - 32px));min-height:690px;margin:0 auto 28px;background:#fff;padding:12px;box-shadow:0 12px 45px rgba(0,0,0,.12);border:3px solid #111}',
+    '.certificate-banner{height:140px;width:100%;padding:0;background:#111;border-bottom:0;position:relative;overflow:hidden}.certificate-banner-image{display:block;width:100%;height:100%;object-fit:cover;object-position:center 44%}',
+    '.frame{height:100%;min-height:510px;border:0;outline:1px solid #ffe500;outline-offset:-8px;padding:34px 62px 45px;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;position:relative;background:linear-gradient(120deg,transparent 0 6%,rgba(0,0,0,.035) 6% 8%,transparent 8% 11%,rgba(0,0,0,.035) 11% 13%,transparent 13% 87%,rgba(0,0,0,.035) 87% 89%,transparent 89% 92%,rgba(0,0,0,.035) 92% 94%,transparent 94%)}',
+    '.kicker{font-size:12px;font-weight:900;letter-spacing:6px;text-transform:uppercase;color:#171b20;margin-top:10px}h1{font-size:48px;line-height:1.05;font-style:italic;font-weight:900;letter-spacing:1px;text-transform:uppercase;margin:16px 0 10px;white-space:normal;max-width:100%;overflow-wrap:anywhere}',
+    '.intro{font-size:17px;color:#4c5661;margin:0}.team{font-size:42px;font-weight:800;margin:25px 0 8px}.partners{font-size:18px;color:#4c5661}',
+    '.award{margin:28px 0 24px;padding:12px 42px;background:#ffe500;clip-path:polygon(8% 0,100% 0,92% 100%,0 100%);font-size:29px;font-style:italic;font-weight:900;letter-spacing:1px;text-transform:uppercase;-webkit-print-color-adjust:exact;print-color-adjust:exact}',
+    '.detail{font-size:14px;line-height:1.8;color:#424b55}.detail strong{color:#171b20}.footer{width:100%;display:flex;justify-content:space-between;gap:35px;margin-top:54px;text-align:left}',
+    '.signature{width:42%;border-top:1px solid #8a929b;padding-top:9px;font-size:11px;color:#68727d}.signature:last-child{text-align:right}',
+    '.event{font-size:10px;letter-spacing:3px;font-weight:900;color:#171b20;text-transform:uppercase;align-self:flex-start;margin:0 0 8px}',
+    '@media(max-width:700px){.toolbar{margin:12px 8px;justify-content:center}.toolbar button{width:100%;max-width:440px;padding:14px 10px;font-size:13px}.sheet{width:calc(100% - 16px);min-height:0;padding:8px;margin:0 auto 16px}.certificate-banner{height:clamp(76px,20vw,118px)}.frame{height:auto;min-height:0;padding:clamp(24px,7vw,42px) clamp(12px,4vw,22px) 48px}.kicker{font-size:9px;letter-spacing:3px;margin-top:0}h1{font-size:clamp(19px,5.7vw,30px);letter-spacing:.3px;line-height:1.08;margin:13px 0 10px}.intro{font-size:clamp(13px,3.8vw,16px)}.team{font-size:clamp(25px,7vw,34px);margin:20px 0 6px;overflow-wrap:anywhere}.partners{font-size:clamp(14px,4vw,17px)}.award{font-size:clamp(19px,5.4vw,25px);margin:22px 0 18px;padding:10px 30px}.detail{font-size:clamp(11px,3.3vw,13px);line-height:1.65}.footer{margin-top:30px;gap:18px}.signature{font-size:9px;padding-top:7px}.event{font-size:8px;letter-spacing:2px}}',
+    '@media print{body{background:#fff}.toolbar{display:none}.sheet{width:100%;min-height:0;height:190mm;margin:0;padding:0;box-shadow:none}.certificate-banner{height:35mm}.frame{height:145mm;min-height:0;padding:24px 55px}.award{background:#ffe500!important;-webkit-print-color-adjust:exact;print-color-adjust:exact}.footer{margin-top:40px}}',
+    '</style></head><body>',
+    '<div class="toolbar"><button onclick="window.print()">DRUCKEN / ALS PDF SPEICHERN</button></div>',
+    '<main class="sheet"><header class="certificate-banner"><img class="certificate-banner-image" src="'+new URL("assets/certificate-banner.png",window.location.href).href+'" alt="HYROX Competition Results"></header><section class="frame"><div class="event">Fitnessclub · Competition Results</div>',
+    '<div class="kicker">Ergebniszertifikat</div><h1>Certificate of Achievement</h1><p class="intro">Hiermit wird ausgezeichnet:</p>',
+    '<div class="team">'+escapeHtml(team.name)+'</div><div class="partners">'+escapeHtml(team.partner1)+' &amp; '+escapeHtml(team.partner2)+'</div>',
+    '<div class="award">'+escapeHtml(certificateTitle)+'</div>',
+    '<div class="detail"><strong>'+escapeHtml(team.division)+'</strong> · Divisionsergebnis<br>Erreicht beim <strong>'+escapeHtml(event.name)+'</strong><br>',
+    escapeHtml(eventDate)+' · '+escapeHtml(event.location||"Fitnessclub")+'<br>Durchschnittlicher Stationsrang: <strong>'+fmt(team.averageRank,2)+'</strong> · Rang '+rank+' von '+divisionPool.length+' Teams</div>',
+    '<div class="footer"><div class="signature">Fitnessclub / Veranstalter</div><div class="signature">Eventorganisation</div></div>',
+    '</section></main></body></html>'
+  ].join("");
+  popup.document.open();
+  popup.document.write(htmlContent);
+  popup.document.close();
+  status.textContent="Zertifikat wurde in einem neuen Tab erstellt.";
+}
+function openTeamDetails(teamId, options={}) {
   const raw=sourceData.teams.find(t=>t.id===teamId);
   if(!raw)return;
   // Station ranks and the normalized profile are calculated within the team's own division,
@@ -189,28 +272,99 @@ function openTeamDetails(teamId) {
     </div>
     <section class="team-station-performance"><p class="eyebrow">STATION PERFORMANCE</p><h3>Einzelergebnisse</h3><div class="performance-list">${stationRows}</div></section>`;
   dialog.showModal();
-  history.replaceState(null,"",location.pathname+`#${encodeURIComponent(currentEventId||sourceData.event.id)}/${encodeURIComponent(teamId)}`);
+  if(options.updateUrl!==false) history.pushState({eventId:currentEventId,teamId},"",teamProfileUrl(teamId));
+  const shareButton=document.getElementById("dialog-share");
+  shareButton.textContent="LINK TEILEN ↗";
+  document.getElementById("dialog-share-status").textContent="Dieses Profil kann direkt über seine URL aufgerufen werden.";
+  shareButton.onclick=()=>shareTeamProfile(teamId);
+  document.getElementById("dialog-certificate").onclick=()=>createTeamCertificate(teamId);
 }
 function renderStations() {
-  const teamId=document.getElementById("team-filter").value;
+  const stationKey=document.getElementById("station-filter").value || sourceData.stations[0]?.key;
+  const station=sourceData.stations.find(s=>s.key===stationKey) || sourceData.stations[0];
+  if(!station)return;
   const selectedAge=document.getElementById("age-filter").value;
-  // When an age class is selected, station ranks are recalculated only
-  // among teams from this division and age class.
+  // Ranks are calculated within the selected comparison pool. In Overall,
+  // absolute results across divisions are shown and must be interpreted cautiously.
   const comparisonPool=activeDivision==="Overall"
     ? sourceData.teams
     : sourceData.teams.filter(t=>t.division===activeDivision);
-  const ranked=rankTeams(comparisonPool,sourceData.stations);
-  const teams=ranked.filter(t=>!selectedAge || t.ageGroup===selectedAge);
-  const cards=sourceData.stations.map(s=>{
-    const sorted=[...teams].sort((a,b)=>s.direction==="asc"?a.results[s.key]-b.results[s.key]:b.results[s.key]-a.results[s.key]);
-    const visible=teamId?sorted.filter(t=>t.id===teamId):sorted.slice(0,3);
-    return `<article class="station-card"><h3>${escapeHtml(s.name)}</h3>${visible.map(t=>`
-      <div class="station-leader"><span>${t.stationRanks[s.key]}. ${escapeHtml(t.name)}</span><span>${fmt(t.results[s.key],0)} ${escapeHtml(s.unit)}</span></div>`).join("")}</article>`;
+  const eligible=comparisonPool.filter(t=>!selectedAge || t.ageGroup===selectedAge);
+  const sorted=[...eligible].sort((a,b)=>{
+    const delta=Number(a.results[station.key])-Number(b.results[station.key]);
+    return (station.direction==="asc"?delta:-delta) || a.name.localeCompare(b.name,"de");
+  });
+  let previous=null,rank=0;
+  const rows=sorted.map((team,index)=>{
+    const value=Number(team.results[station.key]);
+    if(previous===null || value!==previous) rank=index+1;
+    previous=value;
+    return `<tr class="station-team-row" data-team-id="${escapeHtml(team.id)}" tabindex="0" role="button" aria-label="Teamprofil ${escapeHtml(team.name)} öffnen">
+      <td class="rank">${rank}.</td>
+      <td class="team-name">${escapeHtml(team.name)}<span class="row-hint">Details ansehen ↗</span></td>
+      <td class="partner-names">${escapeHtml(team.partner1)} &amp; ${escapeHtml(team.partner2)}</td>
+      <td><span class="station-division">${escapeHtml(team.division)}</span></td>
+      <td class="score station-result">${fmt(value,0)} <small>${escapeHtml(station.unit)}</small></td>
+    </tr>`;
   }).join("");
-  document.getElementById("station-cards").innerHTML=cards;
-  document.querySelector(".stations-section .section-heading h2").textContent =
-    selectedAge ? `Stationswertungen · ${selectedAge}` : "Stationswertungen";
+  document.getElementById("station-leaderboard").innerHTML=rows || '<tr><td colspan="5">Keine Teams für diese Auswahl vorhanden.</td></tr>';
+  document.getElementById("station-result-heading").textContent=`ERGEBNIS · ${station.unit}`;
+  document.querySelector(".stations-section .section-heading h2").textContent=`Stationsrangliste · ${station.name}`;
+  document.getElementById("station-description").textContent=
+    `${activeDivision==="Overall"?"Alle Divisionen gemeinsam – absolute Werte, nur eingeschränkt vergleichbar.":`Division: ${activeDivision}.`} ${station.direction==="asc"?"Niedriger ist besser.":"Höher ist besser."} ${selectedAge?`Altersklasse: ${selectedAge}.`:""} ${sorted.length} Teams in der Wertung.`;
+  document.querySelectorAll("#station-leaderboard [data-team-id]").forEach(row=>{
+    row.addEventListener("click",()=>openTeamDetails(row.dataset.teamId));
+    row.addEventListener("keydown",e=>{if(e.key==="Enter"||e.key===" "){e.preventDefault();openTeamDetails(row.dataset.teamId);}});
+  });
 }
+function renderEventStatistics() {
+  const teams=sourceData.teams;
+  const divisions=["Männer","Frauen","Mixed"];
+  const selectedAge=document.getElementById("age-filter").value;
+  const divisionTeams=Object.fromEntries(divisions.map(d=>[d,teams.filter(t=>t.division===d && (!selectedAge || t.ageGroup===selectedAge))]));
+  const activeTeams=activeDivision==="Overall"
+    ? teams.filter(t=>!selectedAge || t.ageGroup===selectedAge)
+    : divisionTeams[activeDivision]||[];
+  const divisionCount=activeDivision==="Overall" ? divisions.filter(d=>divisionTeams[d].length>0).length : (activeTeams.length?1:0);
+  document.getElementById("event-stat-kpis").innerHTML=[
+    ["TEAMS",activeTeams.length,activeDivision==="Overall"?"im Event":"in "+activeDivision],
+    ["ATHLETEN",activeTeams.length*2,"2 Personen je Team"],
+    ["STATIONEN",sourceData.stations.length,"Einzelwertungen"],
+    ["DIVISIONEN",divisionCount,"mit Teams in der Auswahl"]
+  ].map(([label,value,foot])=>`<article class="event-stat-kpi"><span>${label}</span><strong>${value}</strong><small>${escapeHtml(foot)}</small></article>`).join("");
+
+  const total=divisions.reduce((sum,d)=>sum+divisionTeams[d].length,0);
+  document.getElementById("division-statistics").innerHTML=divisions.map(d=>{
+    const count=divisionTeams[d].length;
+    const percent=total?count/total*100:0;
+    return `<div class="division-stat-row"><div class="division-stat-meta"><strong>${d}</strong><span>${count} Teams · ${fmt(percent,1)}%</span></div><div class="division-stat-track"><span style="width:${percent}%"></span></div></div>`;
+  }).join("");
+
+  const groups=activeDivision==="Overall"?divisions:[activeDivision];
+  const rows=[];
+  for(const division of groups){
+    const pool=divisionTeams[division];
+    for(const station of sourceData.stations){
+      if(!pool.length)continue;
+      const sorted=[...pool].sort((a,b)=>{
+        const delta=Number(a.results[station.key])-Number(b.results[station.key]);
+        return (station.direction==="asc"?delta:-delta)||a.name.localeCompare(b.name,"de");
+      });
+      const values=pool.map(t=>Number(t.results[station.key])).filter(Number.isFinite);
+      if(!values.length)continue;
+      const best=sorted[0];
+      const average=values.reduce((sum,value)=>sum+value,0)/values.length;
+      const low=Math.min(...values),high=Math.max(...values);
+      rows.push(`<tr><td><span class="station-division">${division}</span></td><td class="stat-station-name">${escapeHtml(station.name)}</td><td class="score">${fmt(best.results[station.key],0)} <small>${escapeHtml(station.unit)}</small></td><td>${escapeHtml(best.name)}</td><td>${fmt(average,1)} <small>${escapeHtml(station.unit)}</small></td><td>${fmt(low,0)}–${fmt(high,0)} <small>${escapeHtml(station.unit)}</small></td></tr>`);
+    }
+  }
+  document.getElementById("statistics-description").textContent=activeDivision==="Overall"
+    ?"Bestwert, Durchschnitt und Spannweite werden getrennt für Männer, Frauen und Mixed ausgewiesen."
+    :`Bestwert, Durchschnitt und Spannweite für die Division ${activeDivision}.`;
+  document.getElementById("statistics-table-title").textContent=activeDivision==="Overall"?"Stationswerte nach Division":`Stationswerte · ${activeDivision}`;
+  document.getElementById("event-statistics-table").innerHTML=rows.join("")||'<tr><td colspan="6">Keine Daten für diese Auswahl vorhanden.</td></tr>';
+}
+
 function init(data) {
   sourceData=data;
   document.title=`${data.event.name} – Ergebnisse`;
@@ -233,32 +387,19 @@ function init(data) {
   if (!ageGroupsAvailable) activeView = "overall";
   const ages=[...new Set(data.teams.map(t=>t.ageGroup || ageGroup(t.averageAge)).filter(Boolean))].sort((a,b)=>parseInt(a)-parseInt(b));
   document.getElementById("age-filter").innerHTML='<option value="">Alle Altersklassen</option>'+ages.map(a=>`<option>${a}</option>`).join("");
-  const initialTeams=activeDivision==="Overall"?data.teams:data.teams.filter(t=>t.division===activeDivision);
-  document.getElementById("team-filter").innerHTML='<option value="">Top 3 je Station</option>'+initialTeams.map(t=>`<option value="${escapeHtml(t.id)}">${escapeHtml(t.name)}</option>`).join("");
-  renderLeaderboard();renderStations();
+  document.getElementById("station-filter").innerHTML=data.stations.map(st=>`<option value="${escapeHtml(st.key)}">${escapeHtml(st.name)}</option>`).join("");
+  renderLeaderboard();renderStations();renderEventStatistics();
 }
 document.querySelectorAll(".tab").forEach(b=>b.addEventListener("click",()=>{
   activeDivision=b.dataset.division;
-  document.getElementById("team-filter").value="";
-  const selectedAge=document.getElementById("age-filter").value;
-  const candidates=(activeDivision==="Overall"?sourceData.teams:sourceData.teams.filter(t=>t.division===activeDivision))
-    .filter(t=>!selectedAge || ageGroup((Number(t.age1)+Number(t.age2))/2)===selectedAge);
-  document.getElementById("team-filter").innerHTML='<option value="">Top 3 je Station</option>'+candidates
-    .map(t=>`<option value="${escapeHtml(t.id)}">${escapeHtml(t.name)}</option>`).join("");
-  renderLeaderboard();renderStations();
+  renderLeaderboard();renderStations();renderEventStatistics();
 }));
 document.getElementById("age-filter").addEventListener("change",()=>{
-  const selectedAge=document.getElementById("age-filter").value;
-  const eligible=(activeDivision==="Overall"?sourceData.teams:sourceData.teams.filter(t=>t.division===activeDivision))
-    .filter(t=>!selectedAge || ageGroup((Number(t.age1)+Number(t.age2))/2)===selectedAge);
-  const current=document.getElementById("team-filter").value;
-  document.getElementById("team-filter").innerHTML='<option value="">Top 3 je Station</option>'+eligible
-    .map(t=>`<option value="${escapeHtml(t.id)}">${escapeHtml(t.name)}</option>`).join("");
-  if(!eligible.some(t=>t.id===current)) document.getElementById("team-filter").value="";
   renderLeaderboard();
   renderStations();
+  renderEventStatistics();
 });
-document.getElementById("team-filter").addEventListener("change",renderStations);
+document.getElementById("station-filter").addEventListener("change",renderStations);
 function eventDateValue(value){ if(!value)return null; const d=new Date(value+ (value.length===10?"T00:00:00":"")); return Number.isNaN(d.getTime())?null:d; }
 function formatEventDate(value){const d=eventDateValue(value);return d?d.toLocaleDateString("de-DE",{day:"2-digit",month:"long",year:"numeric"}):"Termin folgt";}
 function eventFlagSvg(countryCode){
@@ -294,21 +435,49 @@ function renderEventIndex(){
   document.querySelectorAll("[data-event-id]").forEach(b=>b.addEventListener("click",()=>openEvent(b.dataset.eventId)));
 }
 function showEvents(){document.getElementById("events-page").hidden=false;document.getElementById("results-page").hidden=true;document.getElementById("nav-results").hidden=true;document.getElementById("nav-events").classList.add("active");document.getElementById("nav-results").classList.remove("active");history.replaceState(null,"",location.pathname+"#events");}
-function openEvent(id){
+function openEvent(id,teamId=null,options={}) {
   const event=eventIndex.find(e=>e.id===id); if(!event)return;
   if(!event.dataFile){alert("Für dieses Event sind noch keine Ergebnisse hinterlegt.");return;}
   fetch(event.dataFile).then(r=>{if(!r.ok)throw new Error("Eventdaten konnten nicht geladen werden");return r.json();}).then(data=>{
-    currentEventId=id; init(data); document.getElementById("events-page").hidden=true; document.getElementById("results-page").hidden=false; document.getElementById("nav-results").hidden=false; document.getElementById("nav-events").classList.remove("active"); document.getElementById("nav-results").classList.add("active"); history.replaceState(null,"",location.pathname+"#"+encodeURIComponent(id)); window.scrollTo(0,0);
+    currentEventId=id; init(data); document.getElementById("events-page").hidden=true; document.getElementById("results-page").hidden=false; document.getElementById("nav-results").hidden=false; document.getElementById("nav-events").classList.remove("active"); document.getElementById("nav-results").classList.add("active");
+    if(options.preserveHash!==true) history.replaceState({eventId:id},"",location.pathname+"#"+encodeURIComponent(id));
+    window.scrollTo(0,0);
+    if(teamId) {
+      if(data.teams.some(t=>t.id===teamId)) openTeamDetails(teamId,{updateUrl:false});
+      else history.replaceState({eventId:id},"",location.pathname+"#"+encodeURIComponent(id));
+    }
   }).catch(err=>{document.getElementById("events-empty").textContent=err.message;document.getElementById("events-empty").hidden=false;});
 }
-fetch("data/events.json").then(r=>{if(!r.ok)throw new Error("events.json konnte nicht geladen werden");return r.json();}).then(data=>{eventIndex=data.events||[];renderEventIndex();if(location.hash.length>1&&location.hash!=="#events"){const id=decodeURIComponent(location.hash.slice(1));if(eventIndex.some(e=>e.id===id))openEvent(id);}}).catch(err=>{document.getElementById("events-empty").textContent="Eventübersicht konnte nicht geladen werden: "+err.message;document.getElementById("events-empty").hidden=false;});
+function readHashRoute() {
+  const raw=location.hash.slice(1);
+  if(!raw||raw==="events") return {page:"events"};
+  const parts=raw.split("/");
+  try { return {page:"event",eventId:decodeURIComponent(parts[0]),teamId:parts[1]?decodeURIComponent(parts[1]):null}; }
+  catch { return {page:"events"}; }
+}
+function restoreRoute() {
+  const route=readHashRoute();
+  if(route.page==="events"){showEvents();return;}
+  if(eventIndex.some(e=>e.id===route.eventId)) openEvent(route.eventId,route.teamId,{preserveHash:true});
+  else showEvents();
+}
+fetch("data/events.json").then(r=>{if(!r.ok)throw new Error("events.json konnte nicht geladen werden");return r.json();}).then(data=>{eventIndex=data.events||[];renderEventIndex();restoreRoute();}).catch(err=>{document.getElementById("events-empty").textContent="Eventübersicht konnte nicht geladen werden: "+err.message;document.getElementById("events-empty").hidden=false;});
+window.addEventListener("popstate",restoreRoute);
 document.getElementById("nav-events").addEventListener("click",showEvents);
 document.getElementById("brand-home").addEventListener("click",e=>{e.preventDefault();showEvents();});
 document.getElementById("nav-results").addEventListener("click",()=>{document.getElementById("events-page").hidden=true;document.getElementById("results-page").hidden=false;document.getElementById("nav-events").classList.remove("active");document.getElementById("nav-results").classList.add("active");window.scrollTo(0,0);});
 
-document.getElementById("dialog-close").addEventListener("click",()=>{document.getElementById("team-dialog").close();history.replaceState(null,"",location.pathname+"#"+encodeURIComponent(currentEventId||sourceData.event.id));});
+function closeTeamProfile() {
+  const dialog=document.getElementById("team-dialog");
+  if(dialog.open) dialog.close();
+  history.replaceState({eventId:currentEventId},"",location.pathname+"#"+encodeURIComponent(currentEventId||sourceData.event.id));
+}
+document.getElementById("dialog-close").addEventListener("click",closeTeamProfile);
 document.getElementById("team-dialog").addEventListener("click",e=>{
-  if(e.target===e.currentTarget){e.currentTarget.close();history.replaceState(null,"",location.pathname+"#"+encodeURIComponent(currentEventId||sourceData.event.id));}
+  if(e.target===e.currentTarget) closeTeamProfile();
+});
+document.getElementById("team-dialog").addEventListener("cancel",e=>{
+  e.preventDefault();closeTeamProfile();
 });
 
 document.querySelectorAll(".view-button").forEach(button=>button.addEventListener("click",()=>{

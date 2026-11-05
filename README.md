@@ -1,9 +1,16 @@
 # Fitnessclub Competition Results
 
-**Website-Version: v1.5.1**  
-**Release-Datum: 04.11.2026**
+**Website-Version: v1.6.0**  
+**Release-Datum: 05.11.2026**
 
 Statische Ergebnis-Website für GitHub Pages. Keine Datenbank, kein Backend und kein Login. Die Website wird über GitHub Actions aus `main` (Produktion) und `develop` (Preview) gemeinsam veröffentlicht.
+
+## Version 1.6.0
+
+- Teilbare Teamprofile mit stabilen Deep Links, Web-Share-/Kopierfunktion und Wiederherstellung der Ansicht über Browser-Zurück/Vorwärts.
+- Vollständige interaktive Stationsranglisten mit Stationsauswahl, Divisions- und Altersklassenfiltern, stationsabhängiger Sortierrichtung und Competition Ranking bei Gleichständen.
+- Event-Statistiken zu Team- und Athletenzahlen, Stationsanzahl, Divisionsverteilung sowie Bestwerten, Durchschnitten und Spannweiten je Division.
+- Druckbare A4-Ergebniszertifikate im Querformat mit dynamischen Team-, Partner-, Event- und Rangdaten; responsive Darstellung und HYROX-inspirierter Fotobanner.
 
 ## Version 1.5.1
 
@@ -57,10 +64,25 @@ Voraussetzung: Python 3 und `openpyxl`.
 
 ```bash
 python3 -m pip install openpyxl
-python3 scripts/export_results.py "/pfad/zur/Fitnessclub_Auswertung.xlsx"
+python3 scripts/export_results.py "/pfad/zur/Fitnessclub_Auswertung_MultiEvent.xlsx"
 ```
 
-Das Skript liest die Event-Stammdaten aus dem Tabellenblatt `Event` sowie Teams, Partnernamen, Alter und Stationswerte aus `Teams & Ergebnisse`. Die Event-ID bestimmt den Dateinamen unter `data/events/`. Ein vorhandenes Event wird aktualisiert; andere Eventdateien bleiben erhalten.
+Die private Master-Datei verwaltet mehrere Events zentral:
+
+- `Events`: Event-Stammdaten.
+- `Athleten`: private Athleten-IDs, Vornamen, optionale Nachnamen-Kürzel und optionale Geburtsdaten.
+- `Event-Ergebnisse`: eine Zeile je Team und Event; Event-ID und Athleten-IDs verbinden die Datensätze.
+- `Event`: Auswahl des aktiven Events für die Excel-Auswertungsblätter.
+
+Der Exporter liest das aktive Event aus `Event!B4`. Alternativ kann ein Event gezielt angegeben werden:
+
+```bash
+python3 scripts/export_results.py "/pfad/zur/Master.xlsx" --event-id halloween-2026
+```
+
+Der Exporter liest nur die Datensätze des ausgewählten Events. Er berechnet das Alter am Eventdatum aus den optionalen Geburtsdaten. Fehlt bei einem Team ein Geburtsdatum, werden dessen Alterswerte und Altersklasse als `null` exportiert; die normale Divisionswertung bleibt möglich.
+
+**Datenschutz:** Interne Athleten-IDs, Nachnamen-Kürzel, Geburtsdaten und interne Notizen werden nicht in die öffentlichen JSON-Dateien übernommen. Öffentlich erscheinen ausschließlich Vornamen, Teamnamen und Wettkampfergebnisse. Die Master-Excel-Datei darf nicht im öffentlichen Repository abgelegt werden.
 
 Nach dem Export die Änderungen prüfen und committen:
 
@@ -78,7 +100,7 @@ Der Export schreibt Rohdaten. Die Website berechnet Stationsränge, Divisionswer
 - Separate Eventdateien; der Eventkatalog verweist über `dataFile` auf die jeweilige JSON-Datei.
 - Division-spezifische Ranglisten: Männer, Frauen und Mixed.
 - Ergänzende Overall-Wertung über alle Divisionen; sie vergleicht absolute Messwerte ohne Ausgleich unterschiedlicher Lasten oder Bedingungen.
-- Podium, Stationsübersicht und Team-Detailansichten.
+- Podium, interaktive Stationsrangliste, Event-Statistiken (Team-/Athletenzahlen, Divisionsverteilung, Stationsbestwerte, Durchschnitte und Spannweiten) und Team-Detailansichten.
 - Altersklassenwertung und Altersfilter nur, wenn für alle Teams die erforderlichen Altersangaben vorhanden sind und `ageGroupsAvailable` nicht explizit `false` ist.
 - Fehlen Altersangaben, werden sie als `null` geführt; Altersklassenfunktionen werden für das Event ausgeblendet.
 
@@ -116,6 +138,7 @@ Hinweis: Die Lizenztexte sind ein Formulierungsvorschlag und keine individuelle 
 
 | Version | Datum | Typ | Änderungen |
 |---|---|---|---|
+| v1.6.0 | 05.11.2026 | MINOR | Teilbare Teamprofile mit Deep Links und Browsernavigation; interaktive Stationsranglisten mit Filtern und korrekter Gleichstandsbehandlung; Event-Statistiken; responsive A4-Ergebniszertifikate mit Fotobanner. |
 | v1.5.1 | 04.11.2026 | PATCH | Doppelte Statusanzeige im Header entfernt; aktive Navigation direkt am Navigationsbutton markiert. |
 | v1.5.0 | 03.11.2026 | MINOR | Optionale Länderflaggen als dezentes Hintergrundmotiv in Event-Karten; Event-Land über `countryCode` konfigurierbar. |
 | v1.4.0 | 03.11.2026 | MINOR | Proprietäre Lizenzbedingungen, Lizenzseite und Copyright-Hinweise ergänzt. |

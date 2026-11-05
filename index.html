@@ -87,19 +87,59 @@
 
     <section class="stations-section">
       <div class="section-heading">
-        <div><p class="eyebrow">PERFORMANCE</p><h2>Stationswertungen</h2></div>
-        <label class="age-filter">Team
-          <select id="team-filter"><option value="">Alle Teams</option></select>
+        <div><p class="eyebrow">PERFORMANCE</p><h2>Stationsrangliste</h2></div>
+        <label class="age-filter">Station
+          <select id="station-filter" aria-label="Station für Rangliste auswählen"></select>
         </label>
       </div>
-      <div id="station-cards" class="station-grid"></div>
+      <p id="station-description" class="view-description">Alle Teams der ausgewählten Division, sortiert nach Stationsleistung.</p>
+      <div class="table-wrap station-table-wrap">
+        <table class="station-leaderboard">
+          <thead><tr><th>RANG</th><th>TEAM</th><th>PARTNER</th><th>DIVISION</th><th id="station-result-heading">ERGEBNIS</th></tr></thead>
+          <tbody id="station-leaderboard"></tbody>
+        </table>
+      </div>
+      <p class="table-note">Gleichstände erhalten denselben Rang (1, 1, 3). Die Wertungsrichtung richtet sich nach der jeweiligen Station.</p>
+    </section>
+
+    <section class="event-statistics-section">
+      <div class="section-heading">
+        <div><p class="eyebrow">EVENT INSIGHTS</p><h2>Event-Statistiken</h2></div>
+      </div>
+      <div id="event-stat-kpis" class="event-stat-kpis"></div>
+      <div class="event-stat-grid">
+        <article class="event-stat-panel">
+          <p class="eyebrow">DIVISION SPLIT</p><h3>Teamverteilung</h3>
+          <div id="division-statistics" class="division-statistics"></div>
+        </article>
+        <article class="event-stat-panel event-stat-explainer">
+          <p class="eyebrow">PERFORMANCE DATA</p><h3>Stationsanalyse</h3>
+          <p id="statistics-description">Bestwert und Durchschnitt je Station.</p>
+          <p class="statistics-caveat">Die Stationswerte werden ausschließlich innerhalb derselben Division verglichen. Unterschiedliche Lasten und Bedingungen machen einen divisionsübergreifenden Leistungsvergleich ungeeignet.</p>
+        </article>
+      </div>
+      <div class="event-stat-table-wrap">
+        <div class="section-heading"><div><p class="eyebrow">STATION BREAKDOWN</p><h3 id="statistics-table-title">Stationswerte nach Division</h3></div></div>
+        <div class="table-wrap">
+          <table class="event-stat-table">
+            <thead><tr><th>DIVISION</th><th>STATION</th><th>BESTWERT</th><th>TEAM</th><th>Ø-ERGEBNIS</th><th>SPANNWEITE</th></tr></thead>
+            <tbody id="event-statistics-table"></tbody>
+          </table>
+        </div>
+      </div>
+      <p class="table-note">Der Durchschnitt basiert auf allen Teams der jeweiligen Auswahl. Die Spannweite zeigt den niedrigsten bis höchsten gemessenen Wert, unabhängig von der Wertungsrichtung.</p>
     </section>
 
     <dialog id="team-dialog" class="team-dialog">
       <div class="dialog-head">
         <div><p class="eyebrow">TEAM PROFILE</p><h2 id="dialog-team-name">Team</h2></div>
-        <button id="dialog-close" class="dialog-close" aria-label="Detailansicht schließen">×</button>
+        <div class="dialog-actions">
+          <button id="dialog-certificate" class="dialog-certificate" type="button">ZERTIFIKAT ↗</button>
+          <button id="dialog-share" class="dialog-share" type="button">LINK TEILEN ↗</button>
+          <button id="dialog-close" class="dialog-close" aria-label="Detailansicht schließen">×</button>
+        </div>
       </div>
+      <p id="dialog-share-status" class="share-status" role="status" aria-live="polite"></p>
       <div id="dialog-team-meta" class="dialog-meta"></div>
       <div id="dialog-team-results" class="detail-results"></div>
     </dialog>
@@ -111,13 +151,14 @@
 
     <section class="release-section" aria-labelledby="release-title">
       <details class="release-details">
-        <summary><span><span class="eyebrow">RELEASE NOTES</span><strong id="release-title">Versionshistorie</strong></span><span class="release-current">v1.5.1 · 04.11.2026</span></summary>
+        <summary><span><span class="eyebrow">RELEASE NOTES</span><strong id="release-title">Versionshistorie</strong></span><span class="release-current">v1.6.0 · 05.11.2026</span></summary>
         <div class="release-table-wrap">
           <table class="release-table">
             <thead><tr><th>VERSION</th><th>DATUM</th><th>TYP</th><th>ÄNDERUNGEN</th></tr></thead>
             <tbody>
+              <tr><td><strong>v1.6.0</strong></td><td>05.11.2026</td><td><span class="release-type release-major">MINOR · FEATURE</span></td><td>Teilbare Teamprofile mit stabilen Deep Links, Web-Share/Kopierfunktion und Browser-Zurück/Vorwärts; vollständige interaktive Stationsranglisten mit Stationsauswahl, Divisions-/Altersfiltern und korrekter Gleichstandsbehandlung; Event-Statistiken zu Teams, Athleten, Divisionen und Stationsleistungen; druckbare A4-Ergebniszertifikate mit dynamischen Team- und Eventdaten, mobiloptimiertem Layout und neuem HYROX-inspiriertem Fotobanner.</td></tr>
               <tr><td><strong>v1.5.1</strong></td><td>04.11.2026</td><td><span class="release-type">PATCH · FIX</span></td><td>Doppelte Statusanzeige im Header entfernt; aktive Navigation wird direkt am jeweiligen Navigationsbutton markiert.</td></tr>
-              <tr><td><strong>v1.5.0</strong></td><td>03.11.2026</td><td><span class="release-type release-major">MINOR · FEATURE</span></td><td>Optionale Länderflaggen als dezentes Hintergrundmotiv in den Event-Karten; Länderauswahl über countryCode.</td></tr>
+              <tr><td><strong>v1.5.0</strong></td><td>03.11.2026</td><td><span class="release-type release-major">MINOR · FEATURE</span></td><td>Optionale Länderflaggen als dezentes Hintergrundmotiv in den Event-Karten; Länderauswahl über <code>countryCode</code>.</td></tr>
               <tr><td><strong>v1.4.0</strong></td><td>03.11.2026</td><td><span class="release-type release-major">MINOR · FEATURE</span></td><td>Proprietäre Lizenzbedingungen, öffentliche Lizenzseite und Copyright-Hinweise ergänzt.</td></tr>
               <tr><td><strong>v1.3.0</strong></td><td>03.11.2026</td><td><span class="release-type release-major">MINOR · FEATURE</span></td><td>Erweiterte Team-Detailansichten mit normalisiertem Stations-Radar, kumuliertem Rangverlauf, Divisionsvergleich und Stationsleistungen.</td></tr>
               <tr><td><strong>v1.2.0</strong></td><td>03.11.2026</td><td><span class="release-type release-major">MINOR · FEATURE</span></td><td>Erstes reales Event veröffentlicht (Halloween 2026), Altersklassen bei fehlenden Altersdaten automatisch ausgeblendet, Demo-Daten aus dem öffentlichen Eventkatalog entfernt, Footer-Slogan kompakt zentriert: „WE 💛 HYROX!“</td></tr>
@@ -133,7 +174,7 @@
     </div>
   </main>
 
-  <footer><span class="footer-slogan">WE 💛 HYROX!</span><span>Website v1.5.1 · Release 04.11.2026 · GitHub Pages</span><span class="footer-legal">© 2026 Reli4ble · Alle Rechte vorbehalten · <a href="license.html">Nutzung &amp; Lizenz</a></span></footer>
-  <script src="app.js"></script>
+  <footer><span class="footer-slogan">WE 💛 HYROX!</span><span>Website v1.6.0 · Release 05.11.2026 · GitHub Pages</span><span class="footer-legal">© 2026 Reli4ble · Alle Rechte vorbehalten · <a href="license.html">Nutzung &amp; Lizenz</a></span></footer>
+  <script src="app.js?v=1.6.2"></script>
 </body>
 </html>
