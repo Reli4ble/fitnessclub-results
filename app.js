@@ -374,9 +374,9 @@ async function renderCrossEventDevelopment() {
  if(!others.length){host.innerHTML='<p class="comparison-empty">Für eine Entwicklungskurve werden mindestens zwei veröffentlichte Events benötigt. Sobald weitere Ergebnisse vorliegen, erscheint hier der Vergleich.</p>';return;}
  const selected=teams.find(t=>t.id===select.value);if(!selected)return;
  const keyFor=t=>[t.partner1,t.partner2].map(v=>String(v||"").trim().toLocaleLowerCase("de")).sort().join("|");
- const targetKey=keyFor(selected),history=[{event:sourceData.event,teams:sourceData.teams}];
+ const targetKey=keyFor(selected),history=[{event:sourceData.event,teams:sourceData.teams,stations:sourceData.stations}];
  for(const event of others){
-  try{const response=await fetch(event.dataFile);if(!response.ok)continue;history.push({event:await response.json().then(d=>d.event||event),teams:await fetch(event.dataFile).then(r=>r.json()).then(d=>d.teams||[])});}catch(error){console.warn("Historische Eventdaten nicht verfügbar",event.id,error);}
+  try{const response=await fetch(event.dataFile);if(!response.ok)continue;const data=await response.json();history.push({event:data.event||event,teams:data.teams||[],stations:data.stations||[]});}catch(error){console.warn("Historische Eventdaten nicht verfügbar",event.id,error);}
  }
  const records=[];
  for(const item of history){
