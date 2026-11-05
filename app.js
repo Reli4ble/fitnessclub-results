@@ -415,6 +415,20 @@ function renderHeadToHead() {
   output.innerHTML=`<div class="comparison-scoreboard"><article><span>TEAM A</span><h3>${escapeHtml(a.name)}</h3><strong>${fmt(ra.averageRank,2)}</strong><small>Ø Stationsrang · Platz ${ra.overallRank}</small></article><div class="comparison-vs">VS</div><article><span>TEAM B</span><h3>${escapeHtml(b.name)}</h3><strong>${fmt(rb.averageRank,2)}</strong><small>Ø Stationsrang · Platz ${rb.overallRank}</small></article></div><div class="comparison-summary"><strong>${escapeHtml(winner)}</strong><span>Stationsduelle: A ${winsA} · Gleichstand ${ties} · B ${winsB}</span></div><div class="table-wrap"><table class="comparison-table"><thead><tr><th>STATION</th><th>${escapeHtml(a.name)}</th><th>${escapeHtml(b.name)}</th><th>VORTEIL</th></tr></thead><tbody>${rows}</tbody></table></div>`;
 }
 
+let activeResultsPage="overview-page";
+function showResultsPage(pageId) {
+  const target=document.getElementById(pageId);
+  if(!target || !target.matches("[data-results-view]")) return;
+  activeResultsPage=pageId;
+  document.querySelectorAll("[data-results-view]").forEach(page=>page.classList.toggle("active",page===target));
+  document.querySelectorAll(".results-nav-link").forEach(link=>{
+    const active=link.dataset.pageTarget===pageId;
+    link.classList.toggle("active",active);
+    if(active) link.setAttribute("aria-current","page"); else link.removeAttribute("aria-current");
+  });
+  window.scrollTo({top:0,behavior:"instant"});
+}
+
 function init(data) {
   sourceData=data;
   document.title=`${data.event.name} – Ergebnisse`;
@@ -442,6 +456,7 @@ function init(data) {
 }
 document.querySelectorAll(".tab").forEach(b=>b.addEventListener("click",()=>{
   activeDivision=b.dataset.division;
+  document.querySelectorAll(".tab").forEach(tab=>tab.classList.toggle("active",tab.dataset.division===activeDivision));
   renderLeaderboard();renderStations();renderEventStatistics();renderHeadToHead();
 }));
 document.getElementById("age-filter").addEventListener("change",()=>{
@@ -494,7 +509,7 @@ function openEvent(id,teamId=null,options={}) {
   fetch(event.dataFile).then(r=>{if(!r.ok)throw new Error("Eventdaten konnten nicht geladen werden");return r.json();}).then(data=>{
     currentEventId=id; init(data); document.getElementById("events-page").hidden=true; document.getElementById("results-page").hidden=false; document.getElementById("nav-results").hidden=false; document.getElementById("nav-events").classList.remove("active"); document.getElementById("nav-results").classList.add("active");
     if(options.preserveHash!==true) history.replaceState({eventId:id},"",location.pathname+"#"+encodeURIComponent(id));
-    window.scrollTo(0,0);
+    showResultsPage("overview-page");
     if(teamId) {
       if(data.teams.some(t=>t.id===teamId)) openTeamDetails(teamId,{updateUrl:false});
       else history.replaceState({eventId:id},"",location.pathname+"#"+encodeURIComponent(id));
@@ -518,7 +533,7 @@ fetch("data/events.json").then(r=>{if(!r.ok)throw new Error("events.json konnte 
 window.addEventListener("popstate",restoreRoute);
 document.getElementById("nav-events").addEventListener("click",showEvents);
 document.getElementById("brand-home").addEventListener("click",e=>{e.preventDefault();showEvents();});
-document.getElementById("nav-results").addEventListener("click",()=>{document.getElementById("events-page").hidden=true;document.getElementById("results-page").hidden=false;document.getElementById("nav-events").classList.remove("active");document.getElementById("nav-results").classList.add("active");window.scrollTo(0,0);});
+document.getElementById("nav-results").addEventListener("click",()=>{document.getElementById("events-page").hidden=true;document.getElementById("results-page").hidden=false;document.getElementById("nav-events").classList.remove("active");document.getElementById("nav-results").classList.add("active");showResultsPage(activeResultsPage);});
 
 function closeTeamProfile() {
   const dialog=document.getElementById("team-dialog");
@@ -539,16 +554,5 @@ document.querySelectorAll(".view-button").forEach(button=>button.addEventListene
 }));
 
 
-// v1.7.1: in-page navigation without changing the event/team deep-link hash.
-document.querySelectorAll(".results-nav-link").forEach(button=>{
-  button.addEventListener("click",()=>{
-    const target=document.getElementById(button.dataset.scrollTarget);
-    if(!target)return;
-    document.querySelectorAll(".results-nav-link").forEach(link=>{
-      link.classList.toggle("active",link===button);
-      if(link===button)link.setAttribute("aria-current","location");
-      else link.removeAttribute("aria-current");
-    });
-    target.scrollIntoView({behavior:"smooth",block:"start"});
-  });
-});
+// Separate result pages; the division selector remains visible on every page.
+document.querySelectorAll(".results-nav-link").forEach(button=>button.addEventListener("click",()=>showResultsPage(button.dataset.pageTarget)));
