@@ -158,7 +158,7 @@ function renderCumulativeRank(team, stations){
 }
 function teamProfileUrl(teamId) {
   const eventId=currentEventId||sourceData.event.id;
-  return `${location.origin}${location.pathname}#${encodeURIComponent(eventId)}/${encodeURIComponent(teamId)}`;
+  const base=new URL("./",location.href); return new URL(`share/${encodeURIComponent(eventId)}/${encodeURIComponent(teamId)}/`,base).href;
 }
 async function shareTeamProfile(teamId) {
   const url=teamProfileUrl(teamId);
