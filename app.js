@@ -202,6 +202,8 @@ function createTeamCertificate(teamId) {
     return;
   }
   const event=sourceData.event;
+  // Resolve the banner from the opener page, not the about:blank certificate popup.
+  const bannerUrl=new URL("assets/certificate-banner.png",window.location.href).href;
   const eventDate=formatEventDate(event.date);
   const rank=team.overallRank;
   const certificateTitle=rank===1?"1. Platz":rank===2?"2. Platz":rank===3?"3. Platz":"Platz "+rank;
@@ -225,7 +227,7 @@ function createTeamCertificate(teamId) {
     '@media print{body{background:#fff}.toolbar{display:none}.sheet{width:100%;min-height:0;height:190mm;margin:0;padding:0;box-shadow:none}.certificate-banner{height:35mm}.frame{height:145mm;min-height:0;padding:24px 55px}.award{background:#ffe500!important;-webkit-print-color-adjust:exact;print-color-adjust:exact}.footer{margin-top:40px}}',
     '</style></head><body>',
     '<div class="toolbar"><button onclick="window.print()">DRUCKEN / ALS PDF SPEICHERN</button></div>',
-    '<main class="sheet"><header class="certificate-banner"><img class="certificate-banner-image" src="'+new URL("./assets/certificate-banner.png",document.baseURI).href+'" alt="HYROX Competition Results" onerror="this.remove();this.parentElement.classList.add(&quot;banner-fallback&quot;)"></header><section class="frame"><div class="event">Fitnessclub · Competition Results</div>',
+    '<main class="sheet"><header class="certificate-banner"><img class="certificate-banner-image" src="'+escapeHtml(bannerUrl)+'" alt="HYROX Competition Results" onerror="this.remove();this.parentElement.classList.add(&quot;banner-fallback&quot;)"></header><section class="frame"><div class="event">Fitnessclub · Competition Results</div>',
     '<div class="kicker">Ergebniszertifikat</div><h1>Certificate of Achievement</h1><p class="intro">Hiermit wird ausgezeichnet:</p>',
     '<div class="team">'+escapeHtml(team.name)+'</div><div class="partners">'+escapeHtml(team.partner1)+' &amp; '+escapeHtml(team.partner2)+'</div>',
     '<div class="award">'+escapeHtml(certificateTitle)+'</div>',
@@ -401,47 +403,13 @@ function renderOverviewDashboard() {
     button.addEventListener("click",()=>openTeamDetails(button.dataset.teamId))
   );
 }
-function renderDigitalAwards() {
- const host=document.getElementById("digital-awards"),divisions=["Männer","Frauen","Mixed"];
- const champions=[],stationRows=[];
- for(const division of divisions){
-  const pool=sourceData.teams.filter(t=>t.division===division);
-  if(!pool.length)continue;
-  const ranked=rankTeams(pool,sourceData.stations);
-  for(const team of ranked.filter(t=>t.overallRank===1)){
-   champions.push({team,division});
-  }
- }
- for(const station of sourceData.stations){
-  const winnersByDivision=divisions.map(division=>{
-   const pool=sourceData.teams.filter(t=>t.division===division);
-   if(!pool.length)return {division,winners:[]};
-   const values=pool.map(t=>Number(t.results[station.key]));
-   const bestValue=station.direction==="asc"?Math.min(...values):Math.max(...values);
-   return {division,winners:pool.filter(t=>Number(t.results[station.key])===bestValue)};
-  });
-  stationRows.push({station,winnersByDivision});
- }
- const championCards=champions.map(({team,division})=>
-  `<button class="digital-award-card division-award-card" data-team-id="${escapeHtml(team.id)}"><span class="award-icon">🏆</span><span class="award-type">Division Champion</span><strong>${escapeHtml(team.name)}</strong><small>${escapeHtml(division)} · Gesamtsieg</small></button>`
- ).join("");
- const stationTable=`<div class="table-wrap awards-table-wrap"><table class="awards-table"><thead><tr><th>STATION</th><th>MÄNNER</th><th>FRAUEN</th><th>MIXED</th></tr></thead><tbody>${stationRows.map(({station,winnersByDivision})=>
-  `<tr><td class="award-station-name">${escapeHtml(station.name)}</td>${winnersByDivision.map(({winners})=>
-   `<td>${winners.length?winners.map(team=>`<button class="award-team-link" data-team-id="${escapeHtml(team.id)}">${escapeHtml(team.name)}</button>`).join('<span class="award-tie-note">geteilt</span>'):'<span class="award-no-result">–</span>'}</td>`
-  ).join("")}</tr>`
- ).join("")}</tbody></table></div>`;
- host.innerHTML=(championCards? `<div class="digital-awards-champions">${championCards}</div>`:"")+stationTable;
- host.querySelectorAll("[data-team-id]").forEach(b=>b.addEventListener("click",()=>openTeamDetails(b.dataset.teamId)));
-}
-
-
 let activeResultsPage="overview-page";
 function showResultsPage(pageId) {
   const target=document.getElementById(pageId);
   if(!target || !target.matches("[data-results-view]")) return;
   activeResultsPage=pageId;
   const divisionBar=document.querySelector(".division-filter-bar");
-  divisionBar.hidden=["overview-page","awards-page"].includes(pageId);
+  divisionBar.hidden=["overview-page","scoring-page"].includes(pageId);
   document.querySelectorAll("[data-results-view]").forEach(page=>page.classList.toggle("active",page===target));
   document.querySelectorAll(".results-nav-link").forEach(link=>{
     const active=link.dataset.pageTarget===pageId;
@@ -474,7 +442,7 @@ function init(data) {
   const ages=[...new Set(data.teams.map(t=>t.ageGroup || ageGroup(t.averageAge)).filter(Boolean))].sort((a,b)=>parseInt(a)-parseInt(b));
   document.getElementById("age-filter").innerHTML='<option value="">Alle Altersklassen</option>'+ages.map(a=>`<option>${a}</option>`).join("");
   document.getElementById("station-filter").innerHTML=data.stations.map(st=>`<option value="${escapeHtml(st.key)}">${escapeHtml(st.name)}</option>`).join("");
-  renderLeaderboard();renderStations();renderEventStatistics();renderDigitalAwards();renderOverviewDashboard();
+  renderLeaderboard();renderStations();renderEventStatistics();renderOverviewDashboard();
 }
 document.querySelectorAll(".tab").forEach(b=>b.addEventListener("click",()=>{
   activeDivision=b.dataset.division;
