@@ -205,6 +205,8 @@ function createTeamCertificate(teamId) {
   const eventDate=formatEventDate(event.date);
   const rank=team.overallRank;
   const certificateTitle=rank===1?"1. Platz":rank===2?"2. Platz":rank===3?"3. Platz":"Platz "+rank;
+  // Use the canonical repository-root asset URL so certificates also work from nested preview/share URLs.
+  const certificateBannerUrl=document.querySelector('meta[property="og:image"]')?.content || new URL("/fitnessclub-results/assets/certificate-banner.png",window.location.origin).href;
   const htmlContent=[
     '<!doctype html>',
     '<html lang="de"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">',
@@ -225,7 +227,7 @@ function createTeamCertificate(teamId) {
     '@media print{body{background:#fff}.toolbar{display:none}.sheet{width:100%;min-height:0;height:190mm;margin:0;padding:0;box-shadow:none}.certificate-banner{height:35mm}.frame{height:145mm;min-height:0;padding:24px 55px}.award{background:#ffe500!important;-webkit-print-color-adjust:exact;print-color-adjust:exact}.footer{margin-top:40px}}',
     '</style></head><body>',
     '<div class="toolbar"><button onclick="window.print()">DRUCKEN / ALS PDF SPEICHERN</button></div>',
-    '<main class="sheet"><header class="certificate-banner"><img class="certificate-banner-image" src="'+new URL("assets/certificate-banner.png",window.location.href).href+'" alt="HYROX Competition Results"></header><section class="frame"><div class="event">Fitnessclub · Competition Results</div>',
+    '<main class="sheet"><header class="certificate-banner"><img class="certificate-banner-image" src="'+certificateBannerUrl+'" alt="HYROX Competition Results"></header><section class="frame"><div class="event">Fitnessclub · Competition Results</div>',
     '<div class="kicker">Ergebniszertifikat</div><h1>Certificate of Achievement</h1><p class="intro">Hiermit wird ausgezeichnet:</p>',
     '<div class="team">'+escapeHtml(team.name)+'</div><div class="partners">'+escapeHtml(team.partner1)+' &amp; '+escapeHtml(team.partner2)+'</div>',
     '<div class="award">'+escapeHtml(certificateTitle)+'</div>',
