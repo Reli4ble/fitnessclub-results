@@ -576,3 +576,4 @@ document.querySelectorAll(".view-button").forEach(button=>button.addEventListene
 
 // Separate result pages; the division selector remains visible on every page.
 document.querySelectorAll(".results-nav-link").forEach(button=>button.addEventListener("click",()=>showResultsPage(button.dataset.pageTarget)));
+document.querySelectorAll(".overview-method-link").forEach(button=>button.addEventListener("click",()=>showResultsPage(button.dataset.pageTarget)));
