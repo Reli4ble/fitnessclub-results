@@ -1,9 +1,16 @@
 # Fitnessclub Competition Results
 
-**Website-Version: v1.5.1**  
-**Release-Datum: 04.11.2026**
+**Website-Version: v1.6.0**  
+**Release-Datum: 05.11.2026**
 
 Statische Ergebnis-Website für GitHub Pages. Keine Datenbank, kein Backend und kein Login. Die Website wird über GitHub Actions aus `main` (Produktion) und `develop` (Preview) gemeinsam veröffentlicht.
+
+## Version 1.6.0
+
+- Teilbare Teamprofile mit stabilen Deep Links, Web-Share-/Kopierfunktion und Wiederherstellung der Ansicht über Browser-Zurück/Vorwärts.
+- Vollständige interaktive Stationsranglisten mit Stationsauswahl, Divisions- und Altersklassenfiltern, stationsabhängiger Sortierrichtung und Competition Ranking bei Gleichständen.
+- Event-Statistiken zu Team- und Athletenzahlen, Stationsanzahl, Divisionsverteilung sowie Bestwerten, Durchschnitten und Spannweiten je Division.
+- Druckbare A4-Ergebniszertifikate im Querformat mit dynamischen Team-, Partner-, Event- und Rangdaten; responsive Darstellung und HYROX-inspirierter Fotobanner.
 
 ## Version 1.5.1
 
@@ -131,6 +138,7 @@ Hinweis: Die Lizenztexte sind ein Formulierungsvorschlag und keine individuelle 
 
 | Version | Datum | Typ | Änderungen |
 |---|---|---|---|
+| v1.6.0 | 05.11.2026 | MINOR | Teilbare Teamprofile mit Deep Links und Browsernavigation; interaktive Stationsranglisten mit Filtern und korrekter Gleichstandsbehandlung; Event-Statistiken; responsive A4-Ergebniszertifikate mit Fotobanner. |
 | v1.5.1 | 04.11.2026 | PATCH | Doppelte Statusanzeige im Header entfernt; aktive Navigation direkt am Navigationsbutton markiert. |
 | v1.5.0 | 03.11.2026 | MINOR | Optionale Länderflaggen als dezentes Hintergrundmotiv in Event-Karten; Event-Land über `countryCode` konfigurierbar. |
 | v1.4.0 | 03.11.2026 | MINOR | Proprietäre Lizenzbedingungen, Lizenzseite und Copyright-Hinweise ergänzt. |
