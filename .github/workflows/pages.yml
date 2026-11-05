@@ -37,6 +37,33 @@ jobs:
           ref: develop
           path: site-dev
 
+      - name: Set up Node.js
+        uses: actions/setup-node@v6
+        with:
+          node-version: 22
+
+      - name: Check development JavaScript syntax
+        run: |
+          node --check site-dev/app.js
+          node --check site-dev/scripts/validate-events.mjs
+          node --check site-dev/scripts/generate-team-share-pages.mjs
+
+      - name: Validate production event data
+        run: |
+          npx --yes ajv-cli@5 validate --spec=draft2020 -s site-dev/schemas/events-catalogue.schema.json -d site-prod/data/events.json --all-errors
+          for file in $(node -e "const c=require('./site-prod/data/events.json'); for(const e of c.events) if(e.dataFile) console.log(e.dataFile)"); do
+            npx --yes ajv-cli@5 validate --spec=draft2020 -s site-dev/schemas/event.schema.json -d "site-prod/$file" --all-errors
+          done
+          node site-dev/scripts/validate-events.mjs site-prod
+
+      - name: Validate development event data
+        run: |
+          npx --yes ajv-cli@5 validate --spec=draft2020 -s site-dev/schemas/events-catalogue.schema.json -d site-dev/data/events.json --all-errors
+          for file in $(node -e "const c=require('./site-dev/data/events.json'); for(const e of c.events) if(e.dataFile) console.log(e.dataFile)"); do
+            npx --yes ajv-cli@5 validate --spec=draft2020 -s site-dev/schemas/event.schema.json -d "site-dev/$file" --all-errors
+          done
+          node site-dev/scripts/validate-events.mjs site-dev
+
       - name: Configure Pages
         uses: actions/configure-pages@v6
 
@@ -53,6 +80,12 @@ jobs:
 
           touch _site/.nojekyll
 
+      - name: Generate team share preview pages
+        run: |
+          node site-dev/scripts/generate-team-share-pages.mjs _site
+          node site-dev/scripts/generate-team-share-pages.mjs _site/preview https://reli4ble.github.io/fitnessclub-results/preview/
+
+
       - name: Verify combined website
         run: |
           echo "Generated website files:"
@@ -62,8 +95,10 @@ jobs:
 
           test -f _site/index.html
           test -f _site/preview/index.html
+          test -n "$(find _site/share -name index.html -print -quit)"
+          test -n "$(find _site/preview/share -name index.html -print -quit)"
 
-          echo "Both production and preview index.html files exist."
+          echo "Production, preview, and team share pages exist."
 
       - name: Archive Pages website
         run: |

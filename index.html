@@ -5,6 +5,13 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="description" content="Ergebnisse und Ranglisten des Fitnessclub-Wettkampfs.">
   <meta name="copyright" content="© 2026 Reli4ble. All rights reserved.">
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="Fitnessclub Competition Results">
+  <meta property="og:title" content="Fitnessclub Wettkampf – Ergebnisse">
+  <meta property="og:description" content="Ergebnisse, Ranglisten und Teamprofile der Fitnessclub-Wettkämpfe.">
+  <meta property="og:image" content="https://reli4ble.github.io/fitnessclub-results/assets/certificate-banner.png">
+  <meta name="twitter:card" content="summary_large_image">
+
   <title>Fitnessclub Wettkampf – Ergebnisse</title>
   <link rel="stylesheet" href="styles.css">
 </head>
@@ -37,8 +44,26 @@
       <p id="events-empty" class="empty-events" hidden>Noch keine Events eingetragen.</p>
     </section>
     <div id="results-page" hidden>
+    <nav class="results-section-nav" aria-label="Ergebnisbereiche">
+      <span class="results-nav-label">ERGEBNISBEREICHE</span>
+      <button type="button" class="results-nav-link active" data-page-target="overview-page">Übersicht</button>
+      <button type="button" class="results-nav-link" data-page-target="leaderboard-page">Gesamtwertung</button>
+      <button type="button" class="results-nav-link" data-page-target="stations-page">Stationen</button>
+      <button type="button" class="results-nav-link" data-page-target="statistics-page">Statistiken</button>
+      <button type="button" class="results-nav-link" data-page-target="scoring-page">Wertung</button>
+      <button type="button" class="results-nav-link" data-page-target="release-page">Versionen</button>
+    </nav>
+    <nav class="division-filter-bar" aria-label="Division für Ergebnisansichten auswählen">
+      <span class="division-filter-label">DIVISION</span>
+      <div class="division-tabs-global">
+        <button class="tab" data-division="Overall">Overall <span id="count-overall">0</span></button>
+        <button class="tab active" data-division="Männer">Männer <span id="count-men">0</span></button>
+        <button class="tab" data-division="Frauen">Frauen <span id="count-women">0</span></button>
+        <button class="tab" data-division="Mixed">Mixed <span id="count-mixed">0</span></button>
+      </div>
+    </nav>
 
-    <section class="hero">
+    <div class="results-view active" id="overview-page" data-results-view><section class="hero" id="results-overview">
       <div class="hero-copy">
         <p class="eyebrow">FITNESSCLUB EVENT · RESULTS</p>
         <h1 id="event-title">Fitnessclub Wettkampf</h1>
@@ -57,7 +82,32 @@
       <article class="stat-card"><span class="stat-label">WERTUNG</span><strong>Ø Rang</strong><span class="stat-foot">niedriger ist besser</span></article>
     </section>
 
-    <section class="results-section">
+    <section class="overview-dashboard-section">
+      <div class="section-heading"><div><p class="eyebrow">THE PODIUM</p><h2>Divisionssieger</h2></div><span class="overview-section-note">Die drei Gesamtwertungen</span></div>
+      <div id="overview-champions" class="overview-champions" aria-label="Divisionssieger"></div>
+    </section>
+
+    <section class="overview-dashboard-section">
+      <div class="section-heading"><div><p class="eyebrow">STATION HIGHLIGHTS</p><h2>Beste Stationsleistungen</h2></div><span class="overview-section-note">Bestwerte je Division</span></div>
+      <div class="table-wrap">
+        <table class="overview-highlights-table">
+          <thead><tr><th>STATION</th><th>MÄNNER</th><th>FRAUEN</th><th>MIXED</th></tr></thead>
+          <tbody id="overview-station-highlights"></tbody>
+        </table>
+      </div>
+      <p class="table-note">Die Bestwerte werden innerhalb jeder Division ermittelt. Dadurch werden unterschiedliche Gewichte und Vorgaben nicht miteinander vermischt.</p>
+    </section>
+
+    <section class="overview-method-note">
+      <div><p class="eyebrow">SCORING SYSTEM</p><h2>So wird gewertet</h2></div>
+      <p>Jedes Team erhält pro Station einen Rang innerhalb seiner Division. Der Durchschnitt der acht Stationsränge ergibt die Gesamtplatzierung. <strong>Je niedriger der Durchschnitt, desto besser das Ergebnis.</strong> Gleichstände teilen sich denselben Rang.</p>
+      <button type="button" class="overview-method-link" data-page-target="scoring-page">WERTUNGSMETHODE ANSEHEN ↗</button>
+    </section>
+
+    </div>
+
+    <div class="results-view" id="leaderboard-page" data-results-view>
+    <section class="results-section" id="overall-results">
       <div class="section-heading">
         <div><p class="eyebrow">LEADERBOARD</p><h2>Gesamtwertung</h2></div>
         <label class="age-filter">Altersklasse
@@ -70,12 +120,6 @@
       </div>
       <p id="view-description" class="view-description">Alle Teams einer Division, sortiert nach dem Durchschnitt ihrer acht Stationsränge.</p>
       <div id="podium" class="podium" aria-label="Top drei Teams"></div>
-      <nav class="division-tabs" aria-label="Division auswählen">
-        <button class="tab" data-division="Overall">Overall <span id="count-overall">0</span></button>
-        <button class="tab active" data-division="Männer">Männer <span id="count-men">0</span></button>
-        <button class="tab" data-division="Frauen">Frauen <span id="count-women">0</span></button>
-        <button class="tab" data-division="Mixed">Mixed <span id="count-mixed">0</span></button>
-      </nav>
       <div class="table-wrap">
         <table>
           <thead><tr><th id="rank-heading">RANG</th><th>TEAM</th><th>PARTNER</th><th>Ø-ALTER</th><th>ALTERSKLASSE</th><th>Ø-RANGPUNKTE</th></tr></thead>
@@ -84,8 +128,10 @@
       </div>
       <p class="table-note">Die Rangpunkte sind der Durchschnitt der acht Stationsränge. Gleichstände erhalten denselben Rang (Wettkampf-Rangfolge: 1, 1, 3).</p>
     </section>
+    </div>
 
-    <section class="stations-section">
+<div class="results-view" id="stations-page" data-results-view>
+<section class="stations-section" id="station-results">
       <div class="section-heading">
         <div><p class="eyebrow">PERFORMANCE</p><h2>Stationsrangliste</h2></div>
         <label class="age-filter">Station
@@ -101,8 +147,10 @@
       </div>
       <p class="table-note">Gleichstände erhalten denselben Rang (1, 1, 3). Die Wertungsrichtung richtet sich nach der jeweiligen Station.</p>
     </section>
+    </div>
 
-    <section class="event-statistics-section">
+    <div class="results-view" id="statistics-page" data-results-view>
+    <section class="event-statistics-section" id="event-statistics">
       <div class="section-heading">
         <div><p class="eyebrow">EVENT INSIGHTS</p><h2>Event-Statistiken</h2></div>
       </div>
@@ -129,6 +177,17 @@
       </div>
       <p class="table-note">Der Durchschnitt basiert auf allen Teams der jeweiligen Auswahl. Die Spannweite zeigt den niedrigsten bis höchsten gemessenen Wert, unabhängig von der Wertungsrichtung.</p>
     </section>
+    </div>
+
+    <div class="results-view" id="scoring-page" data-results-view>
+
+
+    <section class="method-section" id="scoring-method">
+      <div><p class="eyebrow">SCORING</p><h2>So wird gewertet</h2></div>
+      <p>Die Teams werden getrennt nach Männer, Frauen und Mixed verglichen. Pro Station wird innerhalb der jeweiligen Division ein Rang vergeben. Der Mittelwert aus den acht Stationsrängen ergibt die Gesamtwertung. Zusätzlich wird eine Altersklassenwertung innerhalb derselben Division und Altersklasse gebildet.</p>
+    </section>
+
+    </div>
 
     <dialog id="team-dialog" class="team-dialog">
       <div class="dialog-head">
@@ -144,18 +203,16 @@
       <div id="dialog-team-results" class="detail-results"></div>
     </dialog>
 
-    <section class="method-section">
-      <div><p class="eyebrow">SCORING</p><h2>So wird gewertet</h2></div>
-      <p>Die Teams werden getrennt nach Männer, Frauen und Mixed verglichen. Pro Station wird innerhalb der jeweiligen Division ein Rang vergeben. Der Mittelwert aus den acht Stationsrängen ergibt die Gesamtwertung. Zusätzlich wird eine Altersklassenwertung innerhalb derselben Division und Altersklasse gebildet.</p>
-    </section>
-
+    <div class="results-view" id="release-page" data-results-view>
     <section class="release-section" aria-labelledby="release-title">
       <details class="release-details">
-        <summary><span><span class="eyebrow">RELEASE NOTES</span><strong id="release-title">Versionshistorie</strong></span><span class="release-current">v1.6.0 · 05.11.2026</span></summary>
+        <summary><span><span class="eyebrow">RELEASE NOTES</span><strong id="release-title">Versionshistorie</strong></span><span class="release-current">v1.8.0 · 05.11.2026</span></summary>
         <div class="release-table-wrap">
           <table class="release-table">
             <thead><tr><th>VERSION</th><th>DATUM</th><th>TYP</th><th>ÄNDERUNGEN</th></tr></thead>
             <tbody>
+              <tr><td><strong>v1.8.0</strong></td><td>05.11.2026</td><td><span class="release-type">PATCH · BUGFIX</span></td><td>Teamprofil-Navigation korrigiert: Beim Schließen eines geteilten Teamprofils führt die URL zuverlässig zurück zur Eventübersicht. Die Deployment-Basis wird beim Laden der Anwendung fest erfasst; funktioniert in Production und Preview.</td></tr>
+              <tr><td><strong>v1.7.0</strong></td><td>05.11.2026</td><td><span class="release-type release-major">MINOR · FEATURE</span></td><td>Ergebnisbereiche als separate Ansichten mit kontextbezogener Navigation; überarbeitete Übersicht mit integrierten Divisionschampions und Stationssiegern; redundante Auszeichnungsseite und Teamvergleich entfernt; Ergebniszertifikate und PDF-/Druckdarstellung überarbeitet; gemeinsamer Pages-Build aus main (Production) und develop (Preview) mit Deployment-Trigger ausschließlich auf main; GitHub Actions aktualisiert.</td></tr>
               <tr><td><strong>v1.6.0</strong></td><td>05.11.2026</td><td><span class="release-type release-major">MINOR · FEATURE</span></td><td>Teilbare Teamprofile mit stabilen Deep Links, Web-Share/Kopierfunktion und Browser-Zurück/Vorwärts; vollständige interaktive Stationsranglisten mit Stationsauswahl, Divisions-/Altersfiltern und korrekter Gleichstandsbehandlung; Event-Statistiken zu Teams, Athleten, Divisionen und Stationsleistungen; druckbare A4-Ergebniszertifikate mit dynamischen Team- und Eventdaten, mobiloptimiertem Layout und neuem HYROX-inspiriertem Fotobanner.</td></tr>
               <tr><td><strong>v1.5.1</strong></td><td>04.11.2026</td><td><span class="release-type">PATCH · FIX</span></td><td>Doppelte Statusanzeige im Header entfernt; aktive Navigation wird direkt am jeweiligen Navigationsbutton markiert.</td></tr>
               <tr><td><strong>v1.5.0</strong></td><td>03.11.2026</td><td><span class="release-type release-major">MINOR · FEATURE</span></td><td>Optionale Länderflaggen als dezentes Hintergrundmotiv in den Event-Karten; Länderauswahl über <code>countryCode</code>.</td></tr>
@@ -174,7 +231,7 @@
     </div>
   </main>
 
-  <footer><span class="footer-slogan">WE 💛 HYROX!</span><span>Website v1.6.0 · Release 05.11.2026 · GitHub Pages</span><span class="footer-legal">© 2026 Reli4ble · Alle Rechte vorbehalten · <a href="license.html">Nutzung &amp; Lizenz</a></span></footer>
-  <script src="app.js?v=1.6.2"></script>
+  <footer><span class="footer-slogan">WE 💛 HYROX!</span><span>Website v1.8.0 · Release 05.11.2026 · GitHub Pages</span><span class="footer-legal">© 2026 Reli4ble · Alle Rechte vorbehalten · <a href="license.html">Nutzung &amp; Lizenz</a></span></footer>
+  <script src="app.js?v=1.8.1"></script>
 </body>
 </html>

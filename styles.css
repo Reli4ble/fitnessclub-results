@@ -209,3 +209,101 @@ footer>span:last-child{font-size:9px;color:var(--muted)}
 .event-stat-table .stat-station-name{font-weight:700}
 @media(max-width:760px){.event-stat-kpis{grid-template-columns:repeat(2,1fr)}.event-stat-grid{grid-template-columns:1fr}}
 @media(max-width:440px){.event-stat-panel{padding:15px}.event-stat-kpi{padding:13px}.division-stat-meta{font-size:10px}}
+
+/* v1.7: digital event awards */
+.digital-awards-section{margin:0 0 56px;padding-top:28px;border-top:1px solid var(--line)}.digital-awards-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}.digital-award-card{display:flex;flex-direction:column;align-items:flex-start;gap:6px;min-width:0;text-align:left;padding:15px;background:var(--panel);border:1px solid var(--line);color:var(--text);cursor:pointer}.digital-award-card:hover{border-color:var(--accent);background:var(--panel2)}.award-icon{font-size:20px}.award-type{font-size:8px;letter-spacing:.14em;text-transform:uppercase;color:var(--accent);font-weight:800}.digital-award-card strong{font:800 19px 'Barlow Condensed';text-transform:uppercase;overflow-wrap:anywhere}.digital-award-card small{font-size:9px;color:var(--muted)}@media(max-width:760px){.digital-awards-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}@media(max-width:460px){.digital-awards-grid{grid-template-columns:1fr}}
+
+
+/* Awards: compact division winners and one station matrix; tied winners share a cell. */
+.digital-awards-champions{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;margin-bottom:16px}
+.division-award-card{min-height:116px}
+.awards-table-wrap{margin-top:8px}
+.awards-table{width:100%;min-width:620px}
+.awards-table th,.awards-table td{padding:12px 14px}
+.awards-table td{vertical-align:middle}
+.awards-table .award-station-name{font-weight:800;color:var(--text)}
+.award-team-link{display:block;padding:3px 0;border:0;background:none;color:var(--text);font:700 11px Inter,Arial,sans-serif;text-align:left;cursor:pointer}
+.award-team-link:hover{color:var(--accent);text-decoration:underline}
+.award-tie-note{display:block;color:var(--muted);font-size:8px;text-transform:uppercase;letter-spacing:.08em}
+.award-no-result{color:var(--muted)}
+@media(max-width:760px){.digital-awards-champions{grid-template-columns:1fr}}
+
+
+/* v1.7.1: compact awards layout with the station matrix below the winners. */
+.digital-awards-grid{display:block}
+.digital-awards-champions{grid-template-columns:repeat(3,minmax(0,1fr));align-items:stretch;gap:10px;margin-bottom:18px}
+.digital-awards-champions .division-award-card{min-height:0;height:100%;padding:12px 14px;gap:5px}
+.digital-awards-champions .award-icon{font-size:17px;line-height:1}
+.digital-awards-champions .digital-award-card strong{font-size:18px;line-height:1.05}
+.digital-awards-champions .digital-award-card small{font-size:9px}
+.awards-table-wrap{width:100%;margin-top:0}
+.awards-table{min-width:680px}
+.awards-table th,.awards-table td{padding:12px 16px}
+.awards-table td:not(:first-child){width:25%}
+.award-team-link{font-size:11px;line-height:1.4}
+@media(max-width:760px){.digital-awards-champions{grid-template-columns:repeat(3,minmax(0,1fr))}}
+@media(max-width:520px){.digital-awards-champions{grid-template-columns:1fr}.digital-awards-champions .division-award-card{min-height:0}}
+
+/* v1.7.1: sticky, responsive section navigation. Uses buttons so event deep links remain intact. */
+.results-section-nav{position:sticky;top:0;z-index:20;display:flex;align-items:center;gap:5px;margin:0 -24px 22px;padding:10px 24px;background:rgba(14,17,21,.96);border-bottom:1px solid var(--line);backdrop-filter:blur(12px);overflow-x:auto;scrollbar-width:thin}
+.results-nav-label{flex:0 0 auto;margin-right:7px;color:var(--muted);font-size:8px;font-weight:800;letter-spacing:.16em}
+.results-nav-link{flex:0 0 auto;border:1px solid transparent;background:transparent;color:#b7c0ca;padding:9px 11px;font:700 10px Inter,Arial,sans-serif;white-space:nowrap;cursor:pointer;transition:color .15s,border-color .15s,background .15s}
+.results-nav-link:hover{color:var(--text);border-color:var(--line)}
+.results-nav-link.active{color:var(--accent);border-color:#536b20;background:#202918}
+#results-overview,#overall-results,#digital-awards,#head-to-head,#station-results,#event-statistics,#scoring-method{scroll-margin-top:72px}
+@media(max-width:700px){.results-section-nav{margin:0 -24px 18px;padding:9px 16px;gap:3px}.results-nav-label{display:none}.results-nav-link{padding:9px 10px;font-size:9px}}
+
+/* v1.8.0: separate result pages with a persistent division selector. */
+.results-view{display:none;min-height:45vh}
+.results-view.active{display:block}
+.division-filter-bar{position:sticky;top:52px;z-index:19;display:flex;align-items:center;gap:14px;margin:0 -24px 24px;padding:11px 24px;background:rgba(14,17,21,.97);border-bottom:1px solid var(--line);backdrop-filter:blur(12px)}
+.division-filter-label{flex:0 0 auto;color:var(--muted);font-size:9px;font-weight:800;letter-spacing:.14em}
+.division-tabs-global{display:flex;gap:6px;min-width:0;overflow-x:auto}
+.division-tabs-global .tab{flex:0 0 auto}
+.results-section-nav{top:0}
+@media(max-width:700px){
+ .division-filter-bar{top:45px;margin:0 -16px 18px;padding:9px 16px;gap:8px}
+ .division-filter-label{font-size:8px}
+ .division-tabs-global{gap:4px}
+ .division-tabs-global .tab{padding:8px 10px;font-size:9px}
+}
+
+/* Overview dashboard: division champions, station bests and scoring summary. */
+.overview-dashboard-section{margin:0 0 42px;padding-top:24px;border-top:1px solid var(--line)}
+.overview-section-note{color:var(--muted);font-size:9px;letter-spacing:.08em;text-transform:uppercase}
+.overview-champions{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}
+.overview-champion{display:flex;flex-direction:column;align-items:flex-start;gap:7px;min-width:0;min-height:132px;padding:17px 18px;background:var(--panel);border:1px solid var(--line);color:var(--text);text-align:left;cursor:pointer;transition:border-color .15s,background .15s}
+.overview-champion:hover{border-color:var(--accent);background:var(--panel2)}
+.overview-champion-label{color:var(--accent);font-size:8px;font-weight:800;letter-spacing:.14em}
+.overview-champion strong{font:800 23px 'Barlow Condensed';text-transform:uppercase;overflow-wrap:anywhere}
+.overview-champion>span:not(.overview-champion-label){font-size:10px;color:#c4cbd2}
+.overview-champion small{margin-top:auto;color:var(--muted);font-size:9px}
+.overview-champion.is-empty{cursor:default;opacity:.6}
+.overview-highlights-table{width:100%;min-width:650px}
+.overview-highlights-table th,.overview-highlights-table td{padding:11px 13px;vertical-align:top}
+.overview-highlights-table tbody th{font-size:11px;text-align:left;color:var(--text)}
+.overview-highlights-table td{width:25%}
+.overview-best-value{display:block;font-size:13px;font-weight:800;font-variant-numeric:tabular-nums;color:var(--accent)}
+.overview-best-team{display:block;margin-top:4px;padding:0;border:0;background:none;color:var(--text);font:700 10px Inter,Arial,sans-serif;text-align:left;cursor:pointer}
+.overview-best-team:hover{color:var(--accent);text-decoration:underline}
+.overview-tie{display:block;margin-top:3px;color:var(--muted);font-size:8px;text-transform:uppercase;letter-spacing:.06em}
+.overview-no-result{color:var(--muted)}
+.overview-method-note{display:grid;grid-template-columns:minmax(180px,.7fr) 2fr auto;align-items:center;gap:22px;margin:0 0 48px;padding:20px;background:var(--panel);border:1px solid var(--line)}
+.overview-method-note h2{margin:0;font:700 23px 'Barlow Condensed';text-transform:uppercase}
+.overview-method-note p{margin:0;color:#c4cbd2;font-size:11px;line-height:1.7}
+.overview-method-link{border:1px solid var(--line);background:transparent;color:var(--accent);padding:10px 12px;font:800 9px Inter,Arial,sans-serif;letter-spacing:.08em;white-space:nowrap;cursor:pointer}
+.overview-method-link:hover{border-color:var(--accent);background:var(--panel2)}
+@media(max-width:760px){.overview-champions{grid-template-columns:1fr}.overview-champion{min-height:0}.overview-method-note{grid-template-columns:1fr;gap:10px}.overview-method-link{justify-self:start}}
+/* Certificate banner fallback: never show a broken image icon or empty black strip. */
+.certificate-banner{background:linear-gradient(115deg,#111 0%,#242a31 55%,#111 100%)}
+.certificate-banner.banner-fallback{display:grid;place-items:center}
+.certificate-banner.banner-fallback::after{content:'FITNESSCLUB · COMPETITION RESULTS';color:#ffe500;font:800 12px Arial,Helvetica,sans-serif;letter-spacing:.28em;text-align:center}
+
+/* Certificate banner is rendered locally; no external image path or broken asset state. */
+.certificate-banner{background:linear-gradient(115deg,#111820 0%,#28313b 48%,#111820 100%);border-bottom:4px solid #ffe500;position:relative;overflow:hidden;display:flex;align-items:center;justify-content:center}
+.certificate-banner:before,.certificate-banner:after{content:"";position:absolute;top:-70%;height:240%;width:110px;background:rgba(255,255,255,.055);transform:rotate(28deg)}
+.certificate-banner:before{left:12%}.certificate-banner:after{right:13%}
+.certificate-banner-brand{position:relative;z-index:1;display:flex;flex-direction:column;align-items:center;gap:8px;color:#fff;text-align:center}
+.certificate-banner-brand span{font:900 11px Arial,Helvetica,sans-serif;letter-spacing:.42em;color:#ffe500}
+.certificate-banner-brand strong{font:900 clamp(20px,4vw,34px) Arial,Helvetica,sans-serif;letter-spacing:.12em}
+.certificate-banner-brand i{font:700 8px Arial,Helvetica,sans-serif;letter-spacing:.35em;color:#c5cbd2}

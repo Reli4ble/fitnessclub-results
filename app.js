@@ -156,9 +156,18 @@ function renderCumulativeRank(team, stations){
   const path=values.map((v,i)=>`${i?'L':'M'} ${x(i)} ${y(v)}`).join(' ');
   return `<svg class="rank-trend" viewBox="0 0 340 145" role="img" aria-label="Kumulierte durchschnittliche Stationsrangpunkte; niedriger ist besser."><line x1="28" y1="18" x2="312" y2="18" class="trend-grid"/><line x1="28" y1="112" x2="312" y2="112" class="trend-grid"/><path d="${path}" class="trend-line"/>${values.map((v,i)=>`<circle cx="${x(i)}" cy="${y(v)}" r="3.5" class="trend-dot"><title>${escapeHtml(stations[i].name)}: ${fmt(v,2)} Ø-Rang</title></circle>`).join('')}<text x="28" y="133" class="trend-label">${escapeHtml(stations[0].shortName||stations[0].name)}</text><text x="312" y="133" text-anchor="end" class="trend-label">${escapeHtml(stations[stations.length-1].shortName||stations[stations.length-1].name)}</text><text x="28" y="11" class="trend-label">Besser ↑</text></svg>`;
 }
+// Capture the deployment base while app.js is executing. Resolving the relative
+// script src later is unsafe because pushState() can change the document URL.
+const APP_BASE_URL = new URL(".", document.currentScript.src);
+function appBaseUrl() {
+  return new URL(APP_BASE_URL.href);
+}
+function appRouteUrl(hash="events") {
+  const url=appBaseUrl(); url.hash=hash; return url.href;
+}
 function teamProfileUrl(teamId) {
   const eventId=currentEventId||sourceData.event.id;
-  return `${location.origin}${location.pathname}#${encodeURIComponent(eventId)}/${encodeURIComponent(teamId)}`;
+  return new URL(`share/${encodeURIComponent(eventId)}/${encodeURIComponent(teamId)}/`,appBaseUrl()).href;
 }
 async function shareTeamProfile(teamId) {
   const url=teamProfileUrl(teamId);
@@ -205,6 +214,8 @@ function createTeamCertificate(teamId) {
   const eventDate=formatEventDate(event.date);
   const rank=team.overallRank;
   const certificateTitle=rank===1?"1. Platz":rank===2?"2. Platz":rank===3?"3. Platz":"Platz "+rank;
+  // Use the canonical repository-root asset URL so certificates also work from nested preview/share URLs.
+  const certificateBannerUrl=document.querySelector('meta[property="og:image"]')?.content || new URL("/fitnessclub-results/assets/certificate-banner.png",window.location.origin).href;
   const htmlContent=[
     '<!doctype html>',
     '<html lang="de"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">',
@@ -225,7 +236,7 @@ function createTeamCertificate(teamId) {
     '@media print{body{background:#fff}.toolbar{display:none}.sheet{width:100%;min-height:0;height:190mm;margin:0;padding:0;box-shadow:none}.certificate-banner{height:35mm}.frame{height:145mm;min-height:0;padding:24px 55px}.award{background:#ffe500!important;-webkit-print-color-adjust:exact;print-color-adjust:exact}.footer{margin-top:40px}}',
     '</style></head><body>',
     '<div class="toolbar"><button onclick="window.print()">DRUCKEN / ALS PDF SPEICHERN</button></div>',
-    '<main class="sheet"><header class="certificate-banner"><img class="certificate-banner-image" src="'+new URL("assets/certificate-banner.png",window.location.href).href+'" alt="HYROX Competition Results"></header><section class="frame"><div class="event">Fitnessclub · Competition Results</div>',
+    '<main class="sheet"><header class="certificate-banner"><img class="certificate-banner-image" src="'+certificateBannerUrl+'" alt="HYROX Competition Results"></header><section class="frame"><div class="event">Fitnessclub · Competition Results</div>',
     '<div class="kicker">Ergebniszertifikat</div><h1>Certificate of Achievement</h1><p class="intro">Hiermit wird ausgezeichnet:</p>',
     '<div class="team">'+escapeHtml(team.name)+'</div><div class="partners">'+escapeHtml(team.partner1)+' &amp; '+escapeHtml(team.partner2)+'</div>',
     '<div class="award">'+escapeHtml(certificateTitle)+'</div>',
@@ -365,6 +376,58 @@ function renderEventStatistics() {
   document.getElementById("event-statistics-table").innerHTML=rows.join("")||'<tr><td colspan="6">Keine Daten für diese Auswahl vorhanden.</td></tr>';
 }
 
+function renderOverviewDashboard() {
+  const divisions=["Männer","Frauen","Mixed"];
+  const champions=divisions.map(division=>{
+    const pool=sourceData.teams.filter(team=>team.division===division);
+    if(!pool.length)return {division,team:null};
+    const winner=rankTeams(pool,sourceData.stations).find(team=>team.overallRank===1);
+    return {division,team:winner};
+  });
+  document.getElementById("overview-champions").innerHTML=champions.map(({division,team})=>
+    team ? `<button class="overview-champion" data-team-id="${escapeHtml(team.id)}">
+      <span class="overview-champion-label">DIVISIONSSIEGER · ${escapeHtml(division.toUpperCase())}</span>
+      <strong>${escapeHtml(team.name)}</strong>
+      <span>${escapeHtml(team.partner1)} &amp; ${escapeHtml(team.partner2)}</span>
+      <small>Ø ${fmt(team.averageRank,2)} Rangpunkte · Details ↗</small>
+    </button>` : `<article class="overview-champion is-empty"><span class="overview-champion-label">${escapeHtml(division.toUpperCase())}</span><strong>Keine Teams</strong></article>`
+  ).join("");
+
+  const stationRows=sourceData.stations.map(station=>{
+    const cells=divisions.map(division=>{
+      const pool=sourceData.teams.filter(team=>team.division===division);
+      if(!pool.length)return '<td class="overview-no-result">–</td>';
+      const sorted=[...pool].sort((a,b)=>{
+        const delta=Number(a.results[station.key])-Number(b.results[station.key]);
+        return (station.direction==="asc"?delta:-delta)||a.name.localeCompare(b.name,"de");
+      });
+      const best=sorted[0];
+      const tied=sorted.filter(team=>Number(team.results[station.key])===Number(best.results[station.key]));
+      return `<td><span class="overview-best-value">${fmt(best.results[station.key],0)} ${escapeHtml(station.unit)}</span>${tied.map(team=>`<button class="overview-best-team" data-team-id="${escapeHtml(team.id)}">${escapeHtml(team.name)}</button>`).join("")}${tied.length>1?'<small class="overview-tie">geteilter Bestwert</small>':""}</td>`;
+    }).join("");
+    return `<tr><th scope="row">${escapeHtml(station.name)}</th>${cells}</tr>`;
+  }).join("");
+  document.getElementById("overview-station-highlights").innerHTML=stationRows;
+  document.querySelectorAll("#overview-champions [data-team-id],#overview-station-highlights [data-team-id]").forEach(button=>
+    button.addEventListener("click",()=>openTeamDetails(button.dataset.teamId))
+  );
+}
+let activeResultsPage="overview-page";
+function showResultsPage(pageId) {
+  const target=document.getElementById(pageId);
+  if(!target || !target.matches("[data-results-view]")) return;
+  activeResultsPage=pageId;
+  const divisionBar=document.querySelector(".division-filter-bar");
+  divisionBar.hidden=["overview-page","scoring-page"].includes(pageId);
+  document.querySelectorAll("[data-results-view]").forEach(page=>page.classList.toggle("active",page===target));
+  document.querySelectorAll(".results-nav-link").forEach(link=>{
+    const active=link.dataset.pageTarget===pageId;
+    link.classList.toggle("active",active);
+    if(active) link.setAttribute("aria-current","page"); else link.removeAttribute("aria-current");
+  });
+  window.scrollTo({top:0,behavior:"instant"});
+}
+
 function init(data) {
   sourceData=data;
   document.title=`${data.event.name} – Ergebnisse`;
@@ -388,16 +451,18 @@ function init(data) {
   const ages=[...new Set(data.teams.map(t=>t.ageGroup || ageGroup(t.averageAge)).filter(Boolean))].sort((a,b)=>parseInt(a)-parseInt(b));
   document.getElementById("age-filter").innerHTML='<option value="">Alle Altersklassen</option>'+ages.map(a=>`<option>${a}</option>`).join("");
   document.getElementById("station-filter").innerHTML=data.stations.map(st=>`<option value="${escapeHtml(st.key)}">${escapeHtml(st.name)}</option>`).join("");
-  renderLeaderboard();renderStations();renderEventStatistics();
+  renderLeaderboard();renderStations();renderEventStatistics();renderOverviewDashboard();
 }
 document.querySelectorAll(".tab").forEach(b=>b.addEventListener("click",()=>{
   activeDivision=b.dataset.division;
+  document.querySelectorAll(".tab").forEach(tab=>tab.classList.toggle("active",tab.dataset.division===activeDivision));
   renderLeaderboard();renderStations();renderEventStatistics();
 }));
 document.getElementById("age-filter").addEventListener("change",()=>{
   renderLeaderboard();
   renderStations();
   renderEventStatistics();
+  renderHeadToHead();
 });
 document.getElementById("station-filter").addEventListener("change",renderStations);
 function eventDateValue(value){ if(!value)return null; const d=new Date(value+ (value.length===10?"T00:00:00":"")); return Number.isNaN(d.getTime())?null:d; }
@@ -434,17 +499,17 @@ function renderEventIndex(){
   document.getElementById("events-empty").hidden=!!(featured||past.length);
   document.querySelectorAll("[data-event-id]").forEach(b=>b.addEventListener("click",()=>openEvent(b.dataset.eventId)));
 }
-function showEvents(){document.getElementById("events-page").hidden=false;document.getElementById("results-page").hidden=true;document.getElementById("nav-results").hidden=true;document.getElementById("nav-events").classList.add("active");document.getElementById("nav-results").classList.remove("active");history.replaceState(null,"",location.pathname+"#events");}
+function showEvents(){document.getElementById("events-page").hidden=false;document.getElementById("results-page").hidden=true;document.getElementById("nav-results").hidden=true;document.getElementById("nav-events").classList.add("active");document.getElementById("nav-results").classList.remove("active");history.replaceState(null,"",appRouteUrl("events"));}
 function openEvent(id,teamId=null,options={}) {
   const event=eventIndex.find(e=>e.id===id); if(!event)return;
   if(!event.dataFile){alert("Für dieses Event sind noch keine Ergebnisse hinterlegt.");return;}
   fetch(event.dataFile).then(r=>{if(!r.ok)throw new Error("Eventdaten konnten nicht geladen werden");return r.json();}).then(data=>{
     currentEventId=id; init(data); document.getElementById("events-page").hidden=true; document.getElementById("results-page").hidden=false; document.getElementById("nav-results").hidden=false; document.getElementById("nav-events").classList.remove("active"); document.getElementById("nav-results").classList.add("active");
-    if(options.preserveHash!==true) history.replaceState({eventId:id},"",location.pathname+"#"+encodeURIComponent(id));
-    window.scrollTo(0,0);
+    if(options.preserveHash!==true) history.replaceState({eventId:id},"",appRouteUrl(encodeURIComponent(id)));
+    showResultsPage("overview-page");
     if(teamId) {
       if(data.teams.some(t=>t.id===teamId)) openTeamDetails(teamId,{updateUrl:false});
-      else history.replaceState({eventId:id},"",location.pathname+"#"+encodeURIComponent(id));
+      else history.replaceState({eventId:id},"",appRouteUrl(encodeURIComponent(id)));
     }
   }).catch(err=>{document.getElementById("events-empty").textContent=err.message;document.getElementById("events-empty").hidden=false;});
 }
@@ -465,12 +530,12 @@ fetch("data/events.json").then(r=>{if(!r.ok)throw new Error("events.json konnte 
 window.addEventListener("popstate",restoreRoute);
 document.getElementById("nav-events").addEventListener("click",showEvents);
 document.getElementById("brand-home").addEventListener("click",e=>{e.preventDefault();showEvents();});
-document.getElementById("nav-results").addEventListener("click",()=>{document.getElementById("events-page").hidden=true;document.getElementById("results-page").hidden=false;document.getElementById("nav-events").classList.remove("active");document.getElementById("nav-results").classList.add("active");window.scrollTo(0,0);});
+document.getElementById("nav-results").addEventListener("click",()=>{document.getElementById("events-page").hidden=true;document.getElementById("results-page").hidden=false;document.getElementById("nav-events").classList.remove("active");document.getElementById("nav-results").classList.add("active");showResultsPage(activeResultsPage);});
 
 function closeTeamProfile() {
   const dialog=document.getElementById("team-dialog");
   if(dialog.open) dialog.close();
-  history.replaceState({eventId:currentEventId},"",location.pathname+"#"+encodeURIComponent(currentEventId||sourceData.event.id));
+  history.replaceState({eventId:currentEventId},"",appRouteUrl(encodeURIComponent(currentEventId||sourceData.event.id)));
 }
 document.getElementById("dialog-close").addEventListener("click",closeTeamProfile);
 document.getElementById("team-dialog").addEventListener("click",e=>{
@@ -484,3 +549,8 @@ document.querySelectorAll(".view-button").forEach(button=>button.addEventListene
   activeView=button.dataset.view;
   renderLeaderboard();
 }));
+
+
+// Separate result pages; the division selector remains visible on every page.
+document.querySelectorAll(".results-nav-link").forEach(button=>button.addEventListener("click",()=>showResultsPage(button.dataset.pageTarget)));
+document.querySelectorAll(".overview-method-link").forEach(button=>button.addEventListener("click",()=>showResultsPage(button.dataset.pageTarget)));
