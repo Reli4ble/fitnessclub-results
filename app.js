@@ -365,44 +365,36 @@ function renderEventStatistics() {
   document.getElementById("event-statistics-table").innerHTML=rows.join("")||'<tr><td colspan="6">Keine Daten für diese Auswahl vorhanden.</td></tr>';
 }
 
-async function renderCrossEventDevelopment() {
- const select=document.getElementById("history-team"),host=document.getElementById("cross-event-results");
- const previous=select.value,teams=sourceData.teams.slice().sort((a,b)=>a.name.localeCompare(b.name,"de"));
- select.innerHTML=teams.map(t=>`<option value="${escapeHtml(t.id)}">${escapeHtml(t.name)} · ${escapeHtml(t.partner1)} &amp; ${escapeHtml(t.partner2)}</option>`).join("");
- if(teams.some(t=>t.id===previous))select.value=previous;
- const others=eventIndex.filter(e=>e.status==="results"&&e.id!==currentEventId&&e.dataFile);
- if(!others.length){host.innerHTML='<p class="comparison-empty">Für eine Entwicklungskurve werden mindestens zwei veröffentlichte Events benötigt. Sobald weitere Ergebnisse vorliegen, erscheint hier der Vergleich.</p>';return;}
- const selected=teams.find(t=>t.id===select.value);if(!selected)return;
- const keyFor=t=>[t.partner1,t.partner2].map(v=>String(v||"").trim().toLocaleLowerCase("de")).sort().join("|");
- const targetKey=keyFor(selected),history=[{event:sourceData.event,teams:sourceData.teams,stations:sourceData.stations}];
- for(const event of others){
-  try{const response=await fetch(event.dataFile);if(!response.ok)continue;const data=await response.json();history.push({event:data.event||event,teams:data.teams||[],stations:data.stations||[]});}catch(error){console.warn("Historische Eventdaten nicht verfügbar",event.id,error);}
- }
- const records=[];
- for(const item of history){
-  const match=item.teams.find(t=>t.division===selected.division&&keyFor(t)===targetKey);if(!match)continue;
-  const pool=item.teams.filter(t=>t.division===selected.division),ranked=rankTeams(pool,item.event.id===sourceData.event.id?sourceData.stations:(item.stations||[]));
-  const scored=ranked.find(t=>t.id===match.id);if(!scored)continue;
-  const percentile=pool.length<=1?100:100*(1-(scored.averageRank-1)/Math.max(1,pool.length-1));
-  records.push({event:item.event,team:match,rank:scored.overallRank,average:scored.averageRank,count:pool.length,percentile});
- }
- records.sort((a,b)=>String(a.event.date||"").localeCompare(String(b.event.date||"")));
- if(records.length<2){host.innerHTML='<p class="comparison-empty">Für dieses Team liegt noch kein Vergleich über mehrere Events vor. Die Athleten müssen in mindestens zwei Events derselben Division gemeinsam gestartet sein.</p>';return;}
- host.innerHTML=`<div class="history-kpi"><strong>${records.length}</strong><span>Events mit passendem Team · ${escapeHtml(selected.division)}</span></div><div class="table-wrap"><table class="history-table"><thead><tr><th>EVENT</th><th>TEAM</th><th>DIVISIONSRANG</th><th>Ø RANGPUNKTE</th><th>RELATIVE PLATZIERUNG</th></tr></thead><tbody>${records.map(r=>`<tr><td>${escapeHtml(r.event.name)}<small>${escapeHtml(r.event.date||"")}</small></td><td>${escapeHtml(r.team.name)}</td><td>${r.rank} / ${r.count}</td><td>${fmt(r.average,2)}</td><td><strong>${fmt(r.percentile,1)}%</strong><div class="history-track"><span style="width:${Math.max(0,Math.min(100,r.percentile))}%"></span></div></td></tr>`).join("")}</tbody></table></div>`;
-}
-
 function renderDigitalAwards() {
- const host=document.getElementById("digital-awards"),divisions=["Männer","Frauen","Mixed"],cards=[];
+ const host=document.getElementById("digital-awards"),divisions=["Männer","Frauen","Mixed"];
+ const champions=[],stationRows=[];
  for(const division of divisions){
-  const pool=sourceData.teams.filter(t=>t.division===division);if(!pool.length)continue;
-  const ranked=rankTeams(pool,sourceData.stations),champions=ranked.filter(t=>t.overallRank===1);
-  for(const champion of champions)cards.push({team:champion,title:"Division Champion",detail:division+" · Gesamtsieg",icon:"🏆"});
-  for(const station of sourceData.stations){
-   const values=pool.map(t=>Number(t.results[station.key])),bestValue=station.direction==="asc"?Math.min(...values):Math.max(...values);
-   for(const best of pool.filter(t=>Number(t.results[station.key])===bestValue))cards.push({team:best,title:"Station Champion",detail:division+" · "+station.name,icon:"⚡"});
+  const pool=sourceData.teams.filter(t=>t.division===division);
+  if(!pool.length)continue;
+  const ranked=rankTeams(pool,sourceData.stations);
+  for(const team of ranked.filter(t=>t.overallRank===1)){
+   champions.push({team,division});
   }
  }
- host.innerHTML=cards.map(a=>`<button class="digital-award-card" data-team-id="${escapeHtml(a.team.id)}"><span class="award-icon">${a.icon}</span><span class="award-type">${escapeHtml(a.title)}</span><strong>${escapeHtml(a.team.name)}</strong><small>${escapeHtml(a.detail)}</small></button>`).join("")||'<p class="comparison-empty">Noch keine Auszeichnungen verfügbar.</p>';
+ for(const station of sourceData.stations){
+  const winnersByDivision=divisions.map(division=>{
+   const pool=sourceData.teams.filter(t=>t.division===division);
+   if(!pool.length)return {division,winners:[]};
+   const values=pool.map(t=>Number(t.results[station.key]));
+   const bestValue=station.direction==="asc"?Math.min(...values):Math.max(...values);
+   return {division,winners:pool.filter(t=>Number(t.results[station.key])===bestValue)};
+  });
+  stationRows.push({station,winnersByDivision});
+ }
+ const championCards=champions.map(({team,division})=>
+  `<button class="digital-award-card division-award-card" data-team-id="${escapeHtml(team.id)}"><span class="award-icon">🏆</span><span class="award-type">Division Champion</span><strong>${escapeHtml(team.name)}</strong><small>${escapeHtml(division)} · Gesamtsieg</small></button>`
+ ).join("");
+ const stationTable=`<div class="table-wrap awards-table-wrap"><table class="awards-table"><thead><tr><th>STATION</th><th>MÄNNER</th><th>FRAUEN</th><th>MIXED</th></tr></thead><tbody>${stationRows.map(({station,winnersByDivision})=>
+  `<tr><td class="award-station-name">${escapeHtml(station.name)}</td>${winnersByDivision.map(({winners})=>
+   `<td>${winners.length?winners.map(team=>`<button class="award-team-link" data-team-id="${escapeHtml(team.id)}">${escapeHtml(team.name)}</button>`).join('<span class="award-tie-note">geteilt</span>'):'<span class="award-no-result">–</span>'}</td>`
+  ).join("")}</tr>`
+ ).join("")}</tbody></table></div>`;
+ host.innerHTML=(championCards? `<div class="digital-awards-champions">${championCards}</div>`:"")+stationTable;
  host.querySelectorAll("[data-team-id]").forEach(b=>b.addEventListener("click",()=>openTeamDetails(b.dataset.teamId)));
 }
 
@@ -446,7 +438,7 @@ function init(data) {
   const ages=[...new Set(data.teams.map(t=>t.ageGroup || ageGroup(t.averageAge)).filter(Boolean))].sort((a,b)=>parseInt(a)-parseInt(b));
   document.getElementById("age-filter").innerHTML='<option value="">Alle Altersklassen</option>'+ages.map(a=>`<option>${a}</option>`).join("");
   document.getElementById("station-filter").innerHTML=data.stations.map(st=>`<option value="${escapeHtml(st.key)}">${escapeHtml(st.name)}</option>`).join("");
-  renderLeaderboard();renderStations();renderEventStatistics();renderHeadToHead();renderDigitalAwards();renderCrossEventDevelopment();
+  renderLeaderboard();renderStations();renderEventStatistics();renderHeadToHead();renderDigitalAwards();
 }
 document.querySelectorAll(".tab").forEach(b=>b.addEventListener("click",()=>{
   activeDivision=b.dataset.division;
@@ -461,7 +453,6 @@ document.getElementById("age-filter").addEventListener("change",()=>{
 document.getElementById("station-filter").addEventListener("change",renderStations);
 document.getElementById("compare-team-a").addEventListener("change",renderHeadToHead);
 document.getElementById("compare-team-b").addEventListener("change",renderHeadToHead);
-document.getElementById("history-team").addEventListener("change",renderCrossEventDevelopment);
 function eventDateValue(value){ if(!value)return null; const d=new Date(value+ (value.length===10?"T00:00:00":"")); return Number.isNaN(d.getTime())?null:d; }
 function formatEventDate(value){const d=eventDateValue(value);return d?d.toLocaleDateString("de-DE",{day:"2-digit",month:"long",year:"numeric"}):"Termin folgt";}
 function eventFlagSvg(countryCode){
