@@ -3,5 +3,5 @@
   "title":"Fitnessclub event catalogue",
   "type":"object",
   "required":["events"],
-  "properties":{"events":{"type":"array","items":{"type":"object","required":["id","name","status"],"properties":{"id":{"type":"string","minLength":1,"pattern":"^[a-z0-9-]+$"},"name":{"type":"string","minLength":1},"date":{"type":"string","format":"date"},"location":{"type":"string"},"status":{"enum":["planned","completed","results"]},"subtitle":{"type":"string"},"dataFile":{"type":"string","pattern":"^data/events/[A-Za-z0-9_-]+\\.json$"},"countryCode":{"type":"string","pattern":"^[A-Z]{2}$"}},"additionalProperties":true}}},"additionalProperties":false
+  "properties":{"events":{"type":"array","items":{"type":"object","required":["id","name","status"],"properties":{"id":{"type":"string","minLength":1,"pattern":"^[a-z0-9-]+$"},"name":{"type":"string","minLength":1},"date":{"type":"string","pattern":"^[0-9]{4}-[0-9]{2}-[0-9]{2}$"},"location":{"type":"string"},"status":{"enum":["planned","completed","results"]},"subtitle":{"type":"string"},"dataFile":{"type":"string","pattern":"^data/events/[A-Za-z0-9_-]+\\.json$"},"countryCode":{"type":"string","pattern":"^[A-Z]{2}$"}},"additionalProperties":true}}},"additionalProperties":false
 }
