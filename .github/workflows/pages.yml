@@ -43,6 +43,12 @@ jobs:
         with:
           node-version: 22
 
+      - name: Check development JavaScript syntax
+        run: |
+          node --check site-dev/app.js
+          node --check site-dev/scripts/validate-events.mjs
+          node --check site-dev/scripts/generate-team-share-pages.mjs
+
       - name: Validate production event data
         run: |
           npx --yes ajv-cli@5 validate --spec=draft2020 -s site-dev/schemas/events-catalogue.schema.json -d site-prod/data/events.json --all-errors
@@ -86,8 +92,10 @@ jobs:
 
           test -f _site/index.html
           test -f _site/preview/index.html
+          test -n "$(find _site/share -name index.html -print -quit)"
+          test -n "$(find _site/preview/share -name index.html -print -quit)"
 
-          echo "Both production and preview index.html files exist."
+          echo "Production, preview, and team share pages exist."
 
       - name: Archive Pages website
         run: |
