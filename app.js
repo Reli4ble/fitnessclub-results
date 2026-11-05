@@ -225,7 +225,7 @@ function createTeamCertificate(teamId) {
     '@media print{body{background:#fff}.toolbar{display:none}.sheet{width:100%;min-height:0;height:190mm;margin:0;padding:0;box-shadow:none}.certificate-banner{height:35mm}.frame{height:145mm;min-height:0;padding:24px 55px}.award{background:#ffe500!important;-webkit-print-color-adjust:exact;print-color-adjust:exact}.footer{margin-top:40px}}',
     '</style></head><body>',
     '<div class="toolbar"><button onclick="window.print()">DRUCKEN / ALS PDF SPEICHERN</button></div>',
-    '<main class="sheet"><header class="certificate-banner"><img class="certificate-banner-image" src="'+new URL("assets/certificate-banner.png",window.location.href).href+'" alt="HYROX Competition Results"></header><section class="frame"><div class="event">Fitnessclub · Competition Results</div>',
+    '<main class="sheet"><header class="certificate-banner"><img class="certificate-banner-image" src="'+new URL("./assets/certificate-banner.png",document.baseURI).href+'" alt="HYROX Competition Results" onerror="this.remove();this.parentElement.classList.add('banner-fallback')"></header><section class="frame"><div class="event">Fitnessclub · Competition Results</div>',
     '<div class="kicker">Ergebniszertifikat</div><h1>Certificate of Achievement</h1><p class="intro">Hiermit wird ausgezeichnet:</p>',
     '<div class="team">'+escapeHtml(team.name)+'</div><div class="partners">'+escapeHtml(team.partner1)+' &amp; '+escapeHtml(team.partner2)+'</div>',
     '<div class="award">'+escapeHtml(certificateTitle)+'</div>',
@@ -365,6 +365,42 @@ function renderEventStatistics() {
   document.getElementById("event-statistics-table").innerHTML=rows.join("")||'<tr><td colspan="6">Keine Daten für diese Auswahl vorhanden.</td></tr>';
 }
 
+function renderOverviewDashboard() {
+  const divisions=["Männer","Frauen","Mixed"];
+  const champions=divisions.map(division=>{
+    const pool=sourceData.teams.filter(team=>team.division===division);
+    if(!pool.length)return {division,team:null};
+    const winner=rankTeams(pool,sourceData.stations).find(team=>team.overallRank===1);
+    return {division,team:winner};
+  });
+  document.getElementById("overview-champions").innerHTML=champions.map(({division,team})=>
+    team ? `<button class="overview-champion" data-team-id="${escapeHtml(team.id)}">
+      <span class="overview-champion-label">DIVISIONSSIEGER · ${escapeHtml(division.toUpperCase())}</span>
+      <strong>${escapeHtml(team.name)}</strong>
+      <span>${escapeHtml(team.partner1)} &amp; ${escapeHtml(team.partner2)}</span>
+      <small>Ø ${fmt(team.averageRank,2)} Rangpunkte · Details ↗</small>
+    </button>` : `<article class="overview-champion is-empty"><span class="overview-champion-label">${escapeHtml(division.toUpperCase())}</span><strong>Keine Teams</strong></article>`
+  ).join("");
+
+  const stationRows=sourceData.stations.map(station=>{
+    const cells=divisions.map(division=>{
+      const pool=sourceData.teams.filter(team=>team.division===division);
+      if(!pool.length)return '<td class="overview-no-result">–</td>';
+      const sorted=[...pool].sort((a,b)=>{
+        const delta=Number(a.results[station.key])-Number(b.results[station.key]);
+        return (station.direction==="asc"?delta:-delta)||a.name.localeCompare(b.name,"de");
+      });
+      const best=sorted[0];
+      const tied=sorted.filter(team=>Number(team.results[station.key])===Number(best.results[station.key]));
+      return `<td><span class="overview-best-value">${fmt(best.results[station.key],0)} ${escapeHtml(station.unit)}</span>${tied.map(team=>`<button class="overview-best-team" data-team-id="${escapeHtml(team.id)}">${escapeHtml(team.name)}</button>`).join("")}${tied.length>1?'<small class="overview-tie">geteilter Bestwert</small>':""}</td>`;
+    }).join("");
+    return `<tr><th scope="row">${escapeHtml(station.name)}</th>${cells}</tr>`;
+  }).join("");
+  document.getElementById("overview-station-highlights").innerHTML=stationRows;
+  document.querySelectorAll("#overview-champions [data-team-id],#overview-station-highlights [data-team-id]").forEach(button=>
+    button.addEventListener("click",()=>openTeamDetails(button.dataset.teamId))
+  );
+}
 function renderDigitalAwards() {
  const host=document.getElementById("digital-awards"),divisions=["Männer","Frauen","Mixed"];
  const champions=[],stationRows=[];
@@ -438,7 +474,7 @@ function init(data) {
   const ages=[...new Set(data.teams.map(t=>t.ageGroup || ageGroup(t.averageAge)).filter(Boolean))].sort((a,b)=>parseInt(a)-parseInt(b));
   document.getElementById("age-filter").innerHTML='<option value="">Alle Altersklassen</option>'+ages.map(a=>`<option>${a}</option>`).join("");
   document.getElementById("station-filter").innerHTML=data.stations.map(st=>`<option value="${escapeHtml(st.key)}">${escapeHtml(st.name)}</option>`).join("");
-  renderLeaderboard();renderStations();renderEventStatistics();renderDigitalAwards();
+  renderLeaderboard();renderStations();renderEventStatistics();renderDigitalAwards();renderOverviewDashboard();
 }
 document.querySelectorAll(".tab").forEach(b=>b.addEventListener("click",()=>{
   activeDivision=b.dataset.division;
