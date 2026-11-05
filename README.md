@@ -1,9 +1,17 @@
 # Fitnessclub Competition Results
 
-**Website-Version: v1.6.0**  
+**Website-Version: v1.7.0**  
 **Release-Datum: 05.11.2026**
 
 Statische Ergebnis-Website für GitHub Pages. Keine Datenbank, kein Backend und kein Login. Die Website wird über GitHub Actions aus `main` (Produktion) und `develop` (Preview) gemeinsam veröffentlicht.
+
+## Version 1.7.0
+
+- Ergebnisbereiche in eigenständige Ansichten mit bereichsbezogener Navigation aufgeteilt; Divisionsauswahl bleibt dort verfügbar, wo sie die dargestellten Ergebnisse tatsächlich steuert.
+- Übersichtsseite erweitert und Auszeichnungen integriert: Divisionschampions und Stationssieger werden zentral dargestellt; redundante separate Auszeichnungsseite und nicht benötigter Teamvergleich entfernt.
+- Ergebniszertifikate weiter verbessert: responsives A4-Layout, konsistente Platzierungsdarstellung in Webansicht und PDF sowie bereinigter Druckbereich und wiederhergestelltes HYROX-Fotobanner.
+- GitHub-Pages-Deployment vereinheitlicht: Ein manueller Workflow-Start auf `main` baut Production aus `main` und Preview aus `develop` in einem gemeinsamen Pages-Artefakt; Pushes auf `develop` lösen keinen Pages-Deploy mehr aus.
+- GitHub-Actions aktualisiert: `actions/checkout` auf v7 und `actions/setup-node` auf v6; Node.js-20-Deprecation-Warnung behoben.
 
 ## Version 1.6.0
 
@@ -138,6 +146,7 @@ Hinweis: Die Lizenztexte sind ein Formulierungsvorschlag und keine individuelle 
 
 | Version | Datum | Typ | Änderungen |
 |---|---|---|---|
+| v1.7.0 | 05.11.2026 | MINOR | Separate Ergebnisansichten und verbesserte Übersicht mit integrierten Auszeichnungen; Teamvergleich entfernt; Zertifikate und Druckdarstellung verbessert; Pages-Deployment auf main als Trigger vereinheitlicht; GitHub Actions aktualisiert. |
 | v1.6.0 | 05.11.2026 | MINOR | Teilbare Teamprofile mit Deep Links und Browsernavigation; interaktive Stationsranglisten mit Filtern und korrekter Gleichstandsbehandlung; Event-Statistiken; responsive A4-Ergebniszertifikate mit Fotobanner. |
 | v1.5.1 | 04.11.2026 | PATCH | Doppelte Statusanzeige im Header entfernt; aktive Navigation direkt am Navigationsbutton markiert. |
 | v1.5.0 | 03.11.2026 | MINOR | Optionale Länderflaggen als dezentes Hintergrundmotiv in Event-Karten; Event-Land über `countryCode` konfigurierbar. |
