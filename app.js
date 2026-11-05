@@ -158,7 +158,7 @@ function renderCumulativeRank(team, stations){
 }
 function teamProfileUrl(teamId) {
   const eventId=currentEventId||sourceData.event.id;
-  return `${location.origin}${location.pathname}#${encodeURIComponent(eventId)}/${encodeURIComponent(teamId)}`;
+  const base=new URL("./",location.href); return new URL(`share/${encodeURIComponent(eventId)}/${encodeURIComponent(teamId)}/`,base).href;
 }
 async function shareTeamProfile(teamId) {
   const url=teamProfileUrl(teamId);
@@ -365,6 +365,64 @@ function renderEventStatistics() {
   document.getElementById("event-statistics-table").innerHTML=rows.join("")||'<tr><td colspan="6">Keine Daten für diese Auswahl vorhanden.</td></tr>';
 }
 
+async function renderCrossEventDevelopment() {
+ const select=document.getElementById("history-team"),host=document.getElementById("cross-event-results");
+ const previous=select.value,teams=sourceData.teams.slice().sort((a,b)=>a.name.localeCompare(b.name,"de"));
+ select.innerHTML=teams.map(t=>`<option value="${escapeHtml(t.id)}">${escapeHtml(t.name)} · ${escapeHtml(t.partner1)} &amp; ${escapeHtml(t.partner2)}</option>`).join("");
+ if(teams.some(t=>t.id===previous))select.value=previous;
+ const others=eventIndex.filter(e=>e.status==="results"&&e.id!==currentEventId&&e.dataFile);
+ if(!others.length){host.innerHTML='<p class="comparison-empty">Für eine Entwicklungskurve werden mindestens zwei veröffentlichte Events benötigt. Sobald weitere Ergebnisse vorliegen, erscheint hier der Vergleich.</p>';return;}
+ const selected=teams.find(t=>t.id===select.value);if(!selected)return;
+ const keyFor=t=>[t.partner1,t.partner2].map(v=>String(v||"").trim().toLocaleLowerCase("de")).sort().join("|");
+ const targetKey=keyFor(selected),history=[{event:sourceData.event,teams:sourceData.teams,stations:sourceData.stations}];
+ for(const event of others){
+  try{const response=await fetch(event.dataFile);if(!response.ok)continue;const data=await response.json();history.push({event:data.event||event,teams:data.teams||[],stations:data.stations||[]});}catch(error){console.warn("Historische Eventdaten nicht verfügbar",event.id,error);}
+ }
+ const records=[];
+ for(const item of history){
+  const match=item.teams.find(t=>t.division===selected.division&&keyFor(t)===targetKey);if(!match)continue;
+  const pool=item.teams.filter(t=>t.division===selected.division),ranked=rankTeams(pool,item.event.id===sourceData.event.id?sourceData.stations:(item.stations||[]));
+  const scored=ranked.find(t=>t.id===match.id);if(!scored)continue;
+  const percentile=pool.length<=1?100:100*(1-(scored.averageRank-1)/Math.max(1,pool.length-1));
+  records.push({event:item.event,team:match,rank:scored.overallRank,average:scored.averageRank,count:pool.length,percentile});
+ }
+ records.sort((a,b)=>String(a.event.date||"").localeCompare(String(b.event.date||"")));
+ if(records.length<2){host.innerHTML='<p class="comparison-empty">Für dieses Team liegt noch kein Vergleich über mehrere Events vor. Die Athleten müssen in mindestens zwei Events derselben Division gemeinsam gestartet sein.</p>';return;}
+ host.innerHTML=`<div class="history-kpi"><strong>${records.length}</strong><span>Events mit passendem Team · ${escapeHtml(selected.division)}</span></div><div class="table-wrap"><table class="history-table"><thead><tr><th>EVENT</th><th>TEAM</th><th>DIVISIONSRANG</th><th>Ø RANGPUNKTE</th><th>RELATIVE PLATZIERUNG</th></tr></thead><tbody>${records.map(r=>`<tr><td>${escapeHtml(r.event.name)}<small>${escapeHtml(r.event.date||"")}</small></td><td>${escapeHtml(r.team.name)}</td><td>${r.rank} / ${r.count}</td><td>${fmt(r.average,2)}</td><td><strong>${fmt(r.percentile,1)}%</strong><div class="history-track"><span style="width:${Math.max(0,Math.min(100,r.percentile))}%"></span></div></td></tr>`).join("")}</tbody></table></div>`;
+}
+
+function renderDigitalAwards() {
+ const host=document.getElementById("digital-awards"),divisions=["Männer","Frauen","Mixed"],cards=[];
+ for(const division of divisions){
+  const pool=sourceData.teams.filter(t=>t.division===division);if(!pool.length)continue;
+  const ranked=rankTeams(pool,sourceData.stations),champions=ranked.filter(t=>t.overallRank===1);
+  for(const champion of champions)cards.push({team:champion,title:"Division Champion",detail:division+" · Gesamtsieg",icon:"🏆"});
+  for(const station of sourceData.stations){
+   const values=pool.map(t=>Number(t.results[station.key])),bestValue=station.direction==="asc"?Math.min(...values):Math.max(...values);
+   for(const best of pool.filter(t=>Number(t.results[station.key])===bestValue))cards.push({team:best,title:"Station Champion",detail:division+" · "+station.name,icon:"⚡"});
+  }
+ }
+ host.innerHTML=cards.map(a=>`<button class="digital-award-card" data-team-id="${escapeHtml(a.team.id)}"><span class="award-icon">${a.icon}</span><span class="award-type">${escapeHtml(a.title)}</span><strong>${escapeHtml(a.team.name)}</strong><small>${escapeHtml(a.detail)}</small></button>`).join("")||'<p class="comparison-empty">Noch keine Auszeichnungen verfügbar.</p>';
+ host.querySelectorAll("[data-team-id]").forEach(b=>b.addEventListener("click",()=>openTeamDetails(b.dataset.teamId)));
+}
+
+function renderHeadToHead() {
+  const selectA=document.getElementById("compare-team-a"),selectB=document.getElementById("compare-team-b"),output=document.getElementById("head-to-head-results");
+  const division=activeDivision==="Overall"?"Männer":activeDivision,teams=sourceData.teams.filter(t=>t.division===division).sort((a,b)=>a.name.localeCompare(b.name,"de"));
+  const oldA=selectA.value,oldB=selectB.value,options=teams.map(t=>`<option value="${escapeHtml(t.id)}">${escapeHtml(t.name)}</option>`).join("");
+  selectA.innerHTML=options;selectB.innerHTML=options;
+  if(teams.some(t=>t.id===oldA))selectA.value=oldA;if(teams.some(t=>t.id===oldB))selectB.value=oldB;
+  if(!selectA.value&&teams[0])selectA.value=teams[0].id;if(!selectB.value&&teams[1])selectB.value=teams[1].id;
+  document.getElementById("comparison-context").textContent=`Division: ${division} · ${teams.length} Teams`;
+  if(teams.length<2){output.innerHTML='<p class="comparison-empty">Für einen direkten Vergleich werden mindestens zwei Teams in derselben Division benötigt.</p>';return;}
+  const a=teams.find(t=>t.id===selectA.value),b=teams.find(t=>t.id===selectB.value);
+  if(!a||!b)return;if(a.id===b.id){output.innerHTML='<p class="comparison-empty">Bitte zwei unterschiedliche Teams auswählen.</p>';return;}
+  const ranked=rankTeams(teams,sourceData.stations),ra=ranked.find(t=>t.id===a.id),rb=ranked.find(t=>t.id===b.id);let winsA=0,winsB=0,ties=0;
+  const rows=sourceData.stations.map(s=>{const av=Number(a.results[s.key]),bv=Number(b.results[s.key]),delta=av-bv,w=delta===0?"tie":((s.direction==="asc"?delta<0:delta>0)?"a":"b");if(w==="a")winsA++;else if(w==="b")winsB++;else ties++;const label=w==="tie"?"Gleichstand":w==="a"?a.name:b.name;return `<tr><td>${escapeHtml(s.name)}</td><td>${fmt(av,0)} <small>${escapeHtml(s.unit)} · Rang ${ra.stationRanks[s.key]}</small></td><td>${fmt(bv,0)} <small>${escapeHtml(s.unit)} · Rang ${rb.stationRanks[s.key]}</small></td><td><strong>${escapeHtml(label)}</strong><small>${delta>0?"+":""}${fmt(delta,0)} ${escapeHtml(s.unit)} (A − B)</small></td></tr>`;}).join("");
+  const winner=Math.abs(ra.averageRank-rb.averageRank)<1e-9?"Unentschieden":ra.averageRank<rb.averageRank?a.name:b.name;
+  output.innerHTML=`<div class="comparison-scoreboard"><article><span>TEAM A</span><h3>${escapeHtml(a.name)}</h3><strong>${fmt(ra.averageRank,2)}</strong><small>Ø Stationsrang · Platz ${ra.overallRank}</small></article><div class="comparison-vs">VS</div><article><span>TEAM B</span><h3>${escapeHtml(b.name)}</h3><strong>${fmt(rb.averageRank,2)}</strong><small>Ø Stationsrang · Platz ${rb.overallRank}</small></article></div><div class="comparison-summary"><strong>${escapeHtml(winner)}</strong><span>Stationsduelle: A ${winsA} · Gleichstand ${ties} · B ${winsB}</span></div><div class="table-wrap"><table class="comparison-table"><thead><tr><th>STATION</th><th>${escapeHtml(a.name)}</th><th>${escapeHtml(b.name)}</th><th>VORTEIL</th></tr></thead><tbody>${rows}</tbody></table></div>`;
+}
+
 function init(data) {
   sourceData=data;
   document.title=`${data.event.name} – Ergebnisse`;
@@ -388,18 +446,22 @@ function init(data) {
   const ages=[...new Set(data.teams.map(t=>t.ageGroup || ageGroup(t.averageAge)).filter(Boolean))].sort((a,b)=>parseInt(a)-parseInt(b));
   document.getElementById("age-filter").innerHTML='<option value="">Alle Altersklassen</option>'+ages.map(a=>`<option>${a}</option>`).join("");
   document.getElementById("station-filter").innerHTML=data.stations.map(st=>`<option value="${escapeHtml(st.key)}">${escapeHtml(st.name)}</option>`).join("");
-  renderLeaderboard();renderStations();renderEventStatistics();
+  renderLeaderboard();renderStations();renderEventStatistics();renderHeadToHead();renderDigitalAwards();renderCrossEventDevelopment();
 }
 document.querySelectorAll(".tab").forEach(b=>b.addEventListener("click",()=>{
   activeDivision=b.dataset.division;
-  renderLeaderboard();renderStations();renderEventStatistics();
+  renderLeaderboard();renderStations();renderEventStatistics();renderHeadToHead();
 }));
 document.getElementById("age-filter").addEventListener("change",()=>{
   renderLeaderboard();
   renderStations();
   renderEventStatistics();
+  renderHeadToHead();
 });
 document.getElementById("station-filter").addEventListener("change",renderStations);
+document.getElementById("compare-team-a").addEventListener("change",renderHeadToHead);
+document.getElementById("compare-team-b").addEventListener("change",renderHeadToHead);
+document.getElementById("history-team").addEventListener("change",renderCrossEventDevelopment);
 function eventDateValue(value){ if(!value)return null; const d=new Date(value+ (value.length===10?"T00:00:00":"")); return Number.isNaN(d.getTime())?null:d; }
 function formatEventDate(value){const d=eventDateValue(value);return d?d.toLocaleDateString("de-DE",{day:"2-digit",month:"long",year:"numeric"}):"Termin folgt";}
 function eventFlagSvg(countryCode){

@@ -1,0 +1,48 @@
+name: Validate event data and application code
+
+on:
+  pull_request:
+    branches:
+      - develop
+      - main
+  push:
+    branches:
+      - develop
+      - main
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Checkout source
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Check JavaScript syntax
+        run: |
+          node --check app.js
+          node --check scripts/validate-events.mjs
+          node --check scripts/generate-team-share-pages.mjs
+
+      - name: Validate event schemas
+        run: |
+          npx --yes ajv-cli@5 validate --spec=draft2020 -s schemas/events-catalogue.schema.json -d data/events.json --all-errors
+          for file in $(node -e "const c=require('./data/events.json'); for(const e of c.events) if(e.dataFile) console.log(e.dataFile)"); do
+            npx --yes ajv-cli@5 validate --spec=draft2020 -s schemas/event.schema.json -d "$file" --all-errors
+          done
+
+      - name: Validate event references and results
+        run: node scripts/validate-events.mjs .
+
+      - name: Test team share page generation
+        run: |
+          node scripts/generate-team-share-pages.mjs .
+          test -n "$(find share -name index.html -print -quit)"
+          grep -R -q 'property="og:title"' share

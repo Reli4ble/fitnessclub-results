@@ -5,6 +5,13 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="description" content="Ergebnisse und Ranglisten des Fitnessclub-Wettkampfs.">
   <meta name="copyright" content="© 2026 Reli4ble. All rights reserved.">
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="Fitnessclub Competition Results">
+  <meta property="og:title" content="Fitnessclub Wettkampf – Ergebnisse">
+  <meta property="og:description" content="Ergebnisse, Ranglisten und Teamprofile der Fitnessclub-Wettkämpfe.">
+  <meta property="og:image" content="https://reli4ble.github.io/fitnessclub-results/assets/certificate-banner.png">
+  <meta name="twitter:card" content="summary_large_image">
+
   <title>Fitnessclub Wettkampf – Ergebnisse</title>
   <link rel="stylesheet" href="styles.css">
 </head>
@@ -85,7 +92,11 @@
       <p class="table-note">Die Rangpunkte sind der Durchschnitt der acht Stationsränge. Gleichstände erhalten denselben Rang (Wettkampf-Rangfolge: 1, 1, 3).</p>
     </section>
 
-    <section class="stations-section">
+    
+        <section class="cross-event-section"><div class="section-heading"><div><p class="eyebrow">SEASON PROGRESS</p><h2>Eventübergreifende Entwicklung</h2></div><label class="age-filter">Team<select id="history-team"></select></label></div><div id="cross-event-results" class="cross-event-results" aria-live="polite"></div><p class="table-note">Teams werden über beide Athleten und innerhalb derselben Division zugeordnet. Der relative Rang berücksichtigt die jeweilige Feldgröße.</p></section>
+    <section class="digital-awards-section"><div class="section-heading"><div><p class="eyebrow">DIGITAL AWARDS</p><h2>Auszeichnungen</h2></div></div><div id="digital-awards" class="digital-awards-grid"></div></section>
+<section class="head-to-head-section"><div class="section-heading"><div><p class="eyebrow">HEAD TO HEAD</p><h2>Teamvergleich</h2></div><span class="comparison-context" id="comparison-context">Direkter Vergleich innerhalb derselben Division</span></div><div class="comparison-controls"><label>Team A<select id="compare-team-a"></select></label><span class="comparison-versus">VS</span><label>Team B<select id="compare-team-b"></select></label></div><div id="head-to-head-results" class="head-to-head-results" aria-live="polite"></div><p class="table-note">Verglichen werden nur Teams derselben Division. Unterschiedliche Stationslasten werden nicht vermischt.</p></section>
+<section class="stations-section">
       <div class="section-heading">
         <div><p class="eyebrow">PERFORMANCE</p><h2>Stationsrangliste</h2></div>
         <label class="age-filter">Station
