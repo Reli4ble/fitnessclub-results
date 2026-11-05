@@ -1,9 +1,13 @@
 # Fitnessclub Competition Results
 
-**Website-Version: v1.7.0**  
+**Website-Version: v1.8.0**  
 **Release-Datum: 05.11.2026**
 
 Statische Ergebnis-Website für GitHub Pages. Keine Datenbank, kein Backend und kein Login. Die Website wird über GitHub Actions aus `main` (Produktion) und `develop` (Preview) gemeinsam veröffentlicht.
+
+## Version 1.8.0
+
+- Teamprofil-Navigation korrigiert: Die Deployment-Basis-URL wird beim Laden der Anwendung fest erfasst, sodass das Schließen eines geteilten Teamprofils zuverlässig zur Eventübersicht zurückführt – auch in der Preview unter `/preview/`.
 
 ## Version 1.7.0
 
@@ -146,6 +150,7 @@ Hinweis: Die Lizenztexte sind ein Formulierungsvorschlag und keine individuelle 
 
 | Version | Datum | Typ | Änderungen |
 |---|---|---|---|
+| v1.8.0 | 05.11.2026 | PATCH | Teamprofil-Navigation korrigiert: Rückkehr zur Eventübersicht mit stabiler Deployment-Basis-URL in Production und Preview. |
 | v1.7.0 | 05.11.2026 | MINOR | Separate Ergebnisansichten und verbesserte Übersicht mit integrierten Auszeichnungen; Teamvergleich entfernt; Zertifikate und Druckdarstellung verbessert; Pages-Deployment auf main als Trigger vereinheitlicht; GitHub Actions aktualisiert. |
 | v1.6.0 | 05.11.2026 | MINOR | Teilbare Teamprofile mit Deep Links und Browsernavigation; interaktive Stationsranglisten mit Filtern und korrekter Gleichstandsbehandlung; Event-Statistiken; responsive A4-Ergebniszertifikate mit Fotobanner. |
 | v1.5.1 | 04.11.2026 | PATCH | Doppelte Statusanzeige im Header entfernt; aktive Navigation direkt am Navigationsbutton markiert. |
