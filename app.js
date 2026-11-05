@@ -213,7 +213,7 @@ function createTeamCertificate(teamId) {
     '@page{size:A4 landscape;margin:10mm}*{box-sizing:border-box}body{margin:0;background:#e8ebee;color:#171b20;font-family:Arial,Helvetica,sans-serif}',
     '.toolbar{max-width:1120px;margin:18px auto;display:flex;justify-content:flex-end;gap:10px}.toolbar button{border:0;background:#171b20;color:#fff;padding:12px 18px;font-weight:700;cursor:pointer}',
     '.sheet{width:min(1120px,calc(100% - 32px));min-height:690px;margin:0 auto 28px;background:#fff;padding:12px;box-shadow:0 12px 45px rgba(0,0,0,.12);border:3px solid #111}',
-    '.certificate-banner{height:140px;width:100%;padding:0;background:#111;border-bottom:0;position:relative;overflow:hidden}.certificate-banner-image{display:block;width:100%;height:100%;object-fit:cover;object-position:center 44%}',
+    '.certificate-banner{height:140px;width:100%;padding:0;background:linear-gradient(115deg,#111820 0%,#28313b 48%,#111820 100%);border-bottom:4px solid #ffe500;position:relative;overflow:hidden;display:flex;align-items:center;justify-content:center}.certificate-banner:before,.certificate-banner:after{content:"";position:absolute;top:-70%;height:240%;width:110px;background:rgba(255,255,255,.055);transform:rotate(28deg)}.certificate-banner:before{left:12%}.certificate-banner:after{right:13%}.certificate-banner-brand{position:relative;z-index:1;display:flex;flex-direction:column;align-items:center;gap:8px;color:#fff;text-align:center}.certificate-banner-brand span{font:900 11px Arial,Helvetica,sans-serif;letter-spacing:.42em;color:#ffe500}.certificate-banner-brand strong{font:900 clamp(20px,4vw,34px) Arial,Helvetica,sans-serif;letter-spacing:.12em}.certificate-banner-brand i{font:700 8px Arial,Helvetica,sans-serif;letter-spacing:.35em;color:#c5cbd2}',
     '.frame{height:100%;min-height:510px;border:0;outline:1px solid #ffe500;outline-offset:-8px;padding:34px 62px 45px;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;position:relative;background:linear-gradient(120deg,transparent 0 6%,rgba(0,0,0,.035) 6% 8%,transparent 8% 11%,rgba(0,0,0,.035) 11% 13%,transparent 13% 87%,rgba(0,0,0,.035) 87% 89%,transparent 89% 92%,rgba(0,0,0,.035) 92% 94%,transparent 94%)}',
     '.kicker{font-size:12px;font-weight:900;letter-spacing:6px;text-transform:uppercase;color:#171b20;margin-top:10px}h1{font-size:48px;line-height:1.05;font-style:italic;font-weight:900;letter-spacing:1px;text-transform:uppercase;margin:16px 0 10px;white-space:normal;max-width:100%;overflow-wrap:anywhere}',
     '.intro{font-size:17px;color:#4c5661;margin:0}.team{font-size:42px;font-weight:800;margin:25px 0 8px}.partners{font-size:18px;color:#4c5661}',
@@ -225,7 +225,7 @@ function createTeamCertificate(teamId) {
     '@media print{body{background:#fff}.toolbar{display:none}.sheet{width:100%;min-height:0;height:190mm;margin:0;padding:0;box-shadow:none}.certificate-banner{height:35mm}.frame{height:145mm;min-height:0;padding:24px 55px}.award{background:#ffe500!important;-webkit-print-color-adjust:exact;print-color-adjust:exact}.footer{margin-top:40px}}',
     '</style></head><body>',
     '<div class="toolbar"><button onclick="window.print()">DRUCKEN / ALS PDF SPEICHERN</button></div>',
-    '<main class="sheet"><header class="certificate-banner"><img class="certificate-banner-image" src="'+new URL("./assets/certificate-banner.png",document.baseURI).href+'" alt="HYROX Competition Results" onerror="this.remove();this.parentElement.classList.add(&quot;banner-fallback&quot;)"></header><section class="frame"><div class="event">Fitnessclub · Competition Results</div>',
+    '<main class="sheet"><header class="certificate-banner"><div class="certificate-banner-brand"><span>FITNESSCLUB</span><strong>COMPETITION RESULTS</strong><i>TRAIN · PERFORM · ACHIEVE</i></div></header><section class="frame"><div class="event">Fitnessclub · Competition Results</div>',
     '<div class="kicker">Ergebniszertifikat</div><h1>Certificate of Achievement</h1><p class="intro">Hiermit wird ausgezeichnet:</p>',
     '<div class="team">'+escapeHtml(team.name)+'</div><div class="partners">'+escapeHtml(team.partner1)+' &amp; '+escapeHtml(team.partner2)+'</div>',
     '<div class="award">'+escapeHtml(certificateTitle)+'</div>',
@@ -401,47 +401,13 @@ function renderOverviewDashboard() {
     button.addEventListener("click",()=>openTeamDetails(button.dataset.teamId))
   );
 }
-function renderDigitalAwards() {
- const host=document.getElementById("digital-awards"),divisions=["Männer","Frauen","Mixed"];
- const champions=[],stationRows=[];
- for(const division of divisions){
-  const pool=sourceData.teams.filter(t=>t.division===division);
-  if(!pool.length)continue;
-  const ranked=rankTeams(pool,sourceData.stations);
-  for(const team of ranked.filter(t=>t.overallRank===1)){
-   champions.push({team,division});
-  }
- }
- for(const station of sourceData.stations){
-  const winnersByDivision=divisions.map(division=>{
-   const pool=sourceData.teams.filter(t=>t.division===division);
-   if(!pool.length)return {division,winners:[]};
-   const values=pool.map(t=>Number(t.results[station.key]));
-   const bestValue=station.direction==="asc"?Math.min(...values):Math.max(...values);
-   return {division,winners:pool.filter(t=>Number(t.results[station.key])===bestValue)};
-  });
-  stationRows.push({station,winnersByDivision});
- }
- const championCards=champions.map(({team,division})=>
-  `<button class="digital-award-card division-award-card" data-team-id="${escapeHtml(team.id)}"><span class="award-icon">🏆</span><span class="award-type">Division Champion</span><strong>${escapeHtml(team.name)}</strong><small>${escapeHtml(division)} · Gesamtsieg</small></button>`
- ).join("");
- const stationTable=`<div class="table-wrap awards-table-wrap"><table class="awards-table"><thead><tr><th>STATION</th><th>MÄNNER</th><th>FRAUEN</th><th>MIXED</th></tr></thead><tbody>${stationRows.map(({station,winnersByDivision})=>
-  `<tr><td class="award-station-name">${escapeHtml(station.name)}</td>${winnersByDivision.map(({winners})=>
-   `<td>${winners.length?winners.map(team=>`<button class="award-team-link" data-team-id="${escapeHtml(team.id)}">${escapeHtml(team.name)}</button>`).join('<span class="award-tie-note">geteilt</span>'):'<span class="award-no-result">–</span>'}</td>`
-  ).join("")}</tr>`
- ).join("")}</tbody></table></div>`;
- host.innerHTML=(championCards? `<div class="digital-awards-champions">${championCards}</div>`:"")+stationTable;
- host.querySelectorAll("[data-team-id]").forEach(b=>b.addEventListener("click",()=>openTeamDetails(b.dataset.teamId)));
-}
-
-
 let activeResultsPage="overview-page";
 function showResultsPage(pageId) {
   const target=document.getElementById(pageId);
   if(!target || !target.matches("[data-results-view]")) return;
   activeResultsPage=pageId;
   const divisionBar=document.querySelector(".division-filter-bar");
-  divisionBar.hidden=["overview-page","awards-page"].includes(pageId);
+  divisionBar.hidden=["overview-page","scoring-page"].includes(pageId);
   document.querySelectorAll("[data-results-view]").forEach(page=>page.classList.toggle("active",page===target));
   document.querySelectorAll(".results-nav-link").forEach(link=>{
     const active=link.dataset.pageTarget===pageId;
@@ -474,7 +440,7 @@ function init(data) {
   const ages=[...new Set(data.teams.map(t=>t.ageGroup || ageGroup(t.averageAge)).filter(Boolean))].sort((a,b)=>parseInt(a)-parseInt(b));
   document.getElementById("age-filter").innerHTML='<option value="">Alle Altersklassen</option>'+ages.map(a=>`<option>${a}</option>`).join("");
   document.getElementById("station-filter").innerHTML=data.stations.map(st=>`<option value="${escapeHtml(st.key)}">${escapeHtml(st.name)}</option>`).join("");
-  renderLeaderboard();renderStations();renderEventStatistics();renderDigitalAwards();renderOverviewDashboard();
+  renderLeaderboard();renderStations();renderEventStatistics();renderOverviewDashboard();
 }
 document.querySelectorAll(".tab").forEach(b=>b.addEventListener("click",()=>{
   activeDivision=b.dataset.division;
