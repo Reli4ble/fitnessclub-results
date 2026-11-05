@@ -52,13 +52,17 @@ jobs:
       - name: Validate production event data
         run: |
           npx --yes ajv-cli@5 validate --spec=draft2020 -s site-dev/schemas/events-catalogue.schema.json -d site-prod/data/events.json --all-errors
-          npx --yes ajv-cli@5 validate --spec=draft2020 -s site-dev/schemas/event.schema.json -d 'site-prod/data/events/*.json' --all-errors
+          for file in $(node -e "const c=require('./site-prod/data/events.json'); for(const e of c.events) if(e.dataFile) console.log(e.dataFile)"); do
+            npx --yes ajv-cli@5 validate --spec=draft2020 -s site-dev/schemas/event.schema.json -d "site-prod/$file" --all-errors
+          done
           node site-dev/scripts/validate-events.mjs site-prod
 
       - name: Validate development event data
         run: |
           npx --yes ajv-cli@5 validate --spec=draft2020 -s site-dev/schemas/events-catalogue.schema.json -d site-dev/data/events.json --all-errors
-          npx --yes ajv-cli@5 validate --spec=draft2020 -s site-dev/schemas/event.schema.json -d 'site-dev/data/events/*.json' --all-errors
+          for file in $(node -e "const c=require('./site-dev/data/events.json'); for(const e of c.events) if(e.dataFile) console.log(e.dataFile)"); do
+            npx --yes ajv-cli@5 validate --spec=draft2020 -s site-dev/schemas/event.schema.json -d "site-dev/$file" --all-errors
+          done
           node site-dev/scripts/validate-events.mjs site-dev
 
       - name: Configure Pages
