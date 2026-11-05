@@ -156,9 +156,16 @@ function renderCumulativeRank(team, stations){
   const path=values.map((v,i)=>`${i?'L':'M'} ${x(i)} ${y(v)}`).join(' ');
   return `<svg class="rank-trend" viewBox="0 0 340 145" role="img" aria-label="Kumulierte durchschnittliche Stationsrangpunkte; niedriger ist besser."><line x1="28" y1="18" x2="312" y2="18" class="trend-grid"/><line x1="28" y1="112" x2="312" y2="112" class="trend-grid"/><path d="${path}" class="trend-line"/>${values.map((v,i)=>`<circle cx="${x(i)}" cy="${y(v)}" r="3.5" class="trend-dot"><title>${escapeHtml(stations[i].name)}: ${fmt(v,2)} Ø-Rang</title></circle>`).join('')}<text x="28" y="133" class="trend-label">${escapeHtml(stations[0].shortName||stations[0].name)}</text><text x="312" y="133" text-anchor="end" class="trend-label">${escapeHtml(stations[stations.length-1].shortName||stations[stations.length-1].name)}</text><text x="28" y="11" class="trend-label">Besser ↑</text></svg>`;
 }
+function appBaseUrl() {
+  const imageUrl=document.querySelector('meta[property="og:image"]')?.content;
+  return imageUrl ? new URL(".",imageUrl) : new URL("/fitnessclub-results/",location.origin);
+}
+function appRouteUrl(hash="events") {
+  const url=appBaseUrl(); url.hash=hash; return url.href;
+}
 function teamProfileUrl(teamId) {
   const eventId=currentEventId||sourceData.event.id;
-  const base=new URL("./",location.href); return new URL(`share/${encodeURIComponent(eventId)}/${encodeURIComponent(teamId)}/`,base).href;
+  return new URL(`share/${encodeURIComponent(eventId)}/${encodeURIComponent(teamId)}/`,appBaseUrl()).href;
 }
 async function shareTeamProfile(teamId) {
   const url=teamProfileUrl(teamId);
@@ -490,17 +497,17 @@ function renderEventIndex(){
   document.getElementById("events-empty").hidden=!!(featured||past.length);
   document.querySelectorAll("[data-event-id]").forEach(b=>b.addEventListener("click",()=>openEvent(b.dataset.eventId)));
 }
-function showEvents(){document.getElementById("events-page").hidden=false;document.getElementById("results-page").hidden=true;document.getElementById("nav-results").hidden=true;document.getElementById("nav-events").classList.add("active");document.getElementById("nav-results").classList.remove("active");history.replaceState(null,"",location.pathname+"#events");}
+function showEvents(){document.getElementById("events-page").hidden=false;document.getElementById("results-page").hidden=true;document.getElementById("nav-results").hidden=true;document.getElementById("nav-events").classList.add("active");document.getElementById("nav-results").classList.remove("active");history.replaceState(null,"",appRouteUrl("events"));}
 function openEvent(id,teamId=null,options={}) {
   const event=eventIndex.find(e=>e.id===id); if(!event)return;
   if(!event.dataFile){alert("Für dieses Event sind noch keine Ergebnisse hinterlegt.");return;}
   fetch(event.dataFile).then(r=>{if(!r.ok)throw new Error("Eventdaten konnten nicht geladen werden");return r.json();}).then(data=>{
     currentEventId=id; init(data); document.getElementById("events-page").hidden=true; document.getElementById("results-page").hidden=false; document.getElementById("nav-results").hidden=false; document.getElementById("nav-events").classList.remove("active"); document.getElementById("nav-results").classList.add("active");
-    if(options.preserveHash!==true) history.replaceState({eventId:id},"",location.pathname+"#"+encodeURIComponent(id));
+    if(options.preserveHash!==true) history.replaceState({eventId:id},"",appRouteUrl(encodeURIComponent(id)));
     showResultsPage("overview-page");
     if(teamId) {
       if(data.teams.some(t=>t.id===teamId)) openTeamDetails(teamId,{updateUrl:false});
-      else history.replaceState({eventId:id},"",location.pathname+"#"+encodeURIComponent(id));
+      else history.replaceState({eventId:id},"",appRouteUrl(encodeURIComponent(id)));
     }
   }).catch(err=>{document.getElementById("events-empty").textContent=err.message;document.getElementById("events-empty").hidden=false;});
 }
@@ -526,7 +533,7 @@ document.getElementById("nav-results").addEventListener("click",()=>{document.ge
 function closeTeamProfile() {
   const dialog=document.getElementById("team-dialog");
   if(dialog.open) dialog.close();
-  history.replaceState({eventId:currentEventId},"",location.pathname+"#"+encodeURIComponent(currentEventId||sourceData.event.id));
+  history.replaceState({eventId:currentEventId},"",appRouteUrl(encodeURIComponent(currentEventId||sourceData.event.id)));
 }
 document.getElementById("dialog-close").addEventListener("click",closeTeamProfile);
 document.getElementById("team-dialog").addEventListener("click",e=>{
