@@ -1,0 +1,122 @@
+name: Import event results from Google Drive
+
+on:
+  workflow_dispatch:
+    inputs:
+      event_id:
+        description: "Optional event ID (empty = selection in Excel sheet Event!B4)"
+        required: false
+        type: string
+
+permissions:
+  id-token: write
+  contents: write
+  pull-requests: write
+
+concurrency:
+  group: google-drive-results-import
+  cancel-in-progress: false
+
+jobs:
+  export:
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Checkout development branch
+        uses: actions/checkout@v7
+        with:
+          ref: develop
+          fetch-depth: 0
+
+      - name: Set up Python
+        uses: actions/setup-python@v6
+        with:
+          python-version: "3.12"
+
+      - name: Authenticate to Google Cloud with Workload Identity Federation
+        id: auth
+        uses: google-github-actions/auth@v3
+        with:
+          workload_identity_provider: projects/977206525252/locations/global/workloadIdentityPools/github-actions-pool/providers/github-actions
+          service_account: fitnessclub-results-reader@fitnessclub-results-import.iam.gserviceaccount.com
+          token_format: access_token
+          access_token_scopes: https://www.googleapis.com/auth/drive.readonly
+
+      - name: Install exporter dependency
+        run: python -m pip install --disable-pip-version-check openpyxl
+
+      - name: Export Google Sheets master workbook as XLSX
+        env:
+          GOOGLE_ACCESS_TOKEN: ${{ steps.auth.outputs.access_token }}
+          GOOGLE_DRIVE_FILE_ID: ${{ secrets.GOOGLE_DRIVE_FILE_ID }}
+        run: |
+          set -euo pipefail
+
+          if [ -z "${GOOGLE_DRIVE_FILE_ID:-}" ]; then
+            echo "::error::Required repository secret GOOGLE_DRIVE_FILE_ID is missing."
+            exit 1
+          fi
+
+          workbook="$RUNNER_TEMP/master-workbook.xlsx"
+
+          curl --fail --silent --show-error \
+            -H "Authorization: Bearer $GOOGLE_ACCESS_TOKEN" \
+            "https://www.googleapis.com/drive/v3/files/$GOOGLE_DRIVE_FILE_ID/export?mimeType=application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" \
+            --output "$workbook"
+
+          unset GOOGLE_ACCESS_TOKEN
+
+          if ! unzip -tq "$workbook" >/dev/null; then
+            echo "::error::Google Drive export did not return a valid XLSX workbook."
+            exit 1
+          fi
+
+          echo "Google Sheets workbook exported to XLSX and validated. File contents are not logged."
+
+      - name: Export selected event
+        env:
+          EVENT_ID: ${{ inputs.event_id }}
+        run: |
+          set -euo pipefail
+          args=("$RUNNER_TEMP/master-workbook.xlsx")
+          if [ -n "$EVENT_ID" ]; then
+            args+=(--event-id "$EVENT_ID")
+          fi
+          python scripts/export_results.py "${args[@]}" --output-dir data
+          rm -f "$RUNNER_TEMP/master-workbook.xlsx"
+
+      - name: Validate exported public data
+        run: |
+          set -euo pipefail
+          npx --yes ajv-cli@5 validate --spec=draft2020 -s schemas/events-catalogue.schema.json -d data/events.json --all-errors
+          while IFS= read -r file; do
+            [ -z "$file" ] || npx --yes ajv-cli@5 validate --spec=draft2020 -s schemas/event.schema.json -d "$file" --all-errors
+          done < <(node -e "const c=require('./data/events.json'); for(const e of c.events) if(e.dataFile) console.log(e.dataFile)")
+          node scripts/validate-events.mjs .
+
+      - name: Create results pull request
+        env:
+          GH_TOKEN: ${{ github.token }}
+          EVENT_ID: ${{ inputs.event_id }}
+        run: |
+          set -euo pipefail
+
+          if git diff --quiet -- data/events.json data/events/; then
+            echo "No public result data changed; no pull request is necessary."
+            exit 0
+          fi
+
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+
+          branch="data/google-drive-export-$(date -u +%Y%m%d-%H%M%S)"
+          git switch -c "$branch"
+          git add data/events.json data/events/
+          git commit -m "data: import event results from Google Drive"
+          git push --set-upstream origin "$branch"
+
+          event_label="${EVENT_ID:-Excel selection}"
+          gh pr create \
+            --base develop \
+            --head "$branch" \
+            --title "Results import: $event_label" \
+            --body "Automated export from the private Google Drive master spreadsheet.\n\n- Google Sheets was exported as XLSX for scripts/export_results.py\n- Public JSON schema and event validation passed\n- The workbook was downloaded to the temporary runner only and was not committed or uploaded as an artifact\n- Target branch: develop\n\nPlease review the result data before merging."
