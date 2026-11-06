@@ -2,11 +2,11 @@ const { test, expect } = require("@playwright/test");
 
 test.beforeEach(async ({ page }) => {
   await page.goto("/preview/");
-  await expect(page.locator("#past-events .event-card")).toHaveCount(1);
+  await expect(page.locator('#past-events .event-card[data-event-id="halloween-2026"]')).toHaveCount(1);
 });
 
 async function openHalloweenEvent(page) {
-  await page.locator("#past-events .event-card").click();
+  await page.locator('#past-events .event-card[data-event-id="halloween-2026"]').click();
   await expect(page.locator("#results-page")).toBeVisible();
   await expect(page.locator("#event-title")).toHaveText("HYROX Halloween Special 2026");
 }
