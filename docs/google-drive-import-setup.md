@@ -1,38 +1,43 @@
 # Google-Drive-Import für die Ergebnis-Excel einrichten
 
-Der Workflow `.github/workflows/import-results-google-drive.yml` lädt die private XLSX-Masterdatei zur Laufzeit herunter, exportiert nur öffentliche Ergebnis-JSON-Dateien und erstellt einen Pull Request nach `develop`.
+Der Workflow `.github/workflows/import-results-google-drive.yml` authentifiziert GitHub Actions über **Workload Identity Federation (OIDC)** bei Google Cloud. Er lädt die private XLSX-Masterdatei zur Laufzeit herunter, exportiert nur öffentliche Ergebnis-JSON-Dateien und erstellt einen Pull Request nach `develop`.
 
-Die XLSX-Datei wird weder im Repository gespeichert noch als Workflow-Artefakt hochgeladen.
+Die XLSX-Datei wird weder im Repository gespeichert noch als Workflow-Artefakt hochgeladen. Es werden keine langlebigen Google-Service-Account-Schlüssel und keine OAuth-Refresh-Tokens verwendet.
 
 ## 1. Google-Cloud-Projekt vorbereiten
 
-1. In der [Google Cloud Console](https://console.cloud.google.com/) ein eigenes Projekt anlegen oder ein vorhandenes privates Projekt verwenden.
-2. Unter **APIs & Dienste → Bibliothek** die **Google Drive API** aktivieren.
-3. Unter **Google Auth Platform** die OAuth-App konfigurieren:
-   - Zielgruppe: **Extern** (privates Google-Konto).
-   - App-Name und Support-E-Mail eintragen.
-   - Den eigenen Google-Account als Testnutzer hinzufügen, solange die App im Testmodus ist.
-4. Einen OAuth-Client vom Typ **Webanwendung** erstellen.
-5. Als autorisierte Weiterleitungs-URI exakt eintragen:
-   `https://developers.google.com/oauthplayground`
-6. Client-ID und Client-Secret sicher aufbewahren.
+1. Ein Google-Cloud-Projekt auswählen und die **Google Drive API** aktivieren.
+2. Ein Dienstkonto mit dem Namen `fitnessclub-results-reader` erstellen.
+3. Die Master-XLSX in Google Drive für die E-Mail-Adresse des Dienstkontos freigeben. Die Rolle **Betrachter** reicht aus.
+4. Einen Workload-Identity-Pool `github-actions-pool` mit einem OIDC-Anbieter `github-actions` erstellen:
+   - Anbieter: **OpenID Connect (OIDC)**
+   - Aussteller: `https://token.actions.githubusercontent.com`
+   - Attributzuordnung:
+     - `google.subject` → `assertion.sub`
+     - `attribute.repository` → `assertion.repository`
+     - `attribute.ref` → `assertion.ref`
+   - Attributbedingung, damit nur dieses Repository und der Branch `develop` zugelassen werden:
+     `assertion.repository == 'Reli4ble/fitnessclub-results' && assertion.ref == 'refs/heads/develop'`
+5. Dem Dienstkonto über **Workload Identity-Föderation → Pool → Zugriff gewähren → Zugriff mit Identitätsübernahme des Dienstkontos gewähren** Zugriff erteilen:
+   - Dienstkonto: `fitnessclub-results-reader`
+   - Attributname: `attribute.repository`
+   - Attributwert: `Reli4ble/fitnessclub-results`
 
-**Wichtig zum Testmodus:** OAuth-Refresh-Tokens für externe Apps im Status „Testing“ laufen bei Google in der Regel nach sieben Tagen ab. Für einen dauerhaft nutzbaren Workflow muss die OAuth-App in den Produktionsstatus versetzt werden. Bei rein privater Nutzung kann die App als nicht verifizierte App mit dem entsprechenden Google-Warnhinweis verwendet werden; keine fremden Nutzer hinzufügen. Google kann bei bestimmten Scopes zusätzliche Prüfungen verlangen.
+   Das Dienstkonto muss im Tab **Verbundene Dienstkonten** des Pools erscheinen.
 
-## 2. Refresh-Token erzeugen
+## 2. Werte für GitHub Actions
 
-1. [Google OAuth 2.0 Playground](https://developers.google.com/oauthplayground/) öffnen.
-2. Über das Zahnrad **Use your own OAuth credentials** aktivieren.
-3. Client-ID und Client-Secret aus Schritt 1 eintragen.
-4. Im Feld für eigene Scopes diesen Scope eintragen:
+Für das Projekt `fitnessclub-results-import` werden diese Werte verwendet:
 
-   `https://www.googleapis.com/auth/drive.readonly`
+| Einstellung | Wert |
+|---|---|
+| Google Cloud Project Number | `977206525252` |
+| Workload Identity Pool ID | `github-actions-pool` |
+| Provider ID | `github-actions` |
+| Service Account | `fitnessclub-results-reader@fitnessclub-results-import.iam.gserviceaccount.com` |
+| Provider-Ressourcenname | `projects/977206525252/locations/global/workloadIdentityPools/github-actions-pool/providers/github-actions` |
 
-5. **Authorize APIs** auswählen und mit genau dem Google-Konto anmelden, in dessen Drive die Master-Excel liegt.
-6. **Exchange authorization code for tokens** ausführen.
-7. Das angezeigte **Refresh token** sicher kopieren. Nicht den Access Token verwenden.
-
-Das Refresh-Token gewährt Lesezugriff auf Google Drive. Es gehört zu einem privaten Konto und darf weder in Git noch in Logs oder Chats veröffentlicht werden.
+Die Workflow-Datei enthält Provider-Ressourcenname und Dienstkonto bereits.
 
 ## 3. Drive-Datei-ID ermitteln
 
@@ -44,28 +49,28 @@ ist `DATEI_ID` der Wert zwischen `/d/` und `/view`.
 
 Die Datei muss eine echte XLSX-Datei bleiben. Sie wird nicht in ein Google-Sheets-Dokument konvertiert.
 
-## 4. GitHub Secrets anlegen
+## 4. GitHub Secret anlegen
 
-Im Repository **Settings → Secrets and variables → Actions → New repository secret** diese vier Secrets anlegen:
+Im Repository **Settings → Secrets and variables → Actions → New repository secret** genau dieses Secret anlegen:
 
 | Secret | Inhalt |
 |---|---|
-| `GOOGLE_CLIENT_ID` | OAuth-Client-ID |
-| `GOOGLE_CLIENT_SECRET` | OAuth-Client-Secret |
-| `GOOGLE_REFRESH_TOKEN` | Refresh-Token aus Schritt 2 |
 | `GOOGLE_DRIVE_FILE_ID` | Drive-Datei-ID aus Schritt 3 |
 
-Keine dieser Angaben in Workflow-Dateien oder Repository-Variablen mit öffentlicher Sichtbarkeit eintragen.
+Google-Zugangsdaten werden über GitHub OIDC bezogen. Es sind daher keine Client-ID, kein Client-Secret, kein Refresh-Token und kein JSON-Schlüssel als GitHub Secret erforderlich.
 
 ## 5. Workflow starten
 
-Nachdem der Workflow über die normale Branch-Kette in `main` angekommen ist:
+Der Workflow muss zunächst über die normale Branch-Kette in `main` angekommen sein, damit GitHub ihn unter **Actions** anbietet.
+
+Da der Google-Provider absichtlich nur `refs/heads/develop` zulässt, beim manuellen Start im Feld **Branch** ausdrücklich `develop` auswählen:
 
 1. GitHub → **Actions** öffnen.
 2. **Import event results from Google Drive** auswählen.
 3. **Run workflow** wählen.
-4. Optional eine Event-ID eintragen. Ohne Eingabe wird die Auswahl aus `Event!B4` in der Excel-Datei verwendet.
-5. Workflow starten.
+4. Als Branch `develop` auswählen.
+5. Optional eine Event-ID eintragen. Ohne Eingabe wird die Auswahl aus `Event!B4` in der Excel-Datei verwendet.
+6. Workflow starten.
 
 Der Workflow lädt die XLSX-Datei auf einen kurzlebigen GitHub-Runner, führt `scripts/export_results.py` aus und validiert den Export. Bei Änderungen wird ein neuer PR nach `develop` angelegt. Ohne Änderungen wird kein PR erzeugt.
 
