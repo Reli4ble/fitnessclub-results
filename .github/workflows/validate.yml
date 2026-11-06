@@ -46,3 +46,18 @@ jobs:
           node scripts/generate-team-share-pages.mjs .
           test -n "$(find share -name index.html -print -quit)"
           grep -R -q 'property="og:title"' share
+
+      - name: Install Playwright
+        run: |
+          npm install --no-save --package-lock=false @playwright/test@1.56.1
+          npx playwright install --with-deps chromium
+
+      - name: Prepare preview site for browser tests
+        run: |
+          mkdir -p .test-site/preview
+          cp index.html app.js styles.css license.html .test-site/preview/
+          cp -R data assets .test-site/preview/
+          node scripts/generate-team-share-pages.mjs .test-site/preview https://example.test/preview/
+
+      - name: Run browser smoke tests
+        run: npx playwright test
