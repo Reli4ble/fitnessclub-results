@@ -7,7 +7,8 @@
       "location": "AI-Oberhausen",
       "status": "results",
       "subtitle": "Temporäre Beispieldaten zum Prüfen der Event-Auswahl",
-      "dataFile": "data/events/test-event-2026.json"
+      "dataFile": "data/events/test-event-2026.json",
+      "countryCode": "DE"
     },
     {
       "id": "halloween-2026",
