@@ -44,7 +44,7 @@ test("closing a team profile restores the event URL in the preview base path", a
 
   await page.locator("#leaderboard .team-row").first().click();
   await expect(page.locator("#team-dialog")).toBeVisible();
-  await expect(page).toHaveURL(/\/preview\/#halloween-2026\/team-/);
+  await expect(page).toHaveURL(/\/preview\/share\/halloween-2026\/team-[^/]+\/$/);
 
   await page.locator("#dialog-close").click();
   await expect(page.locator("#team-dialog")).not.toBeVisible();
