@@ -5,7 +5,7 @@
     "subtitle": "HYROX-orientierter Club-Wettkampf",
     "date": "2026-10-31",
     "location": "AI-Oberhausen",
-    "status": "Ergebnisse veröffentlicht",
+    "status": "results",
     "ageGroupsAvailable": false,
     "notice": "Ergebnisse des Fitnessclub-Wettkampfs. Die Ranglisten werden aus den Stationswerten berechnet."
   },
@@ -71,14 +71,14 @@
       "averageAge": null,
       "ageGroup": null,
       "results": {
-        "skiErg": 1760,
-        "sledPush": 250,
-        "sledPull": 145,
-        "burpees": 150,
-        "row": 1490,
-        "farmersCarry": 550,
-        "lunges": 195,
-        "wallBalls": 166
+        "skiErg": 1760.0,
+        "sledPush": 250.0,
+        "sledPull": 145.0,
+        "burpees": 150.0,
+        "row": 1490.0,
+        "farmersCarry": 550.0,
+        "lunges": 195.0,
+        "wallBalls": 166.0
       }
     },
     {
@@ -92,14 +92,14 @@
       "averageAge": null,
       "ageGroup": null,
       "results": {
-        "skiErg": 1510,
-        "sledPush": 180,
-        "sledPull": 90,
-        "burpees": 180,
-        "row": 1263,
-        "farmersCarry": 595,
-        "lunges": 180,
-        "wallBalls": 164
+        "skiErg": 1510.0,
+        "sledPush": 180.0,
+        "sledPull": 90.0,
+        "burpees": 180.0,
+        "row": 1263.0,
+        "farmersCarry": 595.0,
+        "lunges": 180.0,
+        "wallBalls": 164.0
       }
     },
     {
@@ -113,14 +113,14 @@
       "averageAge": null,
       "ageGroup": null,
       "results": {
-        "skiErg": 1308,
-        "sledPush": 240,
-        "sledPull": 86,
-        "burpees": 150,
-        "row": 1160,
-        "farmersCarry": 485,
-        "lunges": 190,
-        "wallBalls": 168
+        "skiErg": 1308.0,
+        "sledPush": 240.0,
+        "sledPull": 86.0,
+        "burpees": 150.0,
+        "row": 1160.0,
+        "farmersCarry": 485.0,
+        "lunges": 190.0,
+        "wallBalls": 168.0
       }
     },
     {
@@ -134,14 +134,14 @@
       "averageAge": null,
       "ageGroup": null,
       "results": {
-        "skiErg": 1452,
-        "sledPush": 289,
-        "sledPull": 134,
-        "burpees": 155,
-        "row": 1226,
-        "farmersCarry": 620,
-        "lunges": 200,
-        "wallBalls": 175
+        "skiErg": 1452.0,
+        "sledPush": 289.0,
+        "sledPull": 134.0,
+        "burpees": 155.0,
+        "row": 1226.0,
+        "farmersCarry": 620.0,
+        "lunges": 200.0,
+        "wallBalls": 175.0
       }
     },
     {
@@ -155,14 +155,14 @@
       "averageAge": null,
       "ageGroup": null,
       "results": {
-        "skiErg": 1671,
-        "sledPush": 220,
-        "sledPull": 120,
-        "burpees": 130,
-        "row": 1275,
-        "farmersCarry": 585,
-        "lunges": 160,
-        "wallBalls": 181
+        "skiErg": 1671.0,
+        "sledPush": 220.0,
+        "sledPull": 120.0,
+        "burpees": 130.0,
+        "row": 1275.0,
+        "farmersCarry": 585.0,
+        "lunges": 160.0,
+        "wallBalls": 181.0
       }
     },
     {
@@ -176,14 +176,14 @@
       "averageAge": null,
       "ageGroup": null,
       "results": {
-        "skiErg": 1348,
-        "sledPush": 270,
-        "sledPull": 170,
-        "burpees": 150,
-        "row": 1250,
-        "farmersCarry": 675,
-        "lunges": 180,
-        "wallBalls": 179
+        "skiErg": 1348.0,
+        "sledPush": 270.0,
+        "sledPull": 170.0,
+        "burpees": 150.0,
+        "row": 1250.0,
+        "farmersCarry": 675.0,
+        "lunges": 180.0,
+        "wallBalls": 179.0
       }
     },
     {
@@ -197,14 +197,14 @@
       "averageAge": null,
       "ageGroup": null,
       "results": {
-        "skiErg": 1495,
-        "sledPush": 230,
-        "sledPull": 140,
-        "burpees": 150,
-        "row": 1423,
-        "farmersCarry": 778,
-        "lunges": 160,
-        "wallBalls": 155
+        "skiErg": 1495.0,
+        "sledPush": 230.0,
+        "sledPull": 140.0,
+        "burpees": 150.0,
+        "row": 1423.0,
+        "farmersCarry": 778.0,
+        "lunges": 160.0,
+        "wallBalls": 155.0
       }
     },
     {
@@ -218,14 +218,14 @@
       "averageAge": null,
       "ageGroup": null,
       "results": {
-        "skiErg": 1537,
-        "sledPush": 250,
-        "sledPull": 150,
-        "burpees": 165,
-        "row": 1603,
-        "farmersCarry": 630,
-        "lunges": 280,
-        "wallBalls": 191
+        "skiErg": 1537.0,
+        "sledPush": 250.0,
+        "sledPull": 150.0,
+        "burpees": 165.0,
+        "row": 1603.0,
+        "farmersCarry": 630.0,
+        "lunges": 280.0,
+        "wallBalls": 191.0
       }
     },
     {
@@ -239,14 +239,14 @@
       "averageAge": null,
       "ageGroup": null,
       "results": {
-        "skiErg": 1335,
-        "sledPush": 230,
-        "sledPull": 170,
-        "burpees": 99,
-        "row": 985,
-        "farmersCarry": 473,
-        "lunges": 170,
-        "wallBalls": 143
+        "skiErg": 1335.0,
+        "sledPush": 230.0,
+        "sledPull": 170.0,
+        "burpees": 99.0,
+        "row": 985.0,
+        "farmersCarry": 473.0,
+        "lunges": 170.0,
+        "wallBalls": 143.0
       }
     },
     {
@@ -260,14 +260,14 @@
       "averageAge": null,
       "ageGroup": null,
       "results": {
-        "skiErg": 1378,
-        "sledPush": 160,
-        "sledPull": 80,
-        "burpees": 110,
-        "row": 1106,
-        "farmersCarry": 370,
-        "lunges": 105,
-        "wallBalls": 113
+        "skiErg": 1378.0,
+        "sledPush": 160.0,
+        "sledPull": 80.0,
+        "burpees": 110.0,
+        "row": 1106.0,
+        "farmersCarry": 370.0,
+        "lunges": 105.0,
+        "wallBalls": 113.0
       }
     },
     {
@@ -278,17 +278,17 @@
       "partner2": "Markus",
       "age1": 61,
       "age2": 55,
-      "averageAge": 58,
+      "averageAge": 58.0,
       "ageGroup": "55–59",
       "results": {
-        "skiErg": 1476,
-        "sledPush": 160,
-        "sledPull": 120,
-        "burpees": 130,
-        "row": 1115,
-        "farmersCarry": 551,
-        "lunges": 120,
-        "wallBalls": 113
+        "skiErg": 1476.0,
+        "sledPush": 160.0,
+        "sledPull": 120.0,
+        "burpees": 130.0,
+        "row": 1115.0,
+        "farmersCarry": 551.0,
+        "lunges": 120.0,
+        "wallBalls": 113.0
       }
     },
     {
@@ -302,14 +302,14 @@
       "averageAge": null,
       "ageGroup": null,
       "results": {
-        "skiErg": 1240,
-        "sledPush": 250,
-        "sledPull": 143,
-        "burpees": 115,
-        "row": 1181,
-        "farmersCarry": 603,
-        "lunges": 200,
-        "wallBalls": 162
+        "skiErg": 1240.0,
+        "sledPush": 250.0,
+        "sledPull": 143.0,
+        "burpees": 115.0,
+        "row": 1181.0,
+        "farmersCarry": 603.0,
+        "lunges": 200.0,
+        "wallBalls": 162.0
       }
     },
     {
@@ -323,14 +323,14 @@
       "averageAge": null,
       "ageGroup": null,
       "results": {
-        "skiErg": 1364,
-        "sledPush": 207,
-        "sledPull": 112,
-        "burpees": 139,
-        "row": 1182,
-        "farmersCarry": 574,
-        "lunges": 180,
-        "wallBalls": 167
+        "skiErg": 1364.0,
+        "sledPush": 207.0,
+        "sledPull": 112.0,
+        "burpees": 139.0,
+        "row": 1182.0,
+        "farmersCarry": 574.0,
+        "lunges": 180.0,
+        "wallBalls": 167.0
       }
     },
     {
@@ -344,14 +344,14 @@
       "averageAge": null,
       "ageGroup": null,
       "results": {
-        "skiErg": 1583,
-        "sledPush": 210,
-        "sledPull": 120,
-        "burpees": 112,
-        "row": 1254,
-        "farmersCarry": 641,
-        "lunges": 140,
-        "wallBalls": 116
+        "skiErg": 1583.0,
+        "sledPush": 210.0,
+        "sledPull": 120.0,
+        "burpees": 112.0,
+        "row": 1254.0,
+        "farmersCarry": 641.0,
+        "lunges": 140.0,
+        "wallBalls": 116.0
       }
     },
     {
@@ -365,14 +365,14 @@
       "averageAge": null,
       "ageGroup": null,
       "results": {
-        "skiErg": 1755,
-        "sledPush": 236,
-        "sledPull": 167,
-        "burpees": 150,
-        "row": 1407,
-        "farmersCarry": 675,
-        "lunges": 190,
-        "wallBalls": 172
+        "skiErg": 1755.0,
+        "sledPush": 236.0,
+        "sledPull": 167.0,
+        "burpees": 150.0,
+        "row": 1407.0,
+        "farmersCarry": 675.0,
+        "lunges": 190.0,
+        "wallBalls": 172.0
       }
     },
     {
@@ -386,14 +386,14 @@
       "averageAge": null,
       "ageGroup": null,
       "results": {
-        "skiErg": 1539,
-        "sledPush": 189,
-        "sledPull": 120,
-        "burpees": 130,
-        "row": 1245,
-        "farmersCarry": 473,
-        "lunges": 120,
-        "wallBalls": 138
+        "skiErg": 1539.0,
+        "sledPush": 189.0,
+        "sledPull": 120.0,
+        "burpees": 130.0,
+        "row": 1245.0,
+        "farmersCarry": 473.0,
+        "lunges": 120.0,
+        "wallBalls": 138.0
       }
     },
     {
@@ -407,14 +407,14 @@
       "averageAge": null,
       "ageGroup": null,
       "results": {
-        "skiErg": 1146,
-        "sledPush": 200,
-        "sledPull": 155,
-        "burpees": 100,
-        "row": 1140,
-        "farmersCarry": 450,
-        "lunges": 140,
-        "wallBalls": 118
+        "skiErg": 1146.0,
+        "sledPush": 200.0,
+        "sledPull": 155.0,
+        "burpees": 100.0,
+        "row": 1140.0,
+        "farmersCarry": 450.0,
+        "lunges": 140.0,
+        "wallBalls": 118.0
       }
     }
   ]
