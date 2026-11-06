@@ -11,6 +11,11 @@ async function openHalloweenEvent(page) {
   await expect(page.locator("#event-title")).toHaveText("HYROX Halloween Special 2026");
 }
 
+async function openLeaderboard(page) {
+  await page.locator('.results-nav-link[data-page-target="leaderboard-page"]').click();
+  await expect(page.locator("#leaderboard-page")).toBeVisible();
+}
+
 test("event overview loads and opens the event", async ({ page }) => {
   await expect(page.getByRole("heading", { name: "WETTKÄMPFE" })).toBeVisible();
   await expect(page.locator("#past-events")).toContainText("HYROX Halloween Special 2026");
@@ -20,6 +25,7 @@ test("event overview loads and opens the event", async ({ page }) => {
 
 test("division filters show only teams from the selected division", async ({ page }) => {
   await openHalloweenEvent(page);
+  await openLeaderboard(page);
 
   await page.locator('.tab[data-division="Frauen"]').click();
   await expect(page.locator('.tab[data-division="Frauen"]')).toHaveClass(/active/);
