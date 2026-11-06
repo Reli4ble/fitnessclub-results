@@ -39,6 +39,7 @@ test("division filters show only teams from the selected division", async ({ pag
 
 test("closing a team profile restores the event URL in the preview base path", async ({ page }) => {
   await openHalloweenEvent(page);
+  await openLeaderboard(page);
   await expect(page).toHaveURL(/\/preview\/#halloween-2026$/);
 
   await page.locator("#leaderboard .team-row").first().click();
