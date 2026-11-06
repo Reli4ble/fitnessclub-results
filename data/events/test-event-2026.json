@@ -1,0 +1,190 @@
+{
+  "event": {
+    "id": "test-event-2026",
+    "name": "TEST – Multi-Event-Demo (Beispieldaten)",
+    "subtitle": "Temporäre Beispieldaten zum Prüfen der Event-Auswahl",
+    "date": "2026-11-05",
+    "location": "AI-Oberhausen",
+    "status": "results",
+    "ageGroupsAvailable": false,
+    "notice": "Ergebnisse des Fitnessclub-Wettkampfs. Die Ranglisten werden aus den Stationswerten berechnet."
+  },
+  "stations": [
+    {
+      "key": "skiErg",
+      "name": "SkiErg",
+      "unit": "m",
+      "direction": "desc"
+    },
+    {
+      "key": "sledPush",
+      "name": "Sled Push",
+      "unit": "m",
+      "direction": "desc"
+    },
+    {
+      "key": "sledPull",
+      "name": "Sled Pull",
+      "unit": "m",
+      "direction": "desc"
+    },
+    {
+      "key": "burpees",
+      "name": "Burpees",
+      "unit": "m",
+      "direction": "desc"
+    },
+    {
+      "key": "row",
+      "name": "Row",
+      "unit": "m",
+      "direction": "desc"
+    },
+    {
+      "key": "farmersCarry",
+      "name": "Farmers Carry",
+      "unit": "m",
+      "direction": "desc"
+    },
+    {
+      "key": "lunges",
+      "name": "Lunges",
+      "unit": "m",
+      "direction": "desc"
+    },
+    {
+      "key": "wallBalls",
+      "name": "Wall Balls",
+      "unit": "Wdh.",
+      "direction": "desc"
+    }
+  ],
+  "teams": [
+    {
+      "id": "team-1",
+      "name": "TEST Männer 1",
+      "division": "Männer",
+      "partner1": "Torsten",
+      "partner2": "Dirk",
+      "age1": 27,
+      "age2": 24,
+      "averageAge": 25.5,
+      "ageGroup": "25–29",
+      "results": {
+        "skiErg": 1650.0,
+        "sledPush": 220.0,
+        "sledPull": 130.0,
+        "burpees": 145.0,
+        "row": 1350.0,
+        "farmersCarry": 520.0,
+        "lunges": 175.0,
+        "wallBalls": 160.0
+      }
+    },
+    {
+      "id": "team-2",
+      "name": "TEST Männer 2",
+      "division": "Männer",
+      "partner1": "Thomas",
+      "partner2": "Peter",
+      "age1": 26,
+      "age2": 40,
+      "averageAge": 33.0,
+      "ageGroup": "30–34",
+      "results": {
+        "skiErg": 1580.0,
+        "sledPush": 210.0,
+        "sledPull": 125.0,
+        "burpees": 138.0,
+        "row": 1290.0,
+        "farmersCarry": 500.0,
+        "lunges": 168.0,
+        "wallBalls": 150.0
+      }
+    },
+    {
+      "id": "team-3",
+      "name": "TEST Frauen 1",
+      "division": "Frauen",
+      "partner1": "Anna",
+      "partner2": "Simone",
+      "age1": 29,
+      "age2": 16,
+      "averageAge": 22.5,
+      "ageGroup": "16–24",
+      "results": {
+        "skiErg": 1450.0,
+        "sledPush": 180.0,
+        "sledPull": 105.0,
+        "burpees": 125.0,
+        "row": 1180.0,
+        "farmersCarry": 430.0,
+        "lunges": 155.0,
+        "wallBalls": 145.0
+      }
+    },
+    {
+      "id": "team-4",
+      "name": "TEST Frauen 2",
+      "division": "Frauen",
+      "partner1": "Katharina",
+      "partner2": "Chantal",
+      "age1": null,
+      "age2": null,
+      "averageAge": null,
+      "ageGroup": null,
+      "results": {
+        "skiErg": 1390.0,
+        "sledPush": 170.0,
+        "sledPull": 98.0,
+        "burpees": 118.0,
+        "row": 1120.0,
+        "farmersCarry": 410.0,
+        "lunges": 148.0,
+        "wallBalls": 138.0
+      }
+    },
+    {
+      "id": "team-5",
+      "name": "TEST Mixed 1",
+      "division": "Mixed",
+      "partner1": "Karl",
+      "partner2": "Helene",
+      "age1": 29,
+      "age2": 14,
+      "averageAge": 21.5,
+      "ageGroup": "16–24",
+      "results": {
+        "skiErg": 1550.0,
+        "sledPush": 200.0,
+        "sledPull": 115.0,
+        "burpees": 135.0,
+        "row": 1260.0,
+        "farmersCarry": 480.0,
+        "lunges": 165.0,
+        "wallBalls": 155.0
+      }
+    },
+    {
+      "id": "team-6",
+      "name": "TEST Mixed 2",
+      "division": "Mixed",
+      "partner1": "Michael",
+      "partner2": "Gunnar",
+      "age1": null,
+      "age2": null,
+      "averageAge": null,
+      "ageGroup": null,
+      "results": {
+        "skiErg": 1490.0,
+        "sledPush": 190.0,
+        "sledPull": 108.0,
+        "burpees": 128.0,
+        "row": 1210.0,
+        "farmersCarry": 460.0,
+        "lunges": 158.0,
+        "wallBalls": 148.0
+      }
+    }
+  ]
+}

@@ -1,6 +1,15 @@
 {
   "events": [
     {
+      "id": "test-event-2026",
+      "name": "TEST – Multi-Event-Demo (Beispieldaten)",
+      "date": "2026-11-05",
+      "location": "AI-Oberhausen",
+      "status": "results",
+      "subtitle": "Temporäre Beispieldaten zum Prüfen der Event-Auswahl",
+      "dataFile": "data/events/test-event-2026.json"
+    },
+    {
       "id": "halloween-2026",
       "name": "HYROX Halloween Special 2026",
       "date": "2026-10-31",
